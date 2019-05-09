@@ -16,11 +16,13 @@
         android:layout_margin="16dp"/>
 
     <Button
+        android:id="@+id/mainActivity_bt_start_workout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="start workout" />
 
     <Button
+        android:id="@+id/mainActivity_bt_customize_routine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="customize routine"/>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="32dp"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".WorkoutPickerActivity">
+
+    <Button
+        android:id="@+id/workout_picker_bt_routine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="routine"
+        android:layout_margin="16dp"/>
+    <Button
+        android:id="@+id/workout_picker_bt_copy_previous"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="copy previous workout"
+        android:layout_margin="16dp"/>
+
+    <Button
+        android:id="@+id/workout_picker_bt_new_workout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="start new workout"
+        android:layout_margin="16dp"/>
+</LinearLayout>
