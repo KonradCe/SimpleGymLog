@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 public class AddExerciseFragment extends Fragment implements View.OnClickListener{
     private Button mAddSetButton;
+    private Button mRemoveSetButton;
     private LinearLayout mSetListLinearLayout;
 
     // variable to keep track and display number of sets added by the user
@@ -30,7 +32,11 @@ public class AddExerciseFragment extends Fragment implements View.OnClickListene
         mAddSetButton = rootView.findViewById(R.id.addExerciseFragment_bt_addSet);
         mAddSetButton.setOnClickListener(this);
 
+        mRemoveSetButton = rootView.findViewById(R.id.addExerciseFragment_bt_deleteSet);
+        mRemoveSetButton.setOnClickListener(this);
+
         mSetListLinearLayout = rootView.findViewById(R.id.addExerciseFragment_ll_listOfSets);
+
 
         return rootView;
     }
@@ -40,6 +46,10 @@ public class AddExerciseFragment extends Fragment implements View.OnClickListene
         switch (view.getId()) {
             case (R.id.addExerciseFragment_bt_addSet):
                 mSetListLinearLayout.addView(addSet());
+                break;
+            case (R.id.addExerciseFragment_bt_deleteSet):
+                removeSet();
+                break;
 
         }
     }
@@ -49,6 +59,15 @@ public class AddExerciseFragment extends Fragment implements View.OnClickListene
         LinearLayout setView = (LinearLayout) getLayoutInflater().inflate(R.layout.item_add_set, null);
         TextView setNumber = setView.findViewById(R.id.item_addSet_tv_setNumber);
         setNumber.setText(Integer.toString(mSetNumber));
+        setView.setTag(mSetNumber);
         return setView;
+    }
+
+    private void removeSet() {
+        View setToRemove = mSetListLinearLayout.findViewWithTag(mSetNumber);
+        if (setToRemove != null) {
+            mSetListLinearLayout.removeView(setToRemove);
+            mSetNumber--;
+        }
     }
 }
