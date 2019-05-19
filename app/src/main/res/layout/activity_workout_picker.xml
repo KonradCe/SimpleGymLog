@@ -4,28 +4,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="32dp"
     android:gravity="center"
     android:orientation="vertical"
+    android:padding="32dp"
     tools:context=".WorkoutPickerActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="workout picker activity" />
 
     <Button
         android:id="@+id/workout_picker_bt_routine"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="routine"
-        android:layout_margin="16dp"/>
+        android:layout_margin="16dp"
+        android:text="routine" />
+
     <Button
         android:id="@+id/workout_picker_bt_copy_previous"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="copy previous workout"
-        android:layout_margin="16dp"/>
+        android:layout_margin="16dp"
+        android:text="copy previous workout" />
 
     <Button
         android:id="@+id/workout_picker_bt_new_workout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="start new workout"
-        android:layout_margin="16dp"/>
+        android:layout_margin="16dp"
+        android:text="start new workout" />
 </LinearLayout>

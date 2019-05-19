@@ -1,5 +1,6 @@
 package pl.kcworks.simplegymlog;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -14,10 +15,10 @@ public interface ExerciseDao {
     void insert(Exercise exercise);
 
     @Query("SELECT * FROM exercise_table ORDER BY exerciseId")
-    List<Exercise> getAllExercisese();
+    LiveData<List<Exercise>> getAllExercisese();
 
     @Query("SELECT * FROM exercise_table WHERE exerciseDate=:date")
-    List<Exercise> getExercisesByDate(long date);
+    LiveData<List<Exercise>> getExercisesByDate(long date);
 
     @Query ("DELETE FROM exercise_table")
     void deleteAllExercises();

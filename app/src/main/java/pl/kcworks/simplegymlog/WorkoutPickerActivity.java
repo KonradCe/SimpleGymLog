@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+// TODO[3]: replace with some pop up window or dialog or smth - no need for this to be an entire activity
+
 public class WorkoutPickerActivity extends AppCompatActivity {
     private Button mContinueRoutineButton;
     private Button mCopyPreviousWorkoutButton;

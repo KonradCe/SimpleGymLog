@@ -1,5 +1,6 @@
 package pl.kcworks.simplegymlog;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -15,10 +16,10 @@ public interface SingleSetDao {
     void insert(SingleSet singleSet);
 
     @Query("SELECT * FROM singleset")
-    List<SingleSet> getAllSingleSets();
+    LiveData<List<SingleSet>> getAllSingleSets();
 
     @Query("SELECT * FROM singleset WHERE correspondingExerciseId=:exerciseId")
-    List<SingleSet> getSingleSetsForExercise(int exerciseId);
+    LiveData<List<SingleSet>> getSingleSetsForExercise(int exerciseId);
 
     @Update
     void updateSet(SingleSet singleSet);
