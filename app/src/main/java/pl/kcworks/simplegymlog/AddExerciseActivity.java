@@ -1,18 +1,17 @@
 package pl.kcworks.simplegymlog;
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class AddExerciseFragment extends Fragment implements View.OnClickListener {
+import org.w3c.dom.Text;
+
+public class AddExerciseActivity extends AppCompatActivity implements View.OnClickListener {
     private Button mAddSetButton;
     private Button mRemoveSetButton;
     private Button mSaveExerciseButton;
@@ -23,34 +22,39 @@ public class AddExerciseFragment extends Fragment implements View.OnClickListene
     // variable to keep track and display number of sets added by the user
     private int mSetNumber = 0;
 
-    // mandatory empty constructor for the fragment manager to instantiate the fragment
-    public AddExerciseFragment() {
+    GymLogViewModel mGymLogViewModel;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_exercise);
+
+        setUpViews();
+
+        mGymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
+
+
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_add_exercise, container, false);
-
+    private void setUpViews() {
         // setting up views
-        mAddSetButton = rootView.findViewById(R.id.addExerciseFragment_bt_addSet);
+        mAddSetButton = findViewById(R.id.addExerciseFragment_bt_addSet);
         mAddSetButton.setOnClickListener(this);
 
-        mRemoveSetButton = rootView.findViewById(R.id.addExerciseFragment_bt_deleteSet);
+        mRemoveSetButton = findViewById(R.id.addExerciseFragment_bt_deleteSet);
         mRemoveSetButton.setOnClickListener(this);
 
-        mSaveExerciseButton = rootView.findViewById(R.id.addExerciseFragment_bt_saveExercise);
+        mSaveExerciseButton = findViewById(R.id.addExerciseFragment_bt_saveExercise);
         mSaveExerciseButton.setOnClickListener(this);
 
-        mSetListLinearLayout = rootView.findViewById(R.id.addExerciseFragment_ll_listOfSets);
+        mSetListLinearLayout = findViewById(R.id.addExerciseFragment_ll_listOfSets);
 
-        mExerciseNameEditText = rootView.findViewById(R.id.addExerciseFragment_et_exerciseName);
+        mExerciseNameEditText = findViewById(R.id.addExerciseFragment_et_exerciseName);
 
-        mExerciseDateEditText = rootView.findViewById(R.id.addExerciseFragment_et_exerciseDate);
-
-
-        return rootView;
+        mExerciseDateEditText = findViewById(R.id.addExerciseFragment_et_exerciseDate);
     }
+
 
     @Override
     public void onClick(View view) {
@@ -62,11 +66,12 @@ public class AddExerciseFragment extends Fragment implements View.OnClickListene
                 removeSet();
                 break;
             case (R.id.addExerciseFragment_bt_saveExercise):
-                saveExercise();
+                onSaveButtonPress();
                 break;
 
         }
     }
+
 
     private LinearLayout addSet() {
         mSetNumber++;
@@ -87,21 +92,28 @@ public class AddExerciseFragment extends Fragment implements View.OnClickListene
 
     private void onSaveButtonPress() {
         saveExercise();
-
+        finish();
     }
+
     private void saveExercise() {
         String exerciseName = mExerciseNameEditText.getText().toString();
         long exerciseDate = Long.parseLong(mExerciseDateEditText.getText().toString());
-        // TODO[1]: this value should be passed with starting this activity, 2 is a temporrary value
+        // TODO[1]: this value should be passed with starting this activity, 2 is a temporary value
         int exerciseOrderInDay = 2;
 
         //TODO[1]: add adding sets to database
 //        for (int i = 0; i < mSetListLinearLayout.getChildCount(); i++) {
-//            View set = mSetListLinearLayout.getChildAt(i);
+//            View setView = mSetListLinearLayout.getChildAt(i);
+//
+//            TextView setWeightTextView = setView.findViewById(R.id.item_addSet_tv_setWeight);
+//            float setWeight = Float.valueOf(setWeightTextView.getText().toString());
+//
+//            TextView setRepsTextView = setView.findViewById(R.id.item_addSet_tv_setReps);
+//            int setReps = Integer.valueOf(setRepsTextView.getText().toString());
 //
 //        }
 
         Exercise exercise = new Exercise(exerciseName, exerciseOrderInDay, exerciseDate);
-
+        mGymLogViewModel.insertExercise(exercise);
     }
 }

@@ -8,15 +8,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Collections;
 import java.util.List;
 
-public class ExerciseListAdapter extends RecyclerView.Adapter<ExerciseListAdapter.ExerciseViewHolder> {
+public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder> {
 
     private LayoutInflater mInflater;
-    private List<Exercise> mExercises; // cached copy of exercises
+    private List<Exercise> mExercises = Collections.emptyList(); // cached copy of exercises
 
-    ExerciseListAdapter (Context context) {
+    ExerciseAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
+    }
+
+    public void setExercises(List<Exercise> exercises) {
+        mExercises = exercises;
     }
 
     @NonNull
@@ -53,7 +58,7 @@ public class ExerciseListAdapter extends RecyclerView.Adapter<ExerciseListAdapte
         public ExerciseViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            itemView.findViewById(R.id.rvitem_tv_exercise_name);
+            exerciseNameTextView = itemView.findViewById(R.id.rvitem_tv_exercise_name);
         }
     }
 }

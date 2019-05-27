@@ -7,7 +7,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="add exercise fragment" />
+        android:text="add exercise activity" />
 
     <EditText
         android:id="@+id/addExerciseFragment_et_exerciseName"
