@@ -1,4 +1,4 @@
-package pl.kcworks.simplegymlog;
+package pl.kcworks.simplegymlog.db;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
@@ -10,7 +10,7 @@ import static android.arch.persistence.room.ForeignKey.CASCADE;
 
 @Entity (
         foreignKeys = @ForeignKey(
-                entity=Exercise.class,
+                entity= Exercise.class,
                 parentColumns = "exerciseId",
                 childColumns = "correspondingExerciseId",
                 onDelete = CASCADE),
@@ -18,22 +18,22 @@ import static android.arch.persistence.room.ForeignKey.CASCADE;
 public class SingleSet {
 
     @PrimaryKey (autoGenerate = true)
-    private int singleSetID;
-    private int correspondingExerciseId;
+    private int singleSetID;                // id
+    private long correspondingExerciseId;   // parent exercise ID
     private int reps;
     private float weight;
-    private boolean completed;
+    private boolean completed;              // states if the set was marked as completed
 
     // CONSTRUCTORS
     @Ignore
-    public SingleSet(int correspondingExerciseId, int reps, float weight, boolean completed) {
+    public SingleSet(long correspondingExerciseId, int reps, float weight, boolean completed) {
         this.correspondingExerciseId = correspondingExerciseId;
         this.reps = reps;
         this.weight = weight;
         this.completed = completed;
     }
 
-    public SingleSet(int singleSetID, int correspondingExerciseId, int reps, float weight, boolean completed) {
+    public SingleSet(int singleSetID, long correspondingExerciseId, int reps, float weight, boolean completed) {
         this.singleSetID = singleSetID;
         this.correspondingExerciseId = correspondingExerciseId;
         this.reps = reps;
@@ -51,7 +51,7 @@ public class SingleSet {
         this.singleSetID = singleSetID;
     }
 
-    public int getCorrespondingExerciseId() {
+    public long getCorrespondingExerciseId() {
         return correspondingExerciseId;
     }
 

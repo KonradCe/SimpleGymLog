@@ -11,17 +11,20 @@ import android.widget.TextView;
 import java.util.Collections;
 import java.util.List;
 
+import pl.kcworks.simplegymlog.db.Exercise;
+import pl.kcworks.simplegymlog.db.ExerciseWithSets;
+
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder> {
 
     private LayoutInflater mInflater;
-    private List<Exercise> mExercises = Collections.emptyList(); // cached copy of exercises
+    private List<ExerciseWithSets> mExercisesWithSets = Collections.emptyList(); // cached copy of exercises
 
     ExerciseAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
     }
 
-    public void setExercises(List<Exercise> exercises) {
-        mExercises = exercises;
+    public void setExercises(List<ExerciseWithSets> exercises) {
+        mExercisesWithSets = exercises;
     }
 
     @NonNull
@@ -33,9 +36,13 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
     @Override
     public void onBindViewHolder(@NonNull ExerciseViewHolder holder, int position) {
-        if (mExercises != null) {
-            Exercise exercise = mExercises.get(position);
-            holder.exerciseNameTextView.setText(exercise.getExerciseName());
+        if (mExercisesWithSets != null) {
+            Exercise exercise = mExercisesWithSets.get(position).getExercise();
+            String exerciseName;
+            exerciseName = exercise.getExerciseName();
+            exerciseName += " number of sets: ";
+            exerciseName += mExercisesWithSets.get(position).getExerciseSetList().size();
+            holder.exerciseNameTextView.setText(exerciseName);
         }
         else {
             // Covers the case of data not being ready yet.
@@ -45,8 +52,8 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
     @Override
     public int getItemCount() {
-        if (mExercises != null) {
-            return mExercises.size();
+        if (mExercisesWithSets != null) {
+            return mExercisesWithSets.size();
         }
         else {
             return 0;

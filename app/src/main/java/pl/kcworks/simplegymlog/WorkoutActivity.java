@@ -14,6 +14,9 @@ import android.widget.Button;
 
 import java.util.List;
 
+import pl.kcworks.simplegymlog.db.Exercise;
+import pl.kcworks.simplegymlog.db.ExerciseWithSets;
+
 public class WorkoutActivity extends AppCompatActivity implements View.OnClickListener {
 
     // TODO[3]: standardize field names and widgets ids
@@ -32,13 +35,13 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         setupRecyclerView();
 
         mGymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
-        mGymLogViewModel.getmAllExercises().observe(this, new Observer<List<Exercise>>() {
+        mGymLogViewModel.getmExercisesWithSets().observe(this, new Observer<List<ExerciseWithSets>>() {
             @Override
-            public void onChanged(@Nullable List<Exercise> exercises) {
+            public void onChanged(@Nullable List<ExerciseWithSets> exercisesWithSets) {
                 if (mExerciseAdapter == null) {
                     Log.i("dziab dziab", "mExerciseAdapter jest rowny null");
                 }
-                mExerciseAdapter.setExercises(exercises);
+                mExerciseAdapter.setExercises(exercisesWithSets);
                 mExerciseAdapter.notifyDataSetChanged();
             }
         });

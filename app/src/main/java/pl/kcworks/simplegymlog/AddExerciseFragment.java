@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import pl.kcworks.simplegymlog.db.Exercise;
+
 public class AddExerciseFragment extends Fragment implements View.OnClickListener {
     private Button mAddSetButton;
     private Button mRemoveSetButton;

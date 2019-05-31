@@ -9,7 +9,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
+import java.util.ArrayList;
+import java.util.List;
+
+import pl.kcworks.simplegymlog.db.Exercise;
+import pl.kcworks.simplegymlog.db.SingleSet;
 
 public class AddExerciseActivity extends AppCompatActivity implements View.OnClickListener {
     private Button mAddSetButton;
@@ -95,25 +99,36 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         finish();
     }
 
+    // TODO[3]: this method probably can be refactored to something cleaner
     private void saveExercise() {
+        long newExerciseId; // we need this variable so we can create SingleSets with proper "parent" column value
+        List<SingleSet> singleSetList = new ArrayList<SingleSet>();
+
         String exerciseName = mExerciseNameEditText.getText().toString();
+
+        // TODO[2]: this will be date object in the future?
         long exerciseDate = Long.parseLong(mExerciseDateEditText.getText().toString());
+
         // TODO[1]: this value should be passed with starting this activity, 2 is a temporary value
         int exerciseOrderInDay = 2;
 
-        //TODO[1]: add adding sets to database
-//        for (int i = 0; i < mSetListLinearLayout.getChildCount(); i++) {
-//            View setView = mSetListLinearLayout.getChildAt(i);
-//
-//            TextView setWeightTextView = setView.findViewById(R.id.item_addSet_tv_setWeight);
-//            float setWeight = Float.valueOf(setWeightTextView.getText().toString());
-//
-//            TextView setRepsTextView = setView.findViewById(R.id.item_addSet_tv_setReps);
-//            int setReps = Integer.valueOf(setRepsTextView.getText().toString());
-//
-//        }
-
         Exercise exercise = new Exercise(exerciseName, exerciseOrderInDay, exerciseDate);
-        mGymLogViewModel.insertExercise(exercise);
+        newExerciseId = mGymLogViewModel.insertExercise(exercise);
+        // TODO[3]: this can be the place to add some sort of validation that exercise was saved correctly - if not newExerciseId = -1
+
+        // adding SingleSets in this part
+        for (int i = 0; i < mSetListLinearLayout.getChildCount(); i++) {
+            View setView = mSetListLinearLayout.getChildAt(i);
+
+            TextView setWeightTextView = setView.findViewById(R.id.item_addSet_tv_setWeight);
+            float setWeight = Float.valueOf(setWeightTextView.getText().toString());
+
+            TextView setRepsTextView = setView.findViewById(R.id.item_addSet_tv_setReps);
+            int setReps = Integer.valueOf(setRepsTextView.getText().toString());
+
+            singleSetList.add(new SingleSet(newExerciseId, setReps, setWeight, false));
+        }
+
+        mGymLogViewModel.insertMultipleSingleSets(singleSetList);
     }
 }
