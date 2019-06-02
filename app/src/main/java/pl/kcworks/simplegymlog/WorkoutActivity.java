@@ -45,10 +45,6 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
                 mExerciseAdapter.notifyDataSetChanged();
             }
         });
-        Log.i("dziab", "ilosc w adapterze: " + mExerciseAdapter.getItemCount());
-
-
-
     }
 
     private void setupRecyclerView() {

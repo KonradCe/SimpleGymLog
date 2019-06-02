@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Transaction;
 
 import java.util.List;
 
@@ -24,10 +25,12 @@ public interface ExerciseDao {
     @Query ("DELETE FROM exercise_table")
     void deleteAllExercises();
 
-    @Query("SELECT * FROM exercise_table LEFT JOIN SingleSet ON exerciseId = correspondingExerciseId")
-    LiveData<List<ExerciseWithSets>> getExerciseWithSets();
-
+    @Transaction
     @Query("SELECT * from exercise_table")
-    LiveData<List<ExerciseWithSets>> selectExercisesWithSets();
+    LiveData<List<ExerciseWithSets>> getExercisesWithSets();
+
+    @Transaction
+    @Query("SELECT * from exercise_table WHERE exerciseId=:id ")
+    LiveData<ExerciseWithSets> getSingleExercisesWithSets(int id);
 
 }

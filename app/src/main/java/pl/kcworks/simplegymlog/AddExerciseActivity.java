@@ -1,6 +1,7 @@
 package pl.kcworks.simplegymlog;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,26 +9,26 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import pl.kcworks.simplegymlog.db.Exercise;
+import pl.kcworks.simplegymlog.db.ExerciseWithSets;
 import pl.kcworks.simplegymlog.db.SingleSet;
 
 public class AddExerciseActivity extends AppCompatActivity implements View.OnClickListener {
+    public static final String UPDATE_EXERCISE_ID_EXTRA = "id of the exercise to update";
+    GymLogViewModel mGymLogViewModel;
     private Button mAddSetButton;
     private Button mRemoveSetButton;
     private Button mSaveExerciseButton;
     private LinearLayout mSetListLinearLayout;
     private EditText mExerciseNameEditText;
     private EditText mExerciseDateEditText;
-
     // variable to keep track and display number of sets added by the user
     private int mSetNumber = 0;
-
-    GymLogViewModel mGymLogViewModel;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,12 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
         mGymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
 
+        // check if the activity was launched to edit exercise
+        if (getIntent().hasExtra(UPDATE_EXERCISE_ID_EXTRA)) {
+            int editExerciseId = getIntent().getIntExtra(UPDATE_EXERCISE_ID_EXTRA, -1);
+            // TODO[1]: this is less then ideal solution - any changes will be discarded on configuration change. This should be LiveData after all; or should it?
+            new getSingleExerciseWithSetsAsyncTask().execute(editExerciseId);
+        }
 
     }
 
@@ -59,23 +66,13 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         mExerciseDateEditText = findViewById(R.id.addExerciseFragment_et_exerciseDate);
     }
 
+    private void populateViewToEditExercise(ExerciseWithSets exerciseWithSets) {
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case (R.id.addExerciseFragment_bt_addSet):
-                mSetListLinearLayout.addView(addSet());
-                break;
-            case (R.id.addExerciseFragment_bt_deleteSet):
-                removeSet();
-                break;
-            case (R.id.addExerciseFragment_bt_saveExercise):
-                onSaveButtonPress();
-                break;
+        Exercise editedExercise = exerciseWithSets.getExercise();
 
-        }
+        mExerciseNameEditText.setText(editedExercise.getExerciseName());
+        mExerciseDateEditText.setText(Long.toString(editedExercise.getExerciseDate()));
     }
-
 
     private LinearLayout addSet() {
         mSetNumber++;
@@ -99,7 +96,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         finish();
     }
 
-    // TODO[3]: this method probably can be refactored to something cleaner
+    // TODO[3]: this method probably can be refactored to something cleaner, divided into more methods
     private void saveExercise() {
         long newExerciseId; // we need this variable so we can create SingleSets with proper "parent" column value
         List<SingleSet> singleSetList = new ArrayList<SingleSet>();
@@ -131,4 +128,38 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
         mGymLogViewModel.insertMultipleSingleSets(singleSetList);
     }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case (R.id.addExerciseFragment_bt_addSet):
+                mSetListLinearLayout.addView(addSet());
+                break;
+            case (R.id.addExerciseFragment_bt_deleteSet):
+                removeSet();
+                break;
+            case (R.id.addExerciseFragment_bt_saveExercise):
+                onSaveButtonPress();
+                break;
+
+        }
+    }
+
+    private class getSingleExerciseWithSetsAsyncTask extends AsyncTask<Integer, Void, ExerciseWithSets> {
+
+        @Override
+        protected ExerciseWithSets doInBackground(Integer... id) {
+            ExerciseWithSets exerciseWithSets = mGymLogViewModel.getSingleExerciseWithSets(id[0]);
+            return exerciseWithSets;
+        }
+
+        @Override
+        protected void onPostExecute(ExerciseWithSets exerciseWithSets) {
+            super.onPostExecute(exerciseWithSets);
+            populateViewToEditExercise(exerciseWithSets);
+        }
+    }
 }
+
+
+//TODO[2]: should override onBackPressed to prompt user if he wants to save or discard current exercise

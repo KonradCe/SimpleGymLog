@@ -18,12 +18,11 @@ public class GymLogViewModel extends AndroidViewModel {
     private LiveData<List<SingleSet>> mAllSingleSets;
     private LiveData<List<ExerciseWithSets>> mExercisesWithSets;
 
-
+    // TODO[3]: should we fetch all data in ViewModel constructor?
     public GymLogViewModel(@NonNull Application application) {
         super(application);
         mGymLogRepository = new GymLogRepository(application);
         mAllExercises = mGymLogRepository.getAllExercises();
-        mAllSingleSets = mGymLogRepository.getAllSingleSets();
         mExercisesWithSets = mGymLogRepository.getmExercisesWithSets();
     }
 
@@ -31,12 +30,12 @@ public class GymLogViewModel extends AndroidViewModel {
         return mAllExercises;
     }
 
-    public LiveData<List<SingleSet>> getmAllSingleSets() {
-        return mAllSingleSets;
-    }
-
     public LiveData<List<ExerciseWithSets>> getmExercisesWithSets() {
         return mExercisesWithSets;
+    }
+
+    public ExerciseWithSets getSingleExerciseWithSets(int exerciseId) {
+        return mGymLogRepository.getmSingleExerciseWithSets(exerciseId);
     }
 
     public long insertExercise(Exercise exercise) {

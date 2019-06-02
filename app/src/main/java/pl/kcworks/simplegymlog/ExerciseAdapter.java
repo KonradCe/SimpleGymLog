@@ -1,11 +1,14 @@
 package pl.kcworks.simplegymlog;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.Collections;
@@ -13,11 +16,14 @@ import java.util.List;
 
 import pl.kcworks.simplegymlog.db.Exercise;
 import pl.kcworks.simplegymlog.db.ExerciseWithSets;
+import pl.kcworks.simplegymlog.db.SingleSet;
 
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder> {
 
     private LayoutInflater mInflater;
     private List<ExerciseWithSets> mExercisesWithSets = Collections.emptyList(); // cached copy of exercises
+    private Exercise mCurrentExercise;
+    private List<SingleSet> mCurrentSingleSets;
 
     ExerciseAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
@@ -37,14 +43,25 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     @Override
     public void onBindViewHolder(@NonNull ExerciseViewHolder holder, int position) {
         if (mExercisesWithSets != null) {
-            Exercise exercise = mExercisesWithSets.get(position).getExercise();
-            String exerciseName;
-            exerciseName = exercise.getExerciseName();
-            exerciseName += " number of sets: ";
-            exerciseName += mExercisesWithSets.get(position).getExerciseSetList().size();
-            holder.exerciseNameTextView.setText(exerciseName);
-        }
-        else {
+            mCurrentExercise = mExercisesWithSets.get(position).getExercise();
+            mCurrentSingleSets = mExercisesWithSets.get(position).getExerciseSetList();
+
+            holder.exerciseNameTextView.setText(mCurrentExercise.getExerciseName());
+            if (mCurrentSingleSets.size() != 0) {
+                for (SingleSet set : mCurrentSingleSets) {
+                    LinearLayout newSet = (LinearLayout) mInflater.inflate(R.layout.item_rv_set, null);
+                    ((TextView) newSet.findViewById(R.id.rvitem_tv_setNumber)).setText(String.format("%d", mCurrentSingleSets.indexOf(set) + 1));
+                    ((TextView) newSet.findViewById(R.id.rvitem_tv_setWeight)).setText("" + set.getWeight());
+                    ((TextView) newSet.findViewById(R.id.rvitem_tv_setReps)).setText("" + set.getReps());
+
+                    holder.setListLinearLayout.addView(newSet);
+                }
+            }
+            else {
+                holder.noSetsInfoTextView.setVisibility(View.VISIBLE);
+            }
+
+        } else {
             // Covers the case of data not being ready yet.
             holder.exerciseNameTextView.setText("no excersises to show!");
         }
@@ -54,18 +71,30 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     public int getItemCount() {
         if (mExercisesWithSets != null) {
             return mExercisesWithSets.size();
-        }
-        else {
+        } else {
             return 0;
         }
     }
 
-    class ExerciseViewHolder  extends RecyclerView.ViewHolder {
+    class ExerciseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView exerciseNameTextView;
+        private LinearLayout setListLinearLayout;
+        private TextView noSetsInfoTextView;
+
         public ExerciseViewHolder(@NonNull View itemView) {
             super(itemView);
 
             exerciseNameTextView = itemView.findViewById(R.id.rvitem_tv_exercise_name);
+            setListLinearLayout = itemView.findViewById(R.id.rvitem_ll_sets);
+            noSetsInfoTextView = itemView.findViewById(R.id.rvitem_tv_noSetsInfo);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            Intent editExerciseIntent = new Intent(view.getContext(), AddExerciseActivity.class);
+            editExerciseIntent.putExtra(AddExerciseActivity.UPDATE_EXERCISE_ID_EXTRA, mExercisesWithSets.get(getAdapterPosition()).getExercise().getExerciseId());
+            view.getContext().startActivity(editExerciseIntent);
         }
     }
 }

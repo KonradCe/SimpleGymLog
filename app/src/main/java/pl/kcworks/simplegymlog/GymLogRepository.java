@@ -3,7 +3,6 @@ package pl.kcworks.simplegymlog;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -27,6 +26,8 @@ public class GymLogRepository {
     private LiveData<List<SingleSet>> mSingleSetsForExercise;
 
     private LiveData<List<ExerciseWithSets>> mExercisesWithSets;
+    private ExerciseWithSets mSingleExerciseWithSets;
+
 
     private long newExerciseId = -1;
 
@@ -37,8 +38,7 @@ public class GymLogRepository {
 
         mAllExercises = mExerciseDao.getAllExercisese();
         mAllSingleSets = mSingleSetDao.getAllSingleSets();
-
-        mExercisesWithSets = mExerciseDao.selectExercisesWithSets();
+        mExercisesWithSets = mExerciseDao.getExercisesWithSets();
     }
 
     LiveData<List<Exercise>> getAllExercises() {
@@ -49,16 +49,21 @@ public class GymLogRepository {
         return mAllSingleSets;
     }
 
-    public LiveData<List<ExerciseWithSets>> getmExercisesWithSets() {
+    LiveData<List<ExerciseWithSets>> getmExercisesWithSets() {
         return mExercisesWithSets;
     }
 
-    public long insertExercise(Exercise exercise) {
+    public ExerciseWithSets getmSingleExerciseWithSets(int exerciseId) {
+        return mExerciseDao.getSingleExercisesWithSets(exerciseId);
+    }
+
+    long insertExercise(Exercise exercise) {
         InsertExerciseAsyncTask task = new InsertExerciseAsyncTask(mExerciseDao);
 
         try {
             // using .get() method on AsyncTask in this place denies the whole purpose of AsyncTask - using get we still have to wait for results from the task on the UI thread;
-            // still, for this moment I don't know how to do this any other way and inserting ONLY exercise should not take that long anyway
+            // still, for this moment I don't know how to do this* any other way and inserting ONLY exercise should not take that long anyway
+            // *this - means inserting exercise into db and getting its newly created id
             newExerciseId = task.execute(exercise).get();
         } catch (ExecutionException e) {
             e.printStackTrace();
@@ -68,7 +73,7 @@ public class GymLogRepository {
         return newExerciseId;
     }
 
-    public void insertMultipleSingleSets(List<SingleSet> singleSetList) {
+    void insertMultipleSingleSets(List<SingleSet> singleSetList) {
         InsertSetsAsyncTask task = new InsertSetsAsyncTask(mSingleSetDao);
         // conversion from List to array for the AsyncTask
         SingleSet[] ssArray = new SingleSet[singleSetList.size()];
