@@ -10,14 +10,14 @@
         android:text="add exercise fragment" />
 
     <EditText
-        android:id="@+id/addExerciseFragment_et_exerciseName"
+        android:id="@+id/addExerciseActivity_et_exerciseName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="name of the exercise"
         android:inputType="text" />
 
     <EditText
-        android:id="@+id/addExerciseFragment_et_exerciseDate"
+        android:id="@+id/addExerciseActivity_et_exerciseDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="date"
@@ -30,14 +30,14 @@
         android:padding="8dp">
 
         <Button
-            android:id="@+id/addExerciseFragment_bt_addSet"
+            android:id="@+id/addExerciseActivity_bt_addSet"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="add set" />
 
         <Button
-            android:id="@+id/addExerciseFragment_bt_deleteSet"
+            android:id="@+id/addExerciseActivity_bt_deleteSet"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -49,7 +49,7 @@
         android:layout_height="0dp"
         android:layout_weight="1">
         <LinearLayout
-            android:id="@+id/addExerciseFragment_ll_listOfSets"
+            android:id="@+id/addExerciseActivity_ll_listOfSets"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -57,7 +57,7 @@
     </ScrollView>
 
     <Button
-        android:id="@+id/addExerciseFragment_bt_saveExercise"
+        android:id="@+id/addExerciseActivity_bt_saveExercise"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="save exercise"/>

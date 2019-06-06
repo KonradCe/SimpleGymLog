@@ -9,10 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AddExerciseActivity"></activity>
-        <activity android:name=".WorkoutActivity" />
-        <activity android:name=".WorkoutPickerActivity" />
-        <activity android:name=".MainActivity">
+        <!--TODO[3]: this is an excuse of a solution. It blocks screen rotation so changes done to the exercise while editing won't reset-->
+        <activity android:name=".ui.AddExerciseActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".ui.WorkoutActivity" />
+        <activity android:name=".ui.WorkoutPickerActivity" />
+        <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

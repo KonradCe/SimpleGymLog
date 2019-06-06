@@ -1,10 +1,10 @@
-package pl.kcworks.simplegymlog;
+package pl.kcworks.simplegymlog.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +14,14 @@ import android.widget.TextView;
 import java.util.Collections;
 import java.util.List;
 
+import pl.kcworks.simplegymlog.R;
 import pl.kcworks.simplegymlog.db.Exercise;
 import pl.kcworks.simplegymlog.db.ExerciseWithSets;
 import pl.kcworks.simplegymlog.db.SingleSet;
 
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder> {
 
+    private static final String TAG = "KCTag-" + ExerciseAdapter.class.getSimpleName();
     private LayoutInflater mInflater;
     private List<ExerciseWithSets> mExercisesWithSets = Collections.emptyList(); // cached copy of exercises
     private Exercise mCurrentExercise;
@@ -31,6 +33,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
     public void setExercises(List<ExerciseWithSets> exercises) {
         mExercisesWithSets = exercises;
+        Log.i(TAG, "setting list of ExerciseWithSets to adapter");
     }
 
     @NonNull
@@ -42,12 +45,19 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
     @Override
     public void onBindViewHolder(@NonNull ExerciseViewHolder holder, int position) {
-        if (mExercisesWithSets != null) {
+        if (!mExercisesWithSets.isEmpty()) {
+
+
             mCurrentExercise = mExercisesWithSets.get(position).getExercise();
             mCurrentSingleSets = mExercisesWithSets.get(position).getExerciseSetList();
 
             holder.exerciseNameTextView.setText(mCurrentExercise.getExerciseName());
+            holder.setListLinearLayout.removeAllViews(); // in case we get recycled view where there are already some sets added
+
+            // populating view with information about each SingleSet
             if (mCurrentSingleSets.size() != 0) {
+                // in case when we get recycled view where noSetsInfoTextView is visible
+                holder.noSetsInfoTextView.setVisibility(View.GONE);
                 for (SingleSet set : mCurrentSingleSets) {
                     LinearLayout newSet = (LinearLayout) mInflater.inflate(R.layout.item_rv_set, null);
                     ((TextView) newSet.findViewById(R.id.rvitem_tv_setNumber)).setText(String.format("%d", mCurrentSingleSets.indexOf(set) + 1));

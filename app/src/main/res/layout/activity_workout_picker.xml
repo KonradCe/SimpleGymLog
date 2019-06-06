@@ -7,7 +7,7 @@
     android:gravity="center"
     android:orientation="vertical"
     android:padding="32dp"
-    tools:context=".WorkoutPickerActivity">
+    tools:context=".ui.WorkoutPickerActivity">
 
     <TextView
         android:layout_width="wrap_content"

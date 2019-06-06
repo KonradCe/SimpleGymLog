@@ -21,7 +21,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:hint="weight"
-        android:inputType="numberDecimal" />
+        android:inputType="numberDecimal"/>
 
     <EditText
         android:id="@+id/item_addSet_tv_setReps"

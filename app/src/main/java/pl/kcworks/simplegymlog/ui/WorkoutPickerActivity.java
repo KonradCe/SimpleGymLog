@@ -1,10 +1,12 @@
-package pl.kcworks.simplegymlog;
+package pl.kcworks.simplegymlog.ui;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
+import pl.kcworks.simplegymlog.R;
 
 // TODO[3]: replace with some pop up window or dialog or smth - no need for this to be an entire activity
 

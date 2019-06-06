@@ -1,4 +1,4 @@
-package pl.kcworks.simplegymlog;
+package pl.kcworks.simplegymlog.ui;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -14,12 +14,15 @@ import android.widget.Button;
 
 import java.util.List;
 
-import pl.kcworks.simplegymlog.db.Exercise;
+import pl.kcworks.simplegymlog.R;
+import pl.kcworks.simplegymlog.Workout;
 import pl.kcworks.simplegymlog.db.ExerciseWithSets;
+import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 
 public class WorkoutActivity extends AppCompatActivity implements View.OnClickListener {
 
     // TODO[3]: standardize field names and widgets ids
+    private final String TAG = "KCTag-" + WorkoutActivity.class.getSimpleName();
 
     private Button mAddExerciseButton;
     private GymLogViewModel mGymLogViewModel;
@@ -35,11 +38,17 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         setupRecyclerView();
 
         mGymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
-        mGymLogViewModel.getmExercisesWithSets().observe(this, new Observer<List<ExerciseWithSets>>() {
+        subscribeToModel(mGymLogViewModel);
+    }
+
+    private void subscribeToModel(GymLogViewModel model) {
+        Log.i(TAG, "getExercisesWithSets method is being observed - subscribed to ViewModel");
+        model.getmExercisesWithSets().observe(this, new Observer<List<ExerciseWithSets>>() {
             @Override
             public void onChanged(@Nullable List<ExerciseWithSets> exercisesWithSets) {
+                Log.i(TAG, "change in data observed");
                 if (mExerciseAdapter == null) {
-                    Log.i("dziab dziab", "mExerciseAdapter jest rowny null");
+                    Log.i(TAG, "mExerciseAdapter is null - nothing to present");
                 }
                 mExerciseAdapter.setExercises(exercisesWithSets);
                 mExerciseAdapter.notifyDataSetChanged();
@@ -52,18 +61,17 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         mExerciseAdapter = new ExerciseAdapter(this);
         rv.setAdapter(mExerciseAdapter);
         rv.setLayoutManager(new LinearLayoutManager(this));
+        Log.i(TAG, "setting up RecyclerView");
     }
 
     private void setupViews() {
         mAddExerciseButton = findViewById(R.id.workout_bt_add_exercise);
         mAddExerciseButton.setOnClickListener(this);
-
-
     }
 
     @Override
     public void onClick(View view) {
-        // TODO[2]: this should be start intent for activity
+        // TODO[1]: this should be startActivityForResult
         Intent intent = new Intent(this, AddExerciseActivity.class);
         startActivity(intent);
     }

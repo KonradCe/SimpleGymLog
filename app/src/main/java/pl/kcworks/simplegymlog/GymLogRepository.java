@@ -16,48 +16,43 @@ import pl.kcworks.simplegymlog.db.SingleSetDao;
 
 public class GymLogRepository {
 
+    private static GymLogRepository sInstance;
+
     private ExerciseDao mExerciseDao;
     private SingleSetDao mSingleSetDao;
 
-    private LiveData<List<Exercise>> mAllExercises;
-    private LiveData<List<Exercise>> mExercisesFromDay;
-
-    private LiveData<List<SingleSet>> mAllSingleSets;
-    private LiveData<List<SingleSet>> mSingleSetsForExercise;
-
     private LiveData<List<ExerciseWithSets>> mExercisesWithSets;
-    private ExerciseWithSets mSingleExerciseWithSets;
-
 
     private long newExerciseId = -1;
 
-    GymLogRepository(Application application) {
+    private GymLogRepository(Application application) {
         GymLogRoomDatabase db = GymLogRoomDatabase.getDatabase(application);
         mExerciseDao = db.exerciseDao();
         mSingleSetDao = db.singleSetDao();
 
-        mAllExercises = mExerciseDao.getAllExercisese();
-        mAllSingleSets = mSingleSetDao.getAllSingleSets();
         mExercisesWithSets = mExerciseDao.getExercisesWithSets();
     }
 
-    LiveData<List<Exercise>> getAllExercises() {
-        return mAllExercises;
+    public static GymLogRepository getInstance(Application application) {
+        if (sInstance == null) {
+            synchronized (GymLogRepository.class) {
+                if (sInstance == null) {
+                    sInstance = new GymLogRepository(application);
+                }
+            }
+        }
+        return sInstance;
     }
 
-    LiveData<List<SingleSet>> getAllSingleSets() {
-        return mAllSingleSets;
-    }
-
-    LiveData<List<ExerciseWithSets>> getmExercisesWithSets() {
+    public LiveData<List<ExerciseWithSets>> getmExercisesWithSets() {
         return mExercisesWithSets;
     }
 
-    public ExerciseWithSets getmSingleExerciseWithSets(int exerciseId) {
+    public LiveData<ExerciseWithSets> getmSingleExerciseWithSets(int exerciseId) {
         return mExerciseDao.getSingleExercisesWithSets(exerciseId);
     }
 
-    long insertExercise(Exercise exercise) {
+    public long insertExercise(Exercise exercise) {
         InsertExerciseAsyncTask task = new InsertExerciseAsyncTask(mExerciseDao);
 
         try {
@@ -73,12 +68,22 @@ public class GymLogRepository {
         return newExerciseId;
     }
 
-    void insertMultipleSingleSets(List<SingleSet> singleSetList) {
+    public void updateExercise(Exercise exercise) {
+        UpdateExerciseAsyncTask task = new UpdateExerciseAsyncTask(mExerciseDao);
+        task.execute(exercise);
+    }
+
+    public void insertMultipleSingleSets(List<SingleSet> singleSetList) {
         InsertSetsAsyncTask task = new InsertSetsAsyncTask(mSingleSetDao);
         // conversion from List to array for the AsyncTask
         SingleSet[] ssArray = new SingleSet[singleSetList.size()];
         singleSetList.toArray(ssArray);
         task.execute(ssArray);
+    }
+
+    public void updateSingleSet(SingleSet singleSet) {
+        UpdateSingleSetAsyncTask task = new UpdateSingleSetAsyncTask(mSingleSetDao);
+        task.execute(singleSet);
     }
 
     private static class InsertExerciseAsyncTask extends AsyncTask<Exercise, Void, Long> {
@@ -96,6 +101,20 @@ public class GymLogRepository {
 
     }
 
+    private static class UpdateExerciseAsyncTask extends AsyncTask<Exercise, Void, Void> {
+        private ExerciseDao mAsyncExerciseDao;
+
+        public UpdateExerciseAsyncTask(ExerciseDao dao) {
+            mAsyncExerciseDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(Exercise... exercises) {
+            mAsyncExerciseDao.update(exercises[0]);
+            return null;
+        }
+    }
+
     private static class InsertSetsAsyncTask extends AsyncTask<SingleSet, Void, Void> {
         private SingleSetDao mAsyncSingleSetDao;
 
@@ -108,6 +127,20 @@ public class GymLogRepository {
             for (SingleSet set : singleSets) {
                 mAsyncSingleSetDao.insert(set);
             }
+            return null;
+        }
+    }
+
+    private static class UpdateSingleSetAsyncTask extends AsyncTask<SingleSet, Void, Void> {
+        private SingleSetDao mAsyncSingleSetDao;
+
+        public UpdateSingleSetAsyncTask(SingleSetDao mAsyncSingleSetDao) {
+            this.mAsyncSingleSetDao = mAsyncSingleSetDao;
+        }
+
+        @Override
+        protected Void doInBackground(SingleSet... singleSets) {
+            mAsyncSingleSetDao.updateSet(singleSets[0]);
             return null;
         }
     }

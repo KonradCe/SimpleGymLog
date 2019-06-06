@@ -41,6 +41,25 @@ public class SingleSet {
         this.completed = completed;
     }
 
+    public boolean needsUpdate(SingleSet ss) {
+        if (correspondingExerciseId == ss.getCorrespondingExerciseId() &&
+                reps == ss.getReps() &&
+                weight == ss.getWeight()) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "SingleSet{" +
+                "singleSetID=" + singleSetID +
+                ", correspondingExerciseId=" + correspondingExerciseId +
+                ", reps=" + reps +
+                ", weight=" + weight +
+                ", completed=" + completed +
+                '}';
+    }
 
     // GETTERS AND SETTERS
     public int getSingleSetID() {

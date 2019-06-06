@@ -5,6 +5,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Transaction;
+import android.arch.persistence.room.Update;
 
 import java.util.List;
 
@@ -15,6 +16,9 @@ public interface ExerciseDao {
 
     @Insert
     long insert(Exercise exercise);
+
+    @Update
+    void update(Exercise exercise);
 
     @Query("SELECT * FROM exercise_table ORDER BY exerciseId")
     LiveData<List<Exercise>> getAllExercisese();
