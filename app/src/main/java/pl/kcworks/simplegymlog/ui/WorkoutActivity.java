@@ -62,6 +62,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         rv.setAdapter(mExerciseAdapter);
         rv.setLayoutManager(new LinearLayoutManager(this));
         Log.i(TAG, "setting up RecyclerView");
+
     }
 
     private void setupViews() {

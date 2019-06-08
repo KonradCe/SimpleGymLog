@@ -2,14 +2,17 @@ package pl.kcworks.simplegymlog.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,8 +29,10 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     private List<ExerciseWithSets> mExercisesWithSets = Collections.emptyList(); // cached copy of exercises
     private Exercise mCurrentExercise;
     private List<SingleSet> mCurrentSingleSets;
+    private Context mContext;
 
     ExerciseAdapter(Context context) {
+        mContext = context;
         mInflater = LayoutInflater.from(context);
     }
 
@@ -64,6 +69,9 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                     ((TextView) newSet.findViewById(R.id.rvitem_tv_setWeight)).setText("" + set.getWeight());
                     ((TextView) newSet.findViewById(R.id.rvitem_tv_setReps)).setText("" + set.getReps());
 
+                    newSet.setTag(set.getSingleSetID());
+
+                    newSet.setOnClickListener(holder);
                     holder.setListLinearLayout.addView(newSet);
                 }
             }
@@ -90,6 +98,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         private TextView exerciseNameTextView;
         private LinearLayout setListLinearLayout;
         private TextView noSetsInfoTextView;
+        private ImageView editExerciseImageView;
 
         public ExerciseViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -97,14 +106,25 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
             exerciseNameTextView = itemView.findViewById(R.id.rvitem_tv_exercise_name);
             setListLinearLayout = itemView.findViewById(R.id.rvitem_ll_sets);
             noSetsInfoTextView = itemView.findViewById(R.id.rvitem_tv_noSetsInfo);
-            itemView.setOnClickListener(this);
+            editExerciseImageView = itemView.findViewById(R.id.rvitem_iv_editExercise);
+
+            editExerciseImageView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            Intent editExerciseIntent = new Intent(view.getContext(), AddExerciseActivity.class);
-            editExerciseIntent.putExtra(AddExerciseActivity.UPDATE_EXERCISE_ID_EXTRA, mExercisesWithSets.get(getAdapterPosition()).getExercise().getExerciseId());
-            view.getContext().startActivity(editExerciseIntent);
+            Log.i(TAG, "something in adapter was clicked id: " + view.getId());
+            if (view.getId() == R.id.rvitem_iv_editExercise) {
+                Intent editExerciseIntent = new Intent(view.getContext(), AddExerciseActivity.class);
+                editExerciseIntent.putExtra(AddExerciseActivity.UPDATE_EXERCISE_ID_EXTRA, mExercisesWithSets.get(getAdapterPosition()).getExercise().getExerciseId());
+                view.getContext().startActivity(editExerciseIntent);
+            }
+            else {
+                Toast.makeText(mContext, "Id of SingleSet that was clicked: " + view.getTag(), Toast.LENGTH_LONG).show();
+                TextView temp = view.findViewById(R.id.rvitem_tv_setWeight);
+                temp.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+            }
+
         }
     }
 }
