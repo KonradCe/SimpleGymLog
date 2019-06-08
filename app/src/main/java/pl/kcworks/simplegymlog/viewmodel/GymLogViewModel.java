@@ -41,6 +41,9 @@ public class GymLogViewModel extends AndroidViewModel {
 
     public void updateSingleSet(SingleSet singleSet) {
         mGymLogRepository.updateSingleSet(singleSet);
+    }
 
+    public void deleteMultipleSingleSets(List<SingleSet> singleSetList) {
+        mGymLogRepository.deleteMultipleSingleSets(singleSetList);
     }
 }

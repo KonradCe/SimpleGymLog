@@ -110,6 +110,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             public void onChanged(@Nullable ExerciseWithSets exerciseWithSets) {
                 mCurrentExercise = exerciseWithSets.getExercise();
                 mCurrentSingleSetList = exerciseWithSets.getExerciseSetList();
+
                 mExerciseId = mCurrentExercise.getExerciseId();
 
                 populateViewWithExerciseInfo();
@@ -219,10 +220,46 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
         if (mCurrentSingleSetList.size() < newSingleSetList.size()) {
             // some sets were added - we need to update existing and add the rest
+
+            // TODO[2]: this can be extracted as separate method? it copied and pasted in all 3 cases of updateSets()
+            // updating existing
+            for (int i = 0; i < mCurrentSingleSetList.size(); i++) {
+                if (mCurrentSingleSetList.get(i).needsUpdate(newSingleSetList.get(i))) {
+                    SingleSet singleSetToUpdate = mCurrentSingleSetList.get(i);
+                    SingleSet singleSetWithUpdatedValues = newSingleSetList.get(i);
+
+                    singleSetToUpdate.setReps(singleSetWithUpdatedValues.getReps());
+                    singleSetToUpdate.setWeight(singleSetWithUpdatedValues.getWeight());
+
+                    mGymLogViewModel.updateSingleSet(singleSetToUpdate);
+                }
+            }
+
+            // adding the rest
+            List<SingleSet> subList = newSingleSetList.subList(mCurrentSingleSetList.size(), newSingleSetList.size());
+            mGymLogViewModel.insertMultipleSingleSets(subList);
         }
+
         else if (mCurrentSingleSetList.size() > newSingleSetList.size()) {
             // some sets were deleted - we need to update existing and delete the rest from db
+            // updating existing
+            for (int i = 0; i < newSingleSetList.size(); i++) {
+                if (mCurrentSingleSetList.get(i).needsUpdate(newSingleSetList.get(i))) {
+                    SingleSet singleSetToUpdate = mCurrentSingleSetList.get(i);
+                    SingleSet singleSetWithUpdatedValues = newSingleSetList.get(i);
+
+                    singleSetToUpdate.setReps(singleSetWithUpdatedValues.getReps());
+                    singleSetToUpdate.setWeight(singleSetWithUpdatedValues.getWeight());
+
+                    mGymLogViewModel.updateSingleSet(singleSetToUpdate);
+                }
+            }
+
+            // deleting the rest
+            List<SingleSet> subList = mCurrentSingleSetList.subList(newSingleSetList.size(), mCurrentSingleSetList.size());
+            mGymLogViewModel.deleteMultipleSingleSets(subList);
         }
+
         else {
             // number of sets did not change - we only need to update
             for (int i = 0; i < mCurrentSingleSetList.size(); i++) {

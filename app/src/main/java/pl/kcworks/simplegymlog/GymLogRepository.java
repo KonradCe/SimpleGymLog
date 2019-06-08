@@ -75,10 +75,23 @@ public class GymLogRepository {
 
     public void insertMultipleSingleSets(List<SingleSet> singleSetList) {
         InsertSetsAsyncTask task = new InsertSetsAsyncTask(mSingleSetDao);
+
         // conversion from List to array for the AsyncTask
         SingleSet[] ssArray = new SingleSet[singleSetList.size()];
         singleSetList.toArray(ssArray);
+
         task.execute(ssArray);
+    }
+
+    public void deleteMultipleSingleSets(List<SingleSet> singleSetList) {
+        DeleteSingleSetAsyncTask task = new DeleteSingleSetAsyncTask(mSingleSetDao);
+
+        // conversion from List to array for the AsyncTask
+        SingleSet[] ssArray = new SingleSet[singleSetList.size()];
+        singleSetList.toArray(ssArray);
+
+        task.execute(ssArray);
+
     }
 
     public void updateSingleSet(SingleSet singleSet) {
@@ -127,6 +140,7 @@ public class GymLogRepository {
             for (SingleSet set : singleSets) {
                 mAsyncSingleSetDao.insert(set);
             }
+
             return null;
         }
     }
@@ -141,6 +155,22 @@ public class GymLogRepository {
         @Override
         protected Void doInBackground(SingleSet... singleSets) {
             mAsyncSingleSetDao.updateSet(singleSets[0]);
+            return null;
+        }
+    }
+
+    private static class DeleteSingleSetAsyncTask extends AsyncTask<SingleSet, Void, Void> {
+        SingleSetDao mAsyncSingleSetDao;
+
+        public DeleteSingleSetAsyncTask(SingleSetDao mAsyncSingleSetDao) {
+            this.mAsyncSingleSetDao = mAsyncSingleSetDao;
+        }
+
+        @Override
+        protected Void doInBackground(SingleSet... singleSets) {
+            for (SingleSet ss : singleSets) {
+                mAsyncSingleSetDao.deleteSet(ss);
+            }
             return null;
         }
     }
