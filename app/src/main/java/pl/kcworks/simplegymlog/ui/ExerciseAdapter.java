@@ -114,16 +114,20 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         @Override
         public void onClick(View view) {
             Log.i(TAG, "something in adapter was clicked id: " + view.getId());
+            // edit exercise button
             if (view.getId() == R.id.rvitem_iv_editExercise) {
                 Intent editExerciseIntent = new Intent(view.getContext(), AddExerciseActivity.class);
                 editExerciseIntent.putExtra(AddExerciseActivity.UPDATE_EXERCISE_ID_EXTRA, mExercisesWithSets.get(getAdapterPosition()).getExercise().getExerciseId());
                 view.getContext().startActivity(editExerciseIntent);
             }
-            else {
+            // TODO[3]: dont' know how to update db from here, but this function is not essential at this point
+            // mark set as completed
+/*            else {
                 Toast.makeText(mContext, "Id of SingleSet that was clicked: " + view.getTag(), Toast.LENGTH_LONG).show();
                 TextView temp = view.findViewById(R.id.rvitem_tv_setWeight);
                 temp.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
             }
+            */
 
         }
     }

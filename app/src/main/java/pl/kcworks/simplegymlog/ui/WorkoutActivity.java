@@ -15,7 +15,6 @@ import android.widget.Button;
 import java.util.List;
 
 import pl.kcworks.simplegymlog.R;
-import pl.kcworks.simplegymlog.Workout;
 import pl.kcworks.simplegymlog.db.ExerciseWithSets;
 import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 
