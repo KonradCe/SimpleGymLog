@@ -120,7 +120,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                 editExerciseIntent.putExtra(AddExerciseActivity.UPDATE_EXERCISE_ID_EXTRA, mExercisesWithSets.get(getAdapterPosition()).getExercise().getExerciseId());
                 view.getContext().startActivity(editExerciseIntent);
             }
-            // TODO[3]: dont' know how to update db from here, but this function is not essential at this point
+            // TODO[3]: don't know how to update db from here, but this function is not essential at this point
             // mark set as completed
 /*            else {
                 Toast.makeText(mContext, "Id of SingleSet that was clicked: " + view.getTag(), Toast.LENGTH_LONG).show();

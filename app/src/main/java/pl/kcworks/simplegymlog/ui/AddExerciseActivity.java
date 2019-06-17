@@ -2,15 +2,22 @@ package pl.kcworks.simplegymlog.ui;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,19 +32,28 @@ import pl.kcworks.simplegymlog.viewmodel.SingleExerciseViewModel;
 public class AddExerciseActivity extends AppCompatActivity implements View.OnClickListener {
 
     //TODO[3]: move all db read and write work from this activity to WorkoutActivity. It'd be better to only read and give back serializable objects for it to read/write.
+    // TODO[2]: exercise name should probably be fixed - when exercise name can be edited at any time there can be chaos with sets based % of TM
+    //  (TM value is read from SharedPreferences by key of exercise name)
 
     public static final String TAG = "KCtag-" + AddExerciseActivity.class.getSimpleName();
     public static final String UPDATE_EXERCISE_ID_EXTRA = "UPDATE_EXERCISE_ID_EXTRA";
+    private static final String PREFS_FILE = "EXERCISE_MAXES";
 
     private int mSetNumber = 0;     // variable to keep track and display number of sets added by the user
     private boolean mEditMode = false; // states if activity was started to edit existing exercise (true) or if to add new (false)
+    private boolean mTmPercentageMode = false; // states if the weight of the exercise is determined by the maximum weight user can train with
     private long mExerciseId; // we need exercise id so we can pass it while adding SingleSets to db (so they can have proper "parent" column value)
+    private float mCurrentTrainingMax;
 
     private GymLogViewModel mGymLogViewModel;
-    private Exercise mCurrentExercise;
+    private Exercise mCurrentExercise; // this variable is instantiated when the activity is launched in EditMode
     private List<SingleSet> mCurrentSingleSetList;
 
     // VIEWS
+    private EditText mExerciseNameEditText;
+    private EditText mExerciseDateEditText;
+    private TextView mTrainingMaxInfoEditText;
+    private Switch mWeightIsBasedOnPercentageSwitch;
     private Button mRepsMinusButton;
     private EditText mRepsEditText;
     private Button mRepsPlusButton;
@@ -48,8 +64,6 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     private Button mRemoveSetButton;
     private Button mSaveExerciseButton;
     private LinearLayout mSetListLinearLayout;
-    private EditText mExerciseNameEditText;
-    private EditText mExerciseDateEditText;
 
 
     @Override
@@ -76,6 +90,17 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     private void setUpViews() {
         mExerciseNameEditText = findViewById(R.id.addExerciseActivity_et_exerciseName);
         mExerciseDateEditText = findViewById(R.id.addExerciseActivity_et_exerciseDate);
+        mTrainingMaxInfoEditText = findViewById(R.id.addExerciseActivity_tv_trainingMaxInfo);
+        mWeightIsBasedOnPercentageSwitch = findViewById(R.id.addExerciseActivity_sw_isBasedOnPercentage);
+        mWeightIsBasedOnPercentageSwitch.setChecked(mTmPercentageMode);
+        mWeightIsBasedOnPercentageSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isPercentage) {
+                switchTypeOfSetsToPercentage(isPercentage);
+
+            }
+        });
+
 
         // reps
         mRepsMinusButton = findViewById(R.id.addExerciseActivity_bt_repsMinus);
@@ -128,24 +153,29 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
     private void populateViewWithSetsInfo() {
         for (SingleSet singleSet : mCurrentSingleSetList) {
-            addSet(singleSet.getReps(), singleSet.getWeight());
+            addSet(singleSet.getReps(), singleSet.getWeight(), singleSet.getMaxWeightPercentageInfo());
             Log.i(TAG, "populateViewWithSetsInfo() for set: " + singleSet.toString());
         }
     }
 
     // TODO[3]: this method shouldn't do both of those things, refactor - leave populating views with set info to populateViewWithSetsInfo method? (DUH)
     // this method adds new set or populates view with existing sets
-    private void addSet(Integer reps, Float weight) {
+    private void addSet(Integer reps, Float weight, String percentageOfMaxInfo) {
         Log.i(TAG, "addSet() was called with arguments: " + reps + " x " + weight);
         mSetNumber++;
         LinearLayout setView = (LinearLayout) getLayoutInflater().inflate(R.layout.item_add_set, null);
         TextView setNumber = setView.findViewById(R.id.item_addSet_tv_setNumber);
         setNumber.setText(Integer.toString(mSetNumber));
         if (reps != null && weight != null) {
-            EditText setReps = setView.findViewById(R.id.item_addSet_tv_setReps);
+            TextView setReps = setView.findViewById(R.id.item_addSet_tv_setReps);
             setReps.setText(reps.toString());
-            EditText setWeight = setView.findViewById(R.id.item_addSet_tv_setWeight);
+            TextView setWeight = setView.findViewById(R.id.item_addSet_tv_setWeight);
             setWeight.setText(weight.toString());
+            if (percentageOfMaxInfo != null) {
+                TextView percentageOfMaxTextView = setView.findViewById(R.id.item_addSet_tv_percentageOfMax);
+                percentageOfMaxTextView.setVisibility(View.VISIBLE);
+                percentageOfMaxTextView.setText(percentageOfMaxInfo);
+            }
         }
         setView.setTag(mSetNumber);
         mSetListLinearLayout.addView(setView);
@@ -202,7 +232,15 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             TextView setRepsTextView = setView.findViewById(R.id.item_addSet_tv_setReps);
             int setReps = Integer.valueOf(setRepsTextView.getText().toString());
 
-            singleSetList.add(new SingleSet(newExerciseId, setReps, setWeight, false));
+            SingleSet singleSet = new SingleSet(newExerciseId, setReps, null, setWeight, false);
+
+            if (mTmPercentageMode) {
+                TextView percentageOfMaxTextView = setView.findViewById(R.id.item_addSet_tv_percentageOfMax);
+                String percentageAndMaxInfo = percentageOfMaxTextView.getText().toString();
+                singleSet.setMaxWeightPercentageInfo(percentageAndMaxInfo);
+            }
+
+            singleSetList.add(singleSet);
         }
         return singleSetList;
     }
@@ -301,15 +339,23 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void weightMinus() {
-        if(!mWeightEditText.getText().toString().isEmpty()) {
+        if(!mWeightEditText.getText().toString().trim().isEmpty()) {
             float weight = Float.valueOf(mWeightEditText.getText().toString());
             if (weight > 0) {
                 // TODO[2]: in the future value of the weight increment will be loaded from preferences (depends of units user chose: 5 for lbs and 2.5 for kg)
-                weight -= 2.5;
+                if (mTmPercentageMode) {
+                    weight -= 5;
+                }
+                else {
+                    weight -= 2.5;
+                }
                 mWeightEditText.setText(Float.toString(weight));
             }
         }
         else {
+            if (mTmPercentageMode) {
+                mWeightEditText.setText("50");
+            }
             mWeightEditText.setText("0");
         }
     }
@@ -318,10 +364,86 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         if (!mWeightEditText.getText().toString().isEmpty()) {
             float weight = Float.valueOf(mWeightEditText.getText().toString());
             // TODO[2]: in the future value of the weight increment will be loaded from preferences (depends of units user chose: 5 for lbs and 2.5 for kg)
-            weight += 2.5;
+            if (mTmPercentageMode) {
+                weight += 5;
+            } else {
+                weight += 2.5;
+            }
             mWeightEditText.setText(Float.toString(weight));
         } else {
-            mWeightEditText.setText("2.5");
+            if (mTmPercentageMode) {
+                mWeightEditText.setText("55");
+            } else {
+                mWeightEditText.setText("2.5");
+            }
+        }
+    }
+
+    private void switchTypeOfSetsToPercentage(boolean isPercentage) {
+        Log.i(TAG, "current mTmPercentageMode = " + mTmPercentageMode + " switching to: " + isPercentage);
+        if (mTmPercentageMode == isPercentage) {
+            return;
+        }
+        mTmPercentageMode = isPercentage;
+
+        if (isPercentage) {
+            mWeightEditText.setHint("% of TM");
+            mWeightEditText.setText("");
+            if(mWeightEditText.getText().toString().trim().length() != 0) {
+                mWeightEditText.setText("70%");
+            }
+            SharedPreferences preferences = getSharedPreferences(PREFS_FILE, MODE_PRIVATE);
+            String exerciseName = mExerciseNameEditText.getText().toString();
+            mCurrentTrainingMax = preferences.getFloat(exerciseName, 0);
+            if (mCurrentTrainingMax == 0) {
+                showTrainingMaxForExerciseDialog(exerciseName);
+            }
+            else {
+                displaySetTypeInfo();
+            }
+        }
+        else {
+            mWeightEditText.setHint("weight");
+            mWeightEditText.setText("");
+        }
+        displaySetTypeInfo();
+    }
+
+    private void showTrainingMaxForExerciseDialog(final String exerciseName) {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.alert_training_max_dialog, null);
+        TextView dialogMessageTextView = dialogView.findViewById(R.id.trainingMaxDialog_tv_message);
+        final EditText trainingMaxEditText = dialogView.findViewById(R.id.trainingMaxDialog_et_trainingMax);
+        dialogMessageTextView.setText("Enter your Training Max for " + exerciseName + ": ");
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                SharedPreferences.Editor editor = getSharedPreferences(PREFS_FILE, MODE_PRIVATE).edit();
+                mCurrentTrainingMax = Float.valueOf(trainingMaxEditText.getText().toString());
+                editor.putFloat(exerciseName, mCurrentTrainingMax);
+                editor.apply();
+                displaySetTypeInfo();
+            }
+        });
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                mWeightIsBasedOnPercentageSwitch.setChecked(false);
+            }
+        });
+        builder.setView(dialogView)
+                .setCancelable(false)
+                .show();
+    }
+
+    private void displaySetTypeInfo() {
+        if (mTmPercentageMode) {
+            mTrainingMaxInfoEditText.setText("weight based on % of Training Max \nCurrent Training Max for " + mExerciseNameEditText.getText().toString() + " is set at: " + mCurrentTrainingMax);
+        }
+        else {
+            mTrainingMaxInfoEditText.setText("standard set with fixed weight");
         }
     }
 
@@ -343,10 +465,16 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             case (R.id.addExerciseActivity_bt_addSet):
                 try {
                     int reps = Integer.valueOf(mRepsEditText.getText().toString());
-                    float weight = Float.valueOf(mWeightEditText.getText().toString());
-                    addSet(reps, weight);
+                    float weightOrPercentage = Float.valueOf(mWeightEditText.getText().toString());
+                    if (mTmPercentageMode) {
+                        float weight = weightOrPercentage * mCurrentTrainingMax / 100;
+                        addSet(reps, weight, weightOrPercentage + "% of " + mCurrentTrainingMax);
+                    }
+                    else {
+                        addSet(reps, weightOrPercentage, null);
+                    }
                 } catch (NumberFormatException e) {
-                    addSet(null, null);
+                   Toast.makeText(this, "incorrect set numbers", Toast.LENGTH_SHORT).show();
                 }
                 break;
 

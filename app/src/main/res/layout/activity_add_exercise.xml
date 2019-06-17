@@ -8,7 +8,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="add exercise activity" />
-
     <EditText
         android:id="@+id/addExerciseActivity_et_exerciseName"
         android:layout_width="match_parent"
@@ -24,6 +23,26 @@
         android:hint="date"
         android:inputType="number"
         android:selectAllOnFocus="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <TextView
+            android:id="@+id/addExerciseActivity_tv_trainingMaxInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="standard set with fixed weight"
+            android:layout_weight="1"/>
+        <Switch
+            android:id="@+id/addExerciseActivity_sw_isBasedOnPercentage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="16dp"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -83,7 +102,7 @@
                 android:layout_weight="4"
                 android:gravity="center"
                 android:hint="weight"
-                android:inputType="numberDecimal"
+                android:inputType="numberSigned|numberDecimal"
                 android:selectAllOnFocus="true" />
 
             <Button
@@ -127,7 +146,9 @@
             android:id="@+id/addExerciseActivity_ll_listOfSets"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical">
+
+        </LinearLayout>
     </ScrollView>
 
     <Button

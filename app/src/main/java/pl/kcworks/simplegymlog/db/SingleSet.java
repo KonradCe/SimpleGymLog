@@ -21,26 +21,30 @@ public class SingleSet {
     private int singleSetID;                // id
     private long correspondingExerciseId;   // parent exercise ID
     private int reps;
+    private String maxWeightPercentageInfo;      // states if weight for each set is calculated as a percentage of maximum weight user can perform for 1 rep
     private float weight;
     private boolean completed;              // states if the set was marked as completed
 
     // CONSTRUCTORS
     @Ignore
-    public SingleSet(long correspondingExerciseId, int reps, float weight, boolean completed) {
+    public SingleSet(long correspondingExerciseId, int reps, String maxWeightPercentageInfo, float weight, boolean completed) {
         this.correspondingExerciseId = correspondingExerciseId;
         this.reps = reps;
+        this.maxWeightPercentageInfo = maxWeightPercentageInfo;
         this.weight = weight;
         this.completed = completed;
     }
 
-    public SingleSet(int singleSetID, long correspondingExerciseId, int reps, float weight, boolean completed) {
+    public SingleSet(int singleSetID, long correspondingExerciseId, int reps, String maxWeightPercentageInfo, float weight, boolean completed) {
         this.singleSetID = singleSetID;
         this.correspondingExerciseId = correspondingExerciseId;
         this.reps = reps;
+        this.maxWeightPercentageInfo = maxWeightPercentageInfo;
         this.weight = weight;
         this.completed = completed;
     }
 
+    // method for estimating if SingleSet needs to be updated in db by comparing two SingleSet objects
     public boolean needsUpdate(SingleSet ss) {
         if (correspondingExerciseId == ss.getCorrespondingExerciseId() &&
                 reps == ss.getReps() &&
@@ -50,6 +54,7 @@ public class SingleSet {
         return true;
     }
 
+    // for debug purpose
     @Override
     public String toString() {
         return "SingleSet{" +
@@ -84,6 +89,14 @@ public class SingleSet {
 
     public void setReps(int reps) {
         this.reps = reps;
+    }
+
+    public String getMaxWeightPercentageInfo() {
+        return maxWeightPercentageInfo;
+    }
+
+    public void setMaxWeightPercentageInfo(String maxWeightPercentageInfo) {
+        this.maxWeightPercentageInfo = maxWeightPercentageInfo;
     }
 
     public float getWeight() {
