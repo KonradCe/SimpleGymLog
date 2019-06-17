@@ -41,12 +41,12 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
     private int mSetNumber = 0;     // variable to keep track and display number of sets added by the user
     private boolean mEditMode = false; // states if activity was started to edit existing exercise (true) or if to add new (false)
-    private boolean mTmPercentageMode = false; // states if the weight of the exercise is determined by the maximum weight user can train with
+    private boolean mTmPercentageMode = false; // states if the weight of the exercise is determined by the maximum weight user can train with - Training Max or TM
     private long mExerciseId; // we need exercise id so we can pass it while adding SingleSets to db (so they can have proper "parent" column value)
     private float mCurrentTrainingMax;
 
     private GymLogViewModel mGymLogViewModel;
-    private Exercise mCurrentExercise; // this variable is instantiated when the activity is launched in EditMode
+    private Exercise mCurrentExercise; // this variable is used when the activity is launched in EditMode
     private List<SingleSet> mCurrentSingleSetList;
 
     // VIEWS
@@ -101,7 +101,6 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             }
         });
 
-
         // reps
         mRepsMinusButton = findViewById(R.id.addExerciseActivity_bt_repsMinus);
         mRepsMinusButton.setOnClickListener(this);
@@ -129,6 +128,8 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
     }
 
+    // this method is called only if the activity was started up in edit mode (intent has id of exercise that is being updated)
+    // it fetches data from db for current exercise and calls appropriate methods to populate UI with that info
     private void subscribeToModel(SingleExerciseViewModel singleExerciseViewModel) {
         singleExerciseViewModel.getExerciseWithSets().observe(this, new Observer<ExerciseWithSets>() {
             @Override
@@ -144,6 +145,8 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         });
     }
 
+    // this method is called when activity is started in edit mode in onCreate
+    // it updates views with exercise info
     private void populateViewWithExerciseInfo() {
         mSaveExerciseButton.setText("Update exercise");
 
@@ -151,6 +154,8 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         mExerciseDateEditText.setText(Long.toString(mCurrentExercise.getExerciseDate()));
     }
 
+    // this method is called when activity is started in edit mode
+    // it updates views with info for every set
     private void populateViewWithSetsInfo() {
         for (SingleSet singleSet : mCurrentSingleSetList) {
             addSet(singleSet.getReps(), singleSet.getWeight(), singleSet.getMaxWeightPercentageInfo());
@@ -245,6 +250,8 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         return singleSetList;
     }
 
+    // called in onSaveButtonPress in edit mode only
+    //  it updates exercise entity - so basically only name. It's not very useful right now but might be needed in the future
     private void updateExercise() {
         String newExerciseName = mExerciseNameEditText.getText().toString();
         if (!mCurrentExercise.getExerciseName().equals(newExerciseName)) {
@@ -253,6 +260,8 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         mGymLogViewModel.updateExercise(mCurrentExercise);
     }
 
+    // called in onSaveButtonPress in edit mode only
+    // it compares sets (existing views of sets) with the sets saved in db (for the current exercise) and updates / saves new / deletes sets accordingly
     private void updateSets() {
         List<SingleSet> newSingleSetList = createSingleSetListFromViews(mExerciseId);
 
@@ -314,6 +323,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    // 4 methods changing interface accordingly to what buttons were pressed and if the weight will be added based on TM (mTmPercentageMode)
     private void repsMinus() {
         if(!mRepsEditText.getText().toString().isEmpty()) {
             int reps = Integer.valueOf(mRepsEditText.getText().toString());
@@ -379,8 +389,10 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    // this is prompted by switching set type switch - it changes slightly UI accordingly to mTmPercentageMode
     private void switchTypeOfSetsToPercentage(boolean isPercentage) {
         Log.i(TAG, "current mTmPercentageMode = " + mTmPercentageMode + " switching to: " + isPercentage);
+
         if (mTmPercentageMode == isPercentage) {
             return;
         }
@@ -409,6 +421,8 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         displaySetTypeInfo();
     }
 
+    // if set type is switched to percentage mode and id doesn't have saved TM in SharedPreferences this method is called
+    // it pops up a dialog for the user to enter TM and then saves it in SharedPreferences
     private void showTrainingMaxForExerciseDialog(final String exerciseName) {
         LayoutInflater inflater = LayoutInflater.from(this);
         View dialogView = inflater.inflate(R.layout.alert_training_max_dialog, null);
@@ -438,6 +452,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
                 .show();
     }
 
+    // tris method changes text next to the set type switch
     private void displaySetTypeInfo() {
         if (mTmPercentageMode) {
             mTrainingMaxInfoEditText.setText("weight based on % of Training Max \nCurrent Training Max for " + mExerciseNameEditText.getText().toString() + " is set at: " + mCurrentTrainingMax);
