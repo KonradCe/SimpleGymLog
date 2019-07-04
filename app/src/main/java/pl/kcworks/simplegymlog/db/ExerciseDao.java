@@ -34,6 +34,10 @@ public interface ExerciseDao {
     LiveData<List<ExerciseWithSets>> getExercisesWithSets();
 
     @Transaction
+    @Query("SELECT * from exercise_table WHERE exerciseDate=:date")
+    LiveData<List<ExerciseWithSets>> getExercisesWithSetsForDate(long date);
+
+    @Transaction
     @Query("SELECT * from exercise_table WHERE exerciseId=:id ")
     LiveData<ExerciseWithSets> getSingleExercisesWithSets(int id);
 

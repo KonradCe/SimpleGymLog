@@ -10,6 +10,12 @@
     android:padding="16dp">
 
     <TextView
+        android:id="@+id/workout_tv_exerciseDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="date of exercise"/>
+
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="workout activity"

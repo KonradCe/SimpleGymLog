@@ -48,6 +48,10 @@ public class GymLogRepository {
         return mExercisesWithSets;
     }
 
+    public LiveData<List<ExerciseWithSets>> getmExercisesWithSetsForDate(long date) {
+        return mExerciseDao.getExercisesWithSetsForDate(date);
+    }
+
     public LiveData<ExerciseWithSets> getmSingleExerciseWithSets(int exerciseId) {
         return mExerciseDao.getSingleExercisesWithSets(exerciseId);
     }

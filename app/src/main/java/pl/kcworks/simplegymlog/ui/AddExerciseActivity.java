@@ -3,6 +3,7 @@ package pl.kcworks.simplegymlog.ui;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -19,9 +20,12 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
+import pl.kcworks.simplegymlog.DateConverterHelper;
 import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 import pl.kcworks.simplegymlog.R;
 import pl.kcworks.simplegymlog.db.Exercise;
@@ -43,15 +47,17 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     private boolean mEditMode = false; // states if activity was started to edit existing exercise (true) or if to add new (false)
     private boolean mTmPercentageMode = false; // states if the weight of the exercise is determined by the maximum weight user can train with - Training Max or TM
     private long mExerciseId; // we need exercise id so we can pass it while adding SingleSets to db (so they can have proper "parent" column value)
+    private long mExerciseDate;
     private float mCurrentTrainingMax;
 
     private GymLogViewModel mGymLogViewModel;
     private Exercise mCurrentExercise; // this variable is used when the activity is launched in EditMode
     private List<SingleSet> mCurrentSingleSetList;
+    private Calendar mCalendar;
 
     // VIEWS
     private EditText mExerciseNameEditText;
-    private EditText mExerciseDateEditText;
+    private TextView mExerciseDateTextView;
     private TextView mTrainingMaxInfoEditText;
     private Switch mWeightIsBasedOnPercentageSwitch;
     private Button mRepsMinusButton;
@@ -71,25 +77,38 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_exercise);
 
+        getDataFromIntent(getIntent());
         setUpViews();
 
         mGymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
 
+    }
+
+    private void getDataFromIntent(Intent intent) {
         // check if the activity was launched to edit exercise - and if so to act on it
         if (getIntent().hasExtra(UPDATE_EXERCISE_ID_EXTRA)) {
             mEditMode = true;
-            int editExerciseId = getIntent().getIntExtra(UPDATE_EXERCISE_ID_EXTRA, -1);
+            int editExerciseId = intent.getIntExtra(UPDATE_EXERCISE_ID_EXTRA, -1);
 
             SingleExerciseViewModel.Factory factory = new SingleExerciseViewModel.Factory(getApplication(), editExerciseId);
             SingleExerciseViewModel singleExerciseViewModel = ViewModelProviders.of(this, factory).get(SingleExerciseViewModel.class);
 
             subscribeToModel(singleExerciseViewModel);
         }
+
+        if (!mEditMode) {
+            mExerciseDate = intent.getLongExtra(WorkoutPickerActivity.DATE_OF_EXERCISE_TAG, 19901029);
+        }
     }
 
     private void setUpViews() {
         mExerciseNameEditText = findViewById(R.id.addExerciseActivity_et_exerciseName);
-        mExerciseDateEditText = findViewById(R.id.addExerciseActivity_et_exerciseDate);
+        mExerciseDateTextView = findViewById(R.id.addExerciseActivity_tv_exerciseDate);
+        // if exercise is editmode mExerciseDate wasn't initialized yet; in EditMode this is set later in populateViewWithExerciseInfoInEditMode method, called by subscribeToModel method
+        // TODO[3]: This solution is stupid and should be refactored
+        if (!mEditMode) {
+            mExerciseDateTextView.setText(DateConverterHelper.fromLongToString(mExerciseDate));
+        }
         mTrainingMaxInfoEditText = findViewById(R.id.addExerciseActivity_tv_trainingMaxInfo);
         mWeightIsBasedOnPercentageSwitch = findViewById(R.id.addExerciseActivity_sw_isBasedOnPercentage);
         mWeightIsBasedOnPercentageSwitch.setChecked(mTmPercentageMode);
@@ -97,7 +116,6 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isPercentage) {
                 switchTypeOfSetsToPercentage(isPercentage);
-
             }
         });
 
@@ -135,11 +153,13 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onChanged(@Nullable ExerciseWithSets exerciseWithSets) {
                 mCurrentExercise = exerciseWithSets.getExercise();
+                mExerciseDate = mCurrentExercise.getExerciseDate();
+
                 mCurrentSingleSetList = exerciseWithSets.getExerciseSetList();
 
                 mExerciseId = mCurrentExercise.getExerciseId();
 
-                populateViewWithExerciseInfo();
+                populateViewWithExerciseInfoInEditMode();
                 populateViewWithSetsInfo();
             }
         });
@@ -147,12 +167,14 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
     // this method is called when activity is started in edit mode in onCreate
     // it updates views with exercise info
-    private void populateViewWithExerciseInfo() {
+    private void populateViewWithExerciseInfoInEditMode() {
         mSaveExerciseButton.setText("Update exercise");
 
         mExerciseNameEditText.setText(mCurrentExercise.getExerciseName());
-        mExerciseDateEditText.setText(Long.toString(mCurrentExercise.getExerciseDate()));
+        mExerciseDateTextView.setText(DateConverterHelper.fromLongToString(mExerciseDate));
     }
+
+
 
     // this method is called when activity is started in edit mode
     // it updates views with info for every set
@@ -195,6 +217,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void onSaveButtonPress() {
+        //TODO[2]: there should be a check if exercise name is not empty
         if (!mEditMode) {
             saveExerciseWithSets();
         }
@@ -209,14 +232,11 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     private void saveExerciseWithSets() {
         String exerciseName = mExerciseNameEditText.getText().toString();
 
-        // TODO[2]: this will be date object in the future?
-        long exerciseDate = Long.parseLong(mExerciseDateEditText.getText().toString());
-
         // TODO[2]: this value should be passed with starting this activity, 2 is a temporary value
         //  do we need this field anyway? - not as long as we won't implement changing exercises order
         int exerciseOrderInDay = 2;
 
-        Exercise exercise = new Exercise(exerciseName, exerciseOrderInDay, exerciseDate);
+        Exercise exercise = new Exercise(exerciseName, exerciseOrderInDay, mExerciseDate);
         mExerciseId = mGymLogViewModel.insertExercise(exercise);
         // TODO[3]: this can be the place to add some sort of validation that exercise was saved correctly - if not newExerciseId = -1
 

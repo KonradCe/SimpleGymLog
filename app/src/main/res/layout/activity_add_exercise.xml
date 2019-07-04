@@ -2,26 +2,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="add exercise activity" />
+    <TextView
+        android:id="@+id/addExerciseActivity_tv_exerciseDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="date" />
+
     <EditText
         android:id="@+id/addExerciseActivity_et_exerciseName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="name of the exercise"
         android:inputType="text"
-        android:selectAllOnFocus="true" />
-
-    <EditText
-        android:id="@+id/addExerciseActivity_et_exerciseDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="date"
-        android:inputType="number"
         android:selectAllOnFocus="true" />
 
     <LinearLayout

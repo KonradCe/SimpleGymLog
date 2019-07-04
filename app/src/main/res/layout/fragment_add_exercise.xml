@@ -17,7 +17,7 @@
         android:inputType="text" />
 
     <EditText
-        android:id="@+id/addExerciseActivity_et_exerciseDate"
+        android:id="@+id/addExerciseActivity_tv_exerciseDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="date"

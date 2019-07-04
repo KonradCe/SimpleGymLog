@@ -23,8 +23,12 @@ public class GymLogViewModel extends AndroidViewModel {
         mExercisesWithSets = mGymLogRepository.getmExercisesWithSets();
     }
 
-    public LiveData<List<ExerciseWithSets>> getmExercisesWithSets() {
+    public LiveData<List<ExerciseWithSets>> getAllExercisesWithSets() {
         return mExercisesWithSets;
+    }
+
+    public LiveData<List<ExerciseWithSets>> getExercisesWithSetsForDate(long date) {
+        return mGymLogRepository.getmExercisesWithSetsForDate(date);
     }
 
     public long insertExercise(Exercise exercise) {
