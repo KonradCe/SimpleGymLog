@@ -244,7 +244,6 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         mGymLogViewModel.insertMultipleSingleSets(createSingleSetListFromViews(mExerciseId));
     }
 
-    //TODO[1]: do not try to make SingleSet objects from empty views
     private List<SingleSet> createSingleSetListFromViews(long newExerciseId) {
         List<SingleSet> singleSetList = new ArrayList<>();
         // adding SingleSets in this part

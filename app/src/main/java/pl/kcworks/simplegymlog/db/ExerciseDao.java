@@ -21,7 +21,7 @@ public interface ExerciseDao {
     void update(Exercise exercise);
 
     @Query("SELECT * FROM exercise_table ORDER BY exerciseId")
-    LiveData<List<Exercise>> getAllExercisese();
+    LiveData<List<Exercise>> getAllExercises();
 
     @Query("SELECT * FROM exercise_table WHERE exerciseDate=:date")
     LiveData<List<Exercise>> getExercisesByDate(long date);
@@ -36,6 +36,10 @@ public interface ExerciseDao {
     @Transaction
     @Query("SELECT * from exercise_table WHERE exerciseDate=:date")
     LiveData<List<ExerciseWithSets>> getExercisesWithSetsForDate(long date);
+
+    @Transaction
+    @Query("SELECT * from exercise_table WHERE exerciseDate LIKE :date")
+    LiveData<List<Exercise>> getExercisesForMonth(String date);
 
     @Transaction
     @Query("SELECT * from exercise_table WHERE exerciseId=:id ")

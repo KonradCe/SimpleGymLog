@@ -44,12 +44,20 @@ public class GymLogRepository {
         return sInstance;
     }
 
+    public LiveData<List<Exercise>> getAllExercises() {
+        return mExerciseDao.getAllExercises();
+    }
+
     public LiveData<List<ExerciseWithSets>> getmExercisesWithSets() {
         return mExercisesWithSets;
     }
 
     public LiveData<List<ExerciseWithSets>> getmExercisesWithSetsForDate(long date) {
         return mExerciseDao.getExercisesWithSetsForDate(date);
+    }
+
+    public LiveData<List<Exercise>> getExercisesForMonth(long date) {
+        return mExerciseDao.getExercisesForMonth(date + "%");
     }
 
     public LiveData<ExerciseWithSets> getmSingleExerciseWithSets(int exerciseId) {

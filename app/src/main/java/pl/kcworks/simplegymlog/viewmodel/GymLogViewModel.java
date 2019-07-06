@@ -20,7 +20,7 @@ public class GymLogViewModel extends AndroidViewModel {
     public GymLogViewModel(@NonNull Application application) {
         super(application);
         mGymLogRepository = GymLogRepository.getInstance(application);
-        mExercisesWithSets = mGymLogRepository.getmExercisesWithSets();
+//        mExercisesWithSets = mGymLogRepository.getmExercisesWithSets();
     }
 
     public LiveData<List<ExerciseWithSets>> getAllExercisesWithSets() {
@@ -29,6 +29,12 @@ public class GymLogViewModel extends AndroidViewModel {
 
     public LiveData<List<ExerciseWithSets>> getExercisesWithSetsForDate(long date) {
         return mGymLogRepository.getmExercisesWithSetsForDate(date);
+    }
+    public LiveData<List<Exercise>> getAllExercises() {
+        return mGymLogRepository.getAllExercises();
+    }
+    public LiveData<List<Exercise>> getExerciseForMonth(long date) {
+        return mGymLogRepository.getExercisesForMonth(date);
     }
 
     public long insertExercise(Exercise exercise) {
