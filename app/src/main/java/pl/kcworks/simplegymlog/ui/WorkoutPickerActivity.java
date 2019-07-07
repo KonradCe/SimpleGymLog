@@ -1,6 +1,5 @@
 package pl.kcworks.simplegymlog.ui;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -10,22 +9,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Switch;
 
 
-import com.applikeysolutions.cosmocalendar.listeners.OnMonthChangeListener;
-import com.applikeysolutions.cosmocalendar.model.Month;
-import com.applikeysolutions.cosmocalendar.settings.appearance.ConnectedDayIconPosition;
+import com.applikeysolutions.cosmocalendar.dialog.CalendarDialog;
+import com.applikeysolutions.cosmocalendar.dialog.OnDaysSelectionListener;
+import com.applikeysolutions.cosmocalendar.model.Day;
 import com.applikeysolutions.cosmocalendar.settings.lists.connected_days.ConnectedDays;
 import com.applikeysolutions.cosmocalendar.view.CalendarView;
 
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -33,7 +28,6 @@ import java.util.Set;
 import pl.kcworks.simplegymlog.DateConverterHelper;
 import pl.kcworks.simplegymlog.R;
 import pl.kcworks.simplegymlog.db.Exercise;
-import pl.kcworks.simplegymlog.db.ExerciseWithSets;
 import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 
 // TODO[3]: replace with some pop up window or dialog or smth - no need for this to be an entire activity
@@ -59,7 +53,10 @@ public class WorkoutPickerActivity extends AppCompatActivity implements View.OnC
 
     private void setUpViews() {
         mContinueRoutineButton = findViewById(R.id.workout_picker_bt_routine);
+        mContinueRoutineButton.setOnClickListener(this);
+
         mCopyPreviousWorkoutButton = findViewById(R.id.workout_picker_bt_copy_previous);
+        mCopyPreviousWorkoutButton.setOnClickListener(this);
 
         mStartNewWorkoutButton = findViewById(R.id.workout_picker_bt_new_workout);
         mStartNewWorkoutButton.setOnClickListener(this);
@@ -68,13 +65,12 @@ public class WorkoutPickerActivity extends AppCompatActivity implements View.OnC
     }
 
     private void calendarSetUp() {
-        // Connected days = days specially marked in CalendarView either by icon show below / above date, or by idifferent color
+        // Connected days = days specially marked in CalendarView either by icon show below / above date, or by different color
         // for more info on CosmoCalendar visit: https://github.com/AppliKeySolutions/CosmoCalendar
 
-        // TODO[2]: there is no indicator of 'connceted' day if its the same as today's day
         mGymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
 
-        // due to onMonthChangeListener not working I'm forced to load all exercises to mark in calendar (instead of loading exercises only for chosen month)
+        // due to onMonthChangeListener not working we're forced to load all exercises to mark in calendar (instead of loading exercises only for chosen month)
         mGymLogViewModel.getAllExercises().observe(this, new Observer<List<Exercise>>() {
             @Override
             public void onChanged(@Nullable List<Exercise> listOfAllExercises) {
@@ -108,6 +104,17 @@ public class WorkoutPickerActivity extends AppCompatActivity implements View.OnC
         return new ConnectedDays(daysWithWorkouts, getResources().getColor(R.color.testColor));
     }
 
+    private void copyWorkout() {
+        // select day to copy from
+        selectDayToCopyExercisesFrom();
+        // select day to copy into
+        // chose which exercises to copy
+
+    }
+
+    private void selectDayToCopyExercisesFrom() {
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -115,6 +122,11 @@ public class WorkoutPickerActivity extends AppCompatActivity implements View.OnC
                 Intent startWorkoutActivityIntent = new Intent(WorkoutPickerActivity.this, WorkoutActivity.class);
                 startWorkoutActivityIntent.putExtra(DATE_OF_EXERCISE_TAG, getSelectedDay());
                 startActivity(startWorkoutActivityIntent);
+                break;
+
+            case (R.id.workout_picker_bt_copy_previous):
+                Log.i(TAG, "copy previous workout button was clicked");
+                copyWorkout();
                 break;
         }
 
