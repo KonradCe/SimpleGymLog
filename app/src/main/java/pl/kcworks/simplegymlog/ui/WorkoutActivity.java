@@ -11,7 +11,9 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -20,18 +22,26 @@ import pl.kcworks.simplegymlog.R;
 import pl.kcworks.simplegymlog.db.ExerciseWithSets;
 import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 
-import static pl.kcworks.simplegymlog.ui.WorkoutPickerActivity.DATE_OF_EXERCISE_TAG;
-
 public class WorkoutActivity extends AppCompatActivity implements View.OnClickListener {
 
     // TODO[3]: standardize field names and widgets ids
     private final String TAG = "KCTag-" + WorkoutActivity.class.getSimpleName();
+    public static final String DATE_OF_EXERCISE_TAG = "DATE_OF_EXERCISE_TAG";
 
-    private TextView mDateOfExerciseTextView;
-    private Button mAddExerciseButton;
+    // TODO[3]: not sure if this variable is needed yet
+    private long mDateOfExercise;
     private GymLogViewModel mGymLogViewModel;
     private ExerciseAdapter mExerciseAdapter;
-    private long mDateOfExercise;
+
+    private TextView mDateOfExerciseTextView;
+    private RecyclerView mExerciseRecyclerView;
+    private LinearLayout mAddExercisesOptionsLinearLayout;
+    private Button mAddExerciseButton;
+
+    // additional buttons that show up only when there is no exercises for this day, probably will be replaced by FAB
+    private Button mAddExercisesFromRoutineButton;
+    private Button mCopyPreviousWorkoutButton;
+    private Button mAddExerciseAdditionalButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,18 +63,29 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void setupViews() {
+        mExerciseRecyclerView = findViewById(R.id.workout_rv_exercises);
+        mAddExercisesOptionsLinearLayout = findViewById(R.id.workout_ll_new_exercises_options);
         mAddExerciseButton = findViewById(R.id.workout_bt_add_exercise);
         mAddExerciseButton.setOnClickListener(this);
         mDateOfExerciseTextView = findViewById(R.id.workout_tv_exerciseDate);
         mDateOfExerciseTextView.setText(DateConverterHelper.fromLongToString(mDateOfExercise));
 
+        // additional buttons that show up only when there are, probably will be replaced by FAB
+        mAddExercisesFromRoutineButton = findViewById(R.id.workout_bt_routine);
+        mAddExercisesFromRoutineButton.setOnClickListener(this);
+        mCopyPreviousWorkoutButton = findViewById(R.id.workout_bt_copy_previous);
+        mCopyPreviousWorkoutButton.setOnClickListener(this);
+        mAddExerciseAdditionalButton = findViewById(R.id.workout_bt_add_exercise_additional);
+        mAddExerciseAdditionalButton.setOnClickListener(this);
+
+
     }
 
     private void setupRecyclerView() {
-        RecyclerView rv = findViewById(R.id.workout_rv_exercises);
+
         mExerciseAdapter = new ExerciseAdapter(this);
-        rv.setAdapter(mExerciseAdapter);
-        rv.setLayoutManager(new LinearLayoutManager(this));
+        mExerciseRecyclerView.setAdapter(mExerciseAdapter);
+        mExerciseRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         Log.i(TAG, "setting up RecyclerView");
 
     }
@@ -74,21 +95,50 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         model.getExercisesWithSetsForDate(mDateOfExercise).observe(this, new Observer<List<ExerciseWithSets>>() {
             @Override
             public void onChanged(@Nullable List<ExerciseWithSets> exercisesWithSets) {
-                Log.i(TAG, "change in data observed");
-                if (mExerciseAdapter == null) {
-                    Log.i(TAG, "mExerciseAdapter is null - nothing to present");
+                if (exercisesWithSets.isEmpty()) { displayNewWorkoutOptions(); }
+                else { hideNewWorkoutOptions();
                 }
+                Log.i(TAG, "change in data observed");
                 mExerciseAdapter.setExercises(exercisesWithSets);
                 mExerciseAdapter.notifyDataSetChanged();
             }
         });
     }
 
+    private void displayNewWorkoutOptions() {
+        mExerciseRecyclerView.setVisibility(View.GONE);
+        mAddExercisesOptionsLinearLayout.setVisibility(View.VISIBLE);
+        mAddExerciseButton.setVisibility(View.INVISIBLE);
+    }
+
+    private void hideNewWorkoutOptions() {
+        mExerciseRecyclerView.setVisibility(View.VISIBLE);
+        mAddExercisesOptionsLinearLayout.setVisibility(View.GONE);
+        mAddExerciseButton.setVisibility(View.VISIBLE);
+    }
+
     @Override
     public void onClick(View view) {
-        // TODO[1]: this should be startActivityForResult?
-        Intent intent = new Intent(this, AddExerciseActivity.class);
-        intent.putExtra(DATE_OF_EXERCISE_TAG, mDateOfExercise);
-        startActivity(intent);
+        switch (view.getId()) {
+
+            case (R.id.workout_bt_copy_previous):
+                // copy previous workout
+                break;
+
+            // OR statement within switch
+            case (R.id.workout_bt_add_exercise_additional):
+            case (R.id.workout_bt_add_exercise):
+                Intent intent = new Intent(this, AddExerciseActivity.class);
+                intent.putExtra(DATE_OF_EXERCISE_TAG, mDateOfExercise);
+                startActivity(intent);
+                break;
+
+            case (R.id.workout_bt_routine):
+                // add routing
+                break;
+
+        }
+        // TODO[2]: should this be startActivityForResult?
+
     }
 }

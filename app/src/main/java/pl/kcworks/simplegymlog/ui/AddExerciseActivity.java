@@ -35,7 +35,9 @@ import pl.kcworks.simplegymlog.viewmodel.SingleExerciseViewModel;
 
 public class AddExerciseActivity extends AppCompatActivity implements View.OnClickListener {
 
-    //TODO[3]: move all db read and write work from this activity to WorkoutActivity. It'd be better to only read and give back serializable objects for it to read/write.
+    //TODO[3]: consider moving all db read and write work from this activity to WorkoutActivity. Would it be better to do all read and write (to/from db) work there?
+    // It would have to work by giving back serialized objects of exercises from here to WorkoutActivity/
+
     // TODO[2]: exercise name should probably be fixed - when exercise name can be edited at any time there can be chaos with sets based % of TM
     //  (TM value is read from SharedPreferences by key of exercise name)
 
@@ -97,7 +99,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         }
 
         if (!mEditMode) {
-            mExerciseDate = intent.getLongExtra(WorkoutPickerActivity.DATE_OF_EXERCISE_TAG, 19901029);
+            mExerciseDate = intent.getLongExtra(WorkoutActivity.DATE_OF_EXERCISE_TAG, 19901029);
         }
     }
 

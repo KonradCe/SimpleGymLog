@@ -44,7 +44,7 @@ public class GymLogRepository {
         return sInstance;
     }
 
-    public LiveData<List<Exercise>> getAllExercises() {
+    public List<Exercise> getAllExercises() {
         return mExerciseDao.getAllExercises();
     }
 

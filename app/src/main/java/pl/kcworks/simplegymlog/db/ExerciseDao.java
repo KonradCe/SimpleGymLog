@@ -21,7 +21,7 @@ public interface ExerciseDao {
     void update(Exercise exercise);
 
     @Query("SELECT * FROM exercise_table ORDER BY exerciseId")
-    LiveData<List<Exercise>> getAllExercises();
+    List<Exercise> getAllExercises();
 
     @Query("SELECT * FROM exercise_table WHERE exerciseDate=:date")
     LiveData<List<Exercise>> getExercisesByDate(long date);

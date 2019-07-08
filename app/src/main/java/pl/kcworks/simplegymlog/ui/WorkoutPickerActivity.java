@@ -30,10 +30,12 @@ import pl.kcworks.simplegymlog.R;
 import pl.kcworks.simplegymlog.db.Exercise;
 import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 
+import static pl.kcworks.simplegymlog.ui.WorkoutActivity.DATE_OF_EXERCISE_TAG;
+
 // TODO[3]: replace with some pop up window or dialog or smth - no need for this to be an entire activity
 
 public class WorkoutPickerActivity extends AppCompatActivity implements View.OnClickListener {
-    public static final String DATE_OF_EXERCISE_TAG = "DATE_OF_EXERCISE_TAG";
+
     private static final String TAG = "KCtag-" + AddExerciseActivity.class.getSimpleName();
 
     private Button mContinueRoutineButton;
@@ -65,18 +67,21 @@ public class WorkoutPickerActivity extends AppCompatActivity implements View.OnC
     }
 
     private void calendarSetUp() {
+        Log.i(TAG, "calendarSetUp()");
         // Connected days = days specially marked in CalendarView either by icon show below / above date, or by different color
         // for more info on CosmoCalendar visit: https://github.com/AppliKeySolutions/CosmoCalendar
 
         mGymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
 
         // due to onMonthChangeListener not working we're forced to load all exercises to mark in calendar (instead of loading exercises only for chosen month)
-        mGymLogViewModel.getAllExercises().observe(this, new Observer<List<Exercise>>() {
+ /*       mGymLogViewModel.getAllExercises().observe(this, new Observer<List<Exercise>>() {
+
             @Override
             public void onChanged(@Nullable List<Exercise> listOfAllExercises) {
+
                 mCalendarView.addConnectedDays(createConnectedDaysFromListOfExercises(listOfAllExercises));
             }
-        });
+        });*/
     }
 
     private long getSelectedDay() {

@@ -11,8 +11,9 @@
 
     <TextView
         android:id="@+id/workout_tv_exerciseDate"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:text="date of exercise"/>
 
     <TextView
@@ -28,12 +29,50 @@
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
-    <!--TODO[3]: replace with FAB-->
+
+    <LinearLayout
+        android:id="@+id/workout_ll_new_exercises_options"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <Button
+            android:id="@+id/workout_bt_routine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="routine" />
+
+        <Button
+            android:id="@+id/workout_bt_copy_previous"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="copy previous workout" />
+
+        <Button
+            android:id="@+id/workout_bt_add_exercise_additional"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="start new workout" />
+
+    </LinearLayout>
+
+    <!--TODO[2]: replace with FAB-->
     <Button
         android:id="@+id/workout_bt_add_exercise"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="add exercise" />
+
+
+
+
+
 
 </LinearLayout>
 
