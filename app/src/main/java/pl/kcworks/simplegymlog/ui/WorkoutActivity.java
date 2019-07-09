@@ -15,6 +15,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.applikeysolutions.cosmocalendar.dialog.CalendarDialog;
+import com.applikeysolutions.cosmocalendar.dialog.OnDaysSelectionListener;
+import com.applikeysolutions.cosmocalendar.model.Day;
+
 import java.util.List;
 
 import pl.kcworks.simplegymlog.DateConverterHelper;
@@ -117,12 +121,21 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         mAddExerciseButton.setVisibility(View.VISIBLE);
     }
 
+    private void copyExercisesFromPreviousDay() {
+        new CalendarDialog(this, new OnDaysSelectionListener() {
+            @Override
+            public void onDaysSelected(List<Day> selectedDays) {
+
+            }
+        }).show();
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
 
             case (R.id.workout_bt_copy_previous):
-                // copy previous workout
+                copyExercisesFromPreviousDay();
                 break;
 
             // OR statement within switch
@@ -134,7 +147,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
                 break;
 
             case (R.id.workout_bt_routine):
-                // add routing
+                // add exercises from routine
                 break;
 
         }

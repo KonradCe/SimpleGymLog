@@ -30,7 +30,7 @@ public class GymLogViewModel extends AndroidViewModel {
     public LiveData<List<ExerciseWithSets>> getExercisesWithSetsForDate(long date) {
         return mGymLogRepository.getmExercisesWithSetsForDate(date);
     }
-    public List<Exercise> getAllExercises() {
+    public LiveData<List<Exercise>> getAllExercises() {
         return mGymLogRepository.getAllExercises();
     }
     public LiveData<List<Exercise>> getExerciseForMonth(long date) {

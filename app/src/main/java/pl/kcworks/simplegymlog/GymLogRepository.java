@@ -44,7 +44,7 @@ public class GymLogRepository {
         return sInstance;
     }
 
-    public List<Exercise> getAllExercises() {
+    public LiveData<List<Exercise>> getAllExercises() {
         return mExerciseDao.getAllExercises();
     }
 
@@ -69,8 +69,8 @@ public class GymLogRepository {
 
         try {
             // using .get() method on AsyncTask in this place denies the whole purpose of AsyncTask - using get we still have to wait for results from the task on the UI thread;
-            // still, for this moment I don't know how to do this* any other way and inserting ONLY exercise should not take that long anyway
-            // *this - means inserting exercise into db and getting its newly created id
+            // still, for this moment I don't know how to do this task* any other way and inserting ONLY exercise should not take that long anyway
+            // *this task - task of inserting exercise into db and getting its newly created id
             newExerciseId = task.execute(exercise).get();
         } catch (ExecutionException e) {
             e.printStackTrace();

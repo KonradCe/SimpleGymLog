@@ -70,16 +70,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mGymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
 
-/*        // due to onMonthChangeListener not working we're forced to load all exercises to mark in calendar (instead of loading exercises only for chosen month)
+        // due to onMonthChangeListener not working we're forced to load all exercises to mark in calendar (instead of loading exercises only for chosen month)
         mGymLogViewModel.getAllExercises().observe(this, new Observer<List<Exercise>>() {
             @Override
             public void onChanged(@Nullable List<Exercise> listOfAllExercises) {
             Log.i(TAG, "observing getAllExercises method - to populate calendar with ConnectedDays");
                 mCalendarView.addConnectedDays(createConnectedDaysFromListOfExercises(listOfAllExercises));
             }
-        });*/
-        PopulateCalendarWithAsyncTask task = new PopulateCalendarWithAsyncTask();
-        task.execute(mGymLogViewModel);
+        });
+
     }
 
     private ConnectedDays createConnectedDaysFromListOfExercises(List<Exercise> listOfExercises) {
@@ -105,21 +104,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
-    // TODO[1]: move this async task to GymLogRepository
-    private class PopulateCalendarWithAsyncTask extends AsyncTask<GymLogViewModel, Void, List<Exercise>> {
-
-        @Override
-        protected List<Exercise> doInBackground(GymLogViewModel... gymLogViewModels) {
-            mGymLogViewModel = gymLogViewModels[0];
-            return mGymLogViewModel.getAllExercises();
-        }
-
-        @Override
-        protected void onPostExecute(List<Exercise> exercises) {
-            Log.i(TAG, "size of exerciseList = " + exercises.size());
-            mCalendarView.addConnectedDays(createConnectedDaysFromListOfExercises(exercises));
-
-        }
-    }
 }
