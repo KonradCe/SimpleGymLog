@@ -14,7 +14,6 @@
             android:screenOrientation="portrait">
         </activity>
         <activity android:name=".ui.WorkoutActivity" />
-        <activity android:name=".ui.WorkoutPickerActivity" />
         <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

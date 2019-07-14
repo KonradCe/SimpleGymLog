@@ -3,22 +3,27 @@ package pl.kcworks.simplegymlog.ui;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.applikeysolutions.cosmocalendar.settings.lists.connected_days.ConnectedDays;
-import com.applikeysolutions.cosmocalendar.view.CalendarView;
+import com.jakewharton.threetenabp.AndroidThreeTen;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+import com.prolificinteractive.materialcalendarview.DayViewDecorator;
+import com.prolificinteractive.materialcalendarview.DayViewFacade;
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.format.DateTimeFormatter;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import pl.kcworks.simplegymlog.DateConverterHelper;
 import pl.kcworks.simplegymlog.R;
@@ -30,13 +35,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG = "KCtag-" + MainActivity.class.getSimpleName();
 
     private Button mStartNewWorkoutButton;
-    private CalendarView mCalendarView;
+    private MaterialCalendarView mCalendarView;
 
     private GymLogViewModel mGymLogViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AndroidThreeTen.init(this);
         setContentView(R.layout.activity_main);
 
         setUpViews();
@@ -53,45 +59,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private long getSelectedDay() {
-        Date dateOfExercise;
-        try {
-            dateOfExercise = mCalendarView.getSelectedDates().get(0).getTime();
-        }
-        // in case no day is selected, today's date is passed as chosen by default
-        catch (IndexOutOfBoundsException e) {
-            dateOfExercise = Calendar.getInstance().getTime();
-        }
-        return DateConverterHelper.dateToLong(dateOfExercise);
+        return DateConverterHelper.dateToLong(mCalendarView.getSelectedDate().getDate());
     }
 
     private void calendarSetUp() {
-        // Connected days = days specially marked in CalendarView either by icon show below / above date, or by different color
-        // for more info on CosmoCalendar visit: https://github.com/AppliKeySolutions/CosmoCalendar
+
+        mCalendarView.setSelectedDate(LocalDate.now());
 
         mGymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
-
-        // due to onMonthChangeListener not working we're forced to load all exercises to mark in calendar (instead of loading exercises only for chosen month)
+        // TODO[3]: do not fetch every exercise after every update - get only those that were added
         mGymLogViewModel.getAllExercises().observe(this, new Observer<List<Exercise>>() {
             @Override
             public void onChanged(@Nullable List<Exercise> listOfAllExercises) {
-            Log.i(TAG, "observing getAllExercises method - to populate calendar with ConnectedDays");
-                mCalendarView.addConnectedDays(createConnectedDaysFromListOfExercises(listOfAllExercises));
+                setDecoratorsToDaysWithExercises(listOfAllExercises);
             }
         });
 
     }
 
-    private ConnectedDays createConnectedDaysFromListOfExercises(List<Exercise> listOfExercises) {
-        Set<Long> daysWithWorkouts;
-        List<Long> listOfGymLogDateFormatDates = new ArrayList<>();
-
-        for (Exercise exercise : listOfExercises) {
-            listOfGymLogDateFormatDates.add(exercise.getExerciseDate());
+    private void setDecoratorsToDaysWithExercises(List<Exercise> exerciseList) {
+        List<CalendarDay> listOfDaysWithExercises = new ArrayList<>();
+        for (Exercise exercise : exerciseList) {
+            int[] calendarDayNumbers = DateConverterHelper.gymLogDateFormatToYearMonthDayInt(exercise.getExerciseDate());
+            listOfDaysWithExercises.add(CalendarDay.from(calendarDayNumbers[0], calendarDayNumbers[1], calendarDayNumbers[2]));
         }
-        daysWithWorkouts = DateConverterHelper.convertListOfGymLogDateFormatToSetOfTimeInMillis(listOfGymLogDateFormatDates);
 
-        return new ConnectedDays(daysWithWorkouts, getResources().getColor(R.color.testColor));
+        mCalendarView.addDecorator(new DaysWithExerciseDecorator(listOfDaysWithExercises));
     }
+
 
     @Override
     public void onClick(View view) {
@@ -101,6 +96,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startWorkoutIntent.putExtra(WorkoutActivity.DATE_OF_EXERCISE_TAG, getSelectedDay());
                 startActivity(startWorkoutIntent);
                 break;
+        }
+    }
+
+    public class DaysWithExerciseDecorator implements DayViewDecorator {
+
+        private final List<CalendarDay> dates;
+
+        public DaysWithExerciseDecorator(Collection<CalendarDay> dates) {
+            this.dates = new ArrayList<>(dates);
+        }
+
+        @Override
+        public boolean shouldDecorate(CalendarDay day) {
+            return dates.contains(day);
+        }
+
+        @Override
+        public void decorate(DayViewFacade view) {
+            // this adds dot below date
+//            view.addSpan(new DotSpan(5, color));
+            view.addSpan(new ForegroundColorSpan(getResources().getColor(R.color.calendarDayWithExerciseColor)));
         }
     }
 

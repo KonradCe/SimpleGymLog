@@ -1,25 +1,25 @@
 package pl.kcworks.simplegymlog;
 
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.format.DateTimeFormatter;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class DateConverterHelper {
 
-    public static long dateToLong(Date date) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+    public static long dateToLong(LocalDate date) {
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
         return Long.parseLong(dateFormat.format(date));
     }
 
-    public static long dateToLongMonthOnly(Date date) {
+    public static long dateToLongMonthOnly(LocalDate date) {
         DateFormat dateFormat = new SimpleDateFormat("yyyyMM");
+
         return Long.parseLong(dateFormat.format(date));
     }
+
 
     public static String fromLongToString(long dateInLong) {
         String dateInString = Long.toString(dateInLong);
@@ -31,20 +31,15 @@ public class DateConverterHelper {
         return DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
     }
 
-    public static Set<Long> convertListOfGymLogDateFormatToSetOfTimeInMillis (List<Long> datesInGymLogDateFormat) {
-        Set<Long> setOfDatesInMillis = new HashSet<>();
-        Calendar calendar = Calendar.getInstance();
+    public static int[] gymLogDateFormatToYearMonthDayInt (long gymLogFormatDate) {
+        String gymLogDateInString = Long.toString(gymLogFormatDate);
+        int year = Integer.parseInt(gymLogDateInString.substring(0, 4));
+        int month = Integer.parseInt(gymLogDateInString.substring(4, 6));
+        int day = Integer.parseInt(gymLogDateInString.substring(6));
 
-        for (Long dateInGymLogFormat : datesInGymLogDateFormat) {
-            String dateInString = dateInGymLogFormat.toString();
-            calendar.set(Calendar.YEAR, Integer.parseInt(dateInString.substring(0, 4)));
-            calendar.set(Calendar.MONTH, Integer.parseInt(dateInString.substring(4, 6)) - 1);
-            calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dateInString.substring(6)));
+        return new int[]{year, month, day};
 
-            setOfDatesInMillis.add(calendar.getTimeInMillis());
-        }
-
-        return setOfDatesInMillis;
     }
+
 
 }

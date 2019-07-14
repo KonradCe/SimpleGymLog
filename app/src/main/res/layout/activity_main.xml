@@ -28,11 +28,10 @@
         android:layout_marginBottom="16dp"
         android:text="customize routine"/>
 
-    <com.applikeysolutions.cosmocalendar.view.CalendarView
+    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
         android:id="@+id/mainActivity_picker_calendar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:selectionType="single"
-        />
+        android:layout_height="wrap_content"
+        app:mcv_selectionMode="single"/>
 
 </LinearLayout>
