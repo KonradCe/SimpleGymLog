@@ -28,8 +28,8 @@ public interface ExerciseDao {
     void deleteAllExercises();
 
     @Transaction
-    @Query("SELECT * from exercise_table")
-    LiveData<List<ExerciseWithSets>> getExercisesWithSets();
+    @Query("SELECT * from exercise_table ORDER BY exerciseDate")
+    LiveData<List<ExerciseWithSets>> getAllExercisesWithSets();
 
     @Transaction
     @Query("SELECT * from exercise_table WHERE exerciseDate=:date")

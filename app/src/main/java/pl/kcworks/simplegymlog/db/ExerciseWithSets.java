@@ -27,4 +27,12 @@ public class ExerciseWithSets {
     public void setExerciseSetList(List<SingleSet> exerciseSetList) {
         this.exerciseSetList = exerciseSetList;
     }
+
+    @Override
+    public String toString() {
+        return "ExerciseWithSets{" +
+                "exercise=" + exercise +
+                ", exerciseSetList=" + exerciseSetList +
+                '}';
+    }
 }

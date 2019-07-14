@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -18,9 +17,7 @@ import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
 import org.threeten.bp.LocalDate;
-import org.threeten.bp.format.DateTimeFormatter;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -78,13 +75,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setDecoratorsToDaysWithExercises(List<Exercise> exerciseList) {
-        List<CalendarDay> listOfDaysWithExercises = new ArrayList<>();
-        for (Exercise exercise : exerciseList) {
-            int[] calendarDayNumbers = DateConverterHelper.gymLogDateFormatToYearMonthDayInt(exercise.getExerciseDate());
-            listOfDaysWithExercises.add(CalendarDay.from(calendarDayNumbers[0], calendarDayNumbers[1], calendarDayNumbers[2]));
-        }
+            List<CalendarDay> listOfDaysWithExercises = new ArrayList<>();
+            for (Exercise exercise : exerciseList) {
+                int[] calendarDayNumbers = DateConverterHelper.gymLogDateFormatToYearMonthDayInt(exercise.getExerciseDate());
+                listOfDaysWithExercises.add(CalendarDay.from(calendarDayNumbers[0], calendarDayNumbers[1], calendarDayNumbers[2]));
+            }
 
-        mCalendarView.addDecorator(new DaysWithExerciseDecorator(listOfDaysWithExercises));
+        mCalendarView.addDecorator(new DaysWithExerciseDecorator(listOfDaysWithExercises, getResources().getColor(R.color.calendarDayWithExerciseColor)));
     }
 
 
@@ -99,12 +96,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public class DaysWithExerciseDecorator implements DayViewDecorator {
+    static class DaysWithExerciseDecorator implements DayViewDecorator {
 
         private final List<CalendarDay> dates;
+        private final int color;
 
-        public DaysWithExerciseDecorator(Collection<CalendarDay> dates) {
+        public DaysWithExerciseDecorator(Collection<CalendarDay> dates, int color) {
             this.dates = new ArrayList<>(dates);
+            this.color = color;
         }
 
         @Override
@@ -116,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void decorate(DayViewFacade view) {
             // this adds dot below date
 //            view.addSpan(new DotSpan(5, color));
-            view.addSpan(new ForegroundColorSpan(getResources().getColor(R.color.calendarDayWithExerciseColor)));
+            view.addSpan(new ForegroundColorSpan(color));
         }
     }
 

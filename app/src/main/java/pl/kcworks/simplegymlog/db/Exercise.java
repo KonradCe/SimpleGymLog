@@ -38,6 +38,16 @@ public class Exercise {
         this.exerciseDate = exerciseDate;
     }
 
+    @Override
+    public String toString() {
+        return "Exercise{" +
+                "exerciseId=" + exerciseId +
+                ", exerciseName='" + exerciseName + '\'' +
+                ", exerciseOrderInDay=" + exerciseOrderInDay +
+                ", exerciseDate=" + exerciseDate +
+                '}';
+    }
+
     public int getExerciseId() {
         return exerciseId;
     }

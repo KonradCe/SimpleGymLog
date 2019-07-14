@@ -15,16 +15,14 @@ import pl.kcworks.simplegymlog.db.SingleSet;
 public class GymLogViewModel extends AndroidViewModel {
 
     private GymLogRepository mGymLogRepository;
-    private LiveData<List<ExerciseWithSets>> mExercisesWithSets;
 
     public GymLogViewModel(@NonNull Application application) {
         super(application);
         mGymLogRepository = GymLogRepository.getInstance(application);
-//        mExercisesWithSets = mGymLogRepository.getmExercisesWithSets();
     }
 
     public LiveData<List<ExerciseWithSets>> getAllExercisesWithSets() {
-        return mExercisesWithSets;
+        return mGymLogRepository.getAllExercisesWithSets();
     }
 
     public LiveData<List<ExerciseWithSets>> getExercisesWithSetsForDate(long date) {

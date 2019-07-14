@@ -41,6 +41,8 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     // TODO[2]: exercise name should probably be fixed - when exercise name can be edited at any time there can be chaos with sets based % of TM
     //  (TM value is read from SharedPreferences by key of exercise name)
 
+    // TODO[1]: add functionality of selecting sets in order to edit them
+
     public static final String TAG = "KCtag-" + AddExerciseActivity.class.getSimpleName();
     public static final String UPDATE_EXERCISE_ID_EXTRA = "UPDATE_EXERCISE_ID_EXTRA";
     private static final String PREFS_FILE = "EXERCISE_MAXES";

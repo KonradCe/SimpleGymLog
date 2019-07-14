@@ -9,10 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <!--TODO[3]: this is an excuse of a solution. It blocks screen rotation so changes done to the exercise while editing won't reset-->
-        <activity android:name=".ui.AddExerciseActivity"
-            android:screenOrientation="portrait">
-        </activity>
+        <activity android:name=".ui.CopyExercisesActivity"></activity>
+        <!-- TODO[3]: this is an excuse of a solution. It blocks screen rotation so changes done to the exercise while editing won't reset -->
+        <activity
+            android:name=".ui.AddExerciseActivity"
+            android:screenOrientation="portrait"></activity>
         <activity android:name=".ui.WorkoutActivity" />
         <activity android:name=".ui.MainActivity">
             <intent-filter>

@@ -4,7 +4,6 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class DateConverterHelper {
@@ -13,13 +12,6 @@ public class DateConverterHelper {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
         return Long.parseLong(dateFormat.format(date));
     }
-
-    public static long dateToLongMonthOnly(LocalDate date) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyyMM");
-
-        return Long.parseLong(dateFormat.format(date));
-    }
-
 
     public static String fromLongToString(long dateInLong) {
         String dateInString = Long.toString(dateInLong);

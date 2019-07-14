@@ -29,8 +29,6 @@ public class GymLogRepository {
         GymLogRoomDatabase db = GymLogRoomDatabase.getDatabase(application);
         mExerciseDao = db.exerciseDao();
         mSingleSetDao = db.singleSetDao();
-
-        mExercisesWithSets = mExerciseDao.getExercisesWithSets();
     }
 
     public static GymLogRepository getInstance(Application application) {
@@ -48,8 +46,8 @@ public class GymLogRepository {
         return mExerciseDao.getAllExercises();
     }
 
-    public LiveData<List<ExerciseWithSets>> getmExercisesWithSets() {
-        return mExercisesWithSets;
+    public LiveData<List<ExerciseWithSets>> getAllExercisesWithSets() {
+        return mExerciseDao.getAllExercisesWithSets();
     }
 
     public LiveData<List<ExerciseWithSets>> getmExercisesWithSetsForDate(long date) {

@@ -16,6 +16,7 @@
         android:orientation="horizontal">
 
         <ImageView
+            android:id="@+id/workout_iv_leftArrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_chevron_left_black_24dp"/>
@@ -29,10 +30,10 @@
             android:text="date of exercise"/>
 
         <ImageView
+            android:id="@+id/workout_iv_rightArrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_chevron_right_black_24dp"/>
-
     </LinearLayout>
 
 
