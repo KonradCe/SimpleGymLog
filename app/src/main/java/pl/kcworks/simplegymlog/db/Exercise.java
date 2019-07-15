@@ -48,6 +48,12 @@ public class Exercise {
                 '}';
     }
 
+    public static Exercise createNewFromExisting(Exercise existingExercise) {
+        return new Exercise(existingExercise.getExerciseName(),
+                existingExercise.getExerciseOrderInDay(),
+                existingExercise.getExerciseDate());
+    }
+
     public int getExerciseId() {
         return exerciseId;
     }

@@ -36,6 +36,10 @@ public interface ExerciseDao {
     LiveData<List<ExerciseWithSets>> getExercisesWithSetsForDate(long date);
 
     @Transaction
+    @Query("SELECT * from exercise_table WHERE exerciseId =:id")
+    LiveData<ExerciseWithSets> getExerciseWithSetsById(int id);
+
+    @Transaction
     @Query("SELECT * from exercise_table WHERE exerciseDate LIKE :date")
     LiveData<List<Exercise>> getExercisesForMonth(String date);
 

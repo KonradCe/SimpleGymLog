@@ -20,7 +20,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -38,7 +37,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     //TODO[3]: consider moving all db read and write work from this activity to WorkoutActivity. Would it be better to do all read and write (to/from db) work there?
     // It would have to work by giving back serialized objects of exercises from here to WorkoutActivity/
 
-    // TODO[2]: exercise name should probably be fixed - when exercise name can be edited at any time there can be chaos with sets based % of TM
+    // TODO[3]: exercise name should probably be fixed - when exercise name can be edited at any time there can be chaos with sets based % of TM
     //  (TM value is read from SharedPreferences by key of exercise name)
 
     // TODO[1]: add functionality of selecting sets in order to edit them
@@ -164,7 +163,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
                 mExerciseId = mCurrentExercise.getExerciseId();
 
                 populateViewWithExerciseInfoInEditMode();
-                populateViewWithSetsInfo();
+                populateViewWithSetsInfoInEditMode();
             }
         });
     }
@@ -178,18 +177,16 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         mExerciseDateTextView.setText(DateConverterHelper.fromLongToString(mExerciseDate));
     }
 
-
-
     // this method is called when activity is started in edit mode
     // it updates views with info for every set
-    private void populateViewWithSetsInfo() {
+    private void populateViewWithSetsInfoInEditMode() {
         for (SingleSet singleSet : mCurrentSingleSetList) {
             addSet(singleSet.getReps(), singleSet.getWeight(), singleSet.getMaxWeightPercentageInfo());
-            Log.i(TAG, "populateViewWithSetsInfo() for set: " + singleSet.toString());
+
         }
     }
 
-    // TODO[3]: this method shouldn't do both of those things, refactor - leave populating views with set info to populateViewWithSetsInfo method? (DUH)
+    // TODO[3]: this method shouldn't do both of those things, refactor - leave populating views with set info to populateViewWithSetsInfoInEditMode method? (DUH)
     // this method adds new set or populates view with existing sets
     private void addSet(Integer reps, Float weight, String percentageOfMaxInfo) {
         Log.i(TAG, "addSet() was called with arguments: " + reps + " x " + weight);

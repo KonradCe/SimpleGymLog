@@ -54,12 +54,25 @@ public class GymLogRepository {
         return mExerciseDao.getExercisesWithSetsForDate(date);
     }
 
+    public LiveData<ExerciseWithSets> getExerciseWithSetsById(int id) {
+        return mExerciseDao.getExerciseWithSetsById(id);
+    }
+
     public LiveData<List<Exercise>> getExercisesForMonth(long date) {
         return mExerciseDao.getExercisesForMonth(date + "%");
     }
 
     public LiveData<ExerciseWithSets> getmSingleExerciseWithSets(int exerciseId) {
         return mExerciseDao.getSingleExercisesWithSets(exerciseId);
+    }
+
+    public void insertExercisesWithSets(ExerciseWithSets exerciseWithSets) {
+        InsertExerciseWithSetsAsyncTask task = new InsertExerciseWithSetsAsyncTask(mExerciseDao, mSingleSetDao);
+        task.execute(exerciseWithSets);
+    }
+
+    public void copyExerciseWithSetsToDate(ExerciseWithSets exerciseWithSets, long targetDate) {
+
     }
 
     public long insertExercise(Exercise exercise) {
@@ -122,6 +135,28 @@ public class GymLogRepository {
             return newExerciseId;
         }
 
+    }
+
+    private static class InsertExerciseWithSetsAsyncTask extends AsyncTask<ExerciseWithSets, Void, Void>  {
+        private ExerciseDao mAsyncExerciseDao;
+        private SingleSetDao mAsyncSingleSetDao;
+
+        public InsertExerciseWithSetsAsyncTask(ExerciseDao mAsyncExerciseDao, SingleSetDao mAsyncSingleSetDao) {
+            this.mAsyncExerciseDao = mAsyncExerciseDao;
+            this.mAsyncSingleSetDao = mAsyncSingleSetDao;
+        }
+
+        @Override
+        protected Void doInBackground(ExerciseWithSets... exerciseWithSetsArray) {
+            ExerciseWithSets exerciseWithSets = exerciseWithSetsArray[0];
+                long exerciseId = mAsyncExerciseDao.insert(exerciseWithSets.getExercise());
+                List<SingleSet> singleSetList = exerciseWithSets.getExerciseSetList();
+                for (SingleSet ss : singleSetList) {
+                    ss.setCorrespondingExerciseId(exerciseId);
+                }
+                mAsyncSingleSetDao.insertMultiple(singleSetList);
+            return null;
+        }
     }
 
     private static class UpdateExerciseAsyncTask extends AsyncTask<Exercise, Void, Void> {

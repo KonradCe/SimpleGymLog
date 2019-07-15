@@ -22,6 +22,7 @@ import java.util.List;
 
 import pl.kcworks.simplegymlog.DateConverterHelper;
 import pl.kcworks.simplegymlog.R;
+import pl.kcworks.simplegymlog.db.Exercise;
 import pl.kcworks.simplegymlog.db.ExerciseWithSets;
 import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 
@@ -149,10 +150,36 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         displayCurrentDate();
     }
 
-    private void copyExercisesFromPreviousDay() {
+    private void copyExercisesFromPreviousDayButton() {
         // copy exercises from previous day
         Intent intent = new Intent(this, CopyExercisesActivity.class);
         startActivityForResult(intent, COPY_EXERCISES_REQUEST_CODE);
+    }
+
+    private void copyExercisesWithId(int[] idArray) {
+/*        final Observer<ExerciseWithSets> observer = new Observer<ExerciseWithSets>() {
+            @Override
+            public void onChanged(@Nullable ExerciseWithSets exerciseWithSets) {
+                ExerciseWithSets newExerciseWithSets  = ExerciseWithSets.createNewFromExisting(exerciseWithSets);
+                newExerciseWithSets.getExercise().setExerciseDate(mDateOfExercise);
+                mGymLogViewModel.insertExercisesWithSets(newExerciseWithSets);
+                mGymLogViewModel.insertExercisesWithSets();
+                Log.i("dziab","Kopiuje cwiczenie");
+            }
+        };*/
+
+        for (final int id : idArray) {
+            mGymLogViewModel.getExerciseWithSetById(id).observe(this, new Observer<ExerciseWithSets>() {
+                @Override
+                public void onChanged(@Nullable ExerciseWithSets exerciseWithSets) {
+                    ExerciseWithSets newExerciseWithSets  = ExerciseWithSets.createNewFromExisting(exerciseWithSets);
+                    newExerciseWithSets.getExercise().setExerciseDate(mDateOfExercise);
+                    mGymLogViewModel.insertExercisesWithSets(newExerciseWithSets);
+
+                    Log.i("dziab","Kopiuje cwiczenie o id: " + id);
+                }
+            });
+        }
     }
 
     @Override
@@ -167,7 +194,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
                 break;
 
             case (R.id.workout_bt_copy_previous):
-                copyExercisesFromPreviousDay();
+                copyExercisesFromPreviousDayButton();
                 break;
 
             // OR statement within switch
@@ -194,7 +221,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         if(requestCode == COPY_EXERCISES_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 int[] idsOfExercisesToCopy = data.getIntArrayExtra(CopyExercisesActivity.IDS_OF_EXERCISES_TO_COPY_TAG);
-                Toast.makeText(this, "result OK, number of ids returned: " + idsOfExercisesToCopy.length, Toast.LENGTH_SHORT).show();
+                copyExercisesWithId(idsOfExercisesToCopy);
             }
             else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "result canceled", Toast.LENGTH_SHORT).show();

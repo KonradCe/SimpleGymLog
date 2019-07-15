@@ -54,7 +54,14 @@ public class SingleSet {
         return true;
     }
 
-    // for debug purpose
+    public static SingleSet createNewFromExisting(SingleSet existingSingleSet) {
+        return new SingleSet(existingSingleSet.getCorrespondingExerciseId(),
+                existingSingleSet.getReps(),
+                existingSingleSet.maxWeightPercentageInfo,
+                existingSingleSet.getWeight(),
+                existingSingleSet.isCompleted());
+    }
+
     @Override
     public String toString() {
         return "SingleSet{" +
@@ -79,7 +86,7 @@ public class SingleSet {
         return correspondingExerciseId;
     }
 
-    public void setCorrespondingExerciseId(int correspondingExerciseId) {
+    public void setCorrespondingExerciseId(long correspondingExerciseId) {
         this.correspondingExerciseId = correspondingExerciseId;
     }
 
@@ -97,6 +104,13 @@ public class SingleSet {
 
     public void setMaxWeightPercentageInfo(String maxWeightPercentageInfo) {
         this.maxWeightPercentageInfo = maxWeightPercentageInfo;
+    }
+
+    public boolean hasMaxWeightPercentageInfo() {
+        if (maxWeightPercentageInfo != null) {
+            return true;
+        }
+        return false;
     }
 
     public float getWeight() {

@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
@@ -137,13 +138,19 @@ public class CopyExercisesActivity extends AppCompatActivity {
 
     private void returnExerciseIdsFromSelectedDay() {
         Intent dataIntent = new Intent();
-        int[] idsOfExercisesToCopy = new int[mSelectedExercisesWithSets.size()];
-        for(int i = 0; i < mSelectedExercisesWithSets.size(); i++) {
-            idsOfExercisesToCopy[i] = mSelectedExercisesWithSets.get(i).getExercise().getExerciseId();
+        if (mSelectedExercisesWithSets != null) {
+            int[] idsOfExercisesToCopy = new int[mSelectedExercisesWithSets.size()];
+            for(int i = 0; i < mSelectedExercisesWithSets.size(); i++) {
+                idsOfExercisesToCopy[i] = mSelectedExercisesWithSets.get(i).getExercise().getExerciseId();
+            }
+            dataIntent.putExtra(IDS_OF_EXERCISES_TO_COPY_TAG, idsOfExercisesToCopy);
+            setResult(RESULT_OK, dataIntent);
+            finish();
         }
-        dataIntent.putExtra(IDS_OF_EXERCISES_TO_COPY_TAG, idsOfExercisesToCopy);
-        setResult(RESULT_OK, dataIntent);
-        finish();
+        else {
+            Toast.makeText(this, "no exercises in selected day", Toast.LENGTH_SHORT).show();;
+        }
+
     }
 
     @Override
