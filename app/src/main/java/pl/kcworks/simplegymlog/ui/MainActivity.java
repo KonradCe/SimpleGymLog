@@ -75,11 +75,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setDecoratorsToDaysWithExercises(List<Exercise> exerciseList) {
-            List<CalendarDay> listOfDaysWithExercises = new ArrayList<>();
-            for (Exercise exercise : exerciseList) {
-                int[] calendarDayNumbers = DateConverterHelper.gymLogDateFormatToYearMonthDayInt(exercise.getExerciseDate());
-                listOfDaysWithExercises.add(CalendarDay.from(calendarDayNumbers[0], calendarDayNumbers[1], calendarDayNumbers[2]));
-            }
+        List<CalendarDay> listOfDaysWithExercises = new ArrayList<>();
+        for (Exercise exercise : exerciseList) {
+            int[] calendarDayNumbers = DateConverterHelper.gymLogDateFormatToYearMonthDayInt(exercise.getExerciseDate());
+            listOfDaysWithExercises.add(CalendarDay.from(calendarDayNumbers[0], calendarDayNumbers[1], calendarDayNumbers[2]));
+        }
 
         mCalendarView.addDecorator(new DaysWithExerciseDecorator(listOfDaysWithExercises, getResources().getColor(R.color.calendarDayWithExerciseColor)));
     }

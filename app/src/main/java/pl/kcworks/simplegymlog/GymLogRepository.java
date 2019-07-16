@@ -50,12 +50,12 @@ public class GymLogRepository {
         return mExerciseDao.getAllExercisesWithSets();
     }
 
-    public LiveData<List<ExerciseWithSets>> getmExercisesWithSetsForDate(long date) {
+    public LiveData<List<ExerciseWithSets>> getExercisesWithSetsForDate(long date) {
         return mExerciseDao.getExercisesWithSetsForDate(date);
     }
 
-    public LiveData<ExerciseWithSets> getExerciseWithSetsById(int id) {
-        return mExerciseDao.getExerciseWithSetsById(id);
+    public LiveData<List<ExerciseWithSets>> getExerciseWithSetsByIds(int[] ids) {
+        return mExerciseDao.getExerciseWithSetsByIds(ids);
     }
 
     public LiveData<List<Exercise>> getExercisesForMonth(long date) {
@@ -137,7 +137,7 @@ public class GymLogRepository {
 
     }
 
-    private static class InsertExerciseWithSetsAsyncTask extends AsyncTask<ExerciseWithSets, Void, Void>  {
+    private static class InsertExerciseWithSetsAsyncTask extends AsyncTask<ExerciseWithSets, Void, Void> {
         private ExerciseDao mAsyncExerciseDao;
         private SingleSetDao mAsyncSingleSetDao;
 
@@ -149,12 +149,12 @@ public class GymLogRepository {
         @Override
         protected Void doInBackground(ExerciseWithSets... exerciseWithSetsArray) {
             ExerciseWithSets exerciseWithSets = exerciseWithSetsArray[0];
-                long exerciseId = mAsyncExerciseDao.insert(exerciseWithSets.getExercise());
-                List<SingleSet> singleSetList = exerciseWithSets.getExerciseSetList();
-                for (SingleSet ss : singleSetList) {
-                    ss.setCorrespondingExerciseId(exerciseId);
-                }
-                mAsyncSingleSetDao.insertMultiple(singleSetList);
+            long exerciseId = mAsyncExerciseDao.insert(exerciseWithSets.getExercise());
+            List<SingleSet> singleSetList = exerciseWithSets.getExerciseSetList();
+            for (SingleSet ss : singleSetList) {
+                ss.setCorrespondingExerciseId(exerciseId);
+            }
+            mAsyncSingleSetDao.insertMultiple(singleSetList);
             return null;
         }
     }

@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,22 +17,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import java.util.List;
 
 import pl.kcworks.simplegymlog.DateConverterHelper;
 import pl.kcworks.simplegymlog.R;
-import pl.kcworks.simplegymlog.db.Exercise;
 import pl.kcworks.simplegymlog.db.ExerciseWithSets;
 import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 
 public class WorkoutActivity extends AppCompatActivity implements View.OnClickListener {
 
-    // TODO[3]: standardize field names and widgets ids
-    private final String TAG = "KCTag-" + WorkoutActivity.class.getSimpleName();
     public static final String DATE_OF_EXERCISE_TAG = "DATE_OF_EXERCISE_TAG";
     private static final int COPY_EXERCISES_REQUEST_CODE = 31416;
-
+    // TODO[3]: standardize field names and widgets ids
+    private final String TAG = "KCTag-" + WorkoutActivity.class.getSimpleName();
     // TODO[3]: not sure if this variable is needed yet
     private long mDateOfExercise;
     private GymLogViewModel mGymLogViewModel;
@@ -115,8 +112,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
             public void onChanged(@Nullable List<ExerciseWithSets> exercisesWithSets) {
                 if (exercisesWithSets.isEmpty()) {
                     displayNewWorkoutOptions();
-                }
-                else {
+                } else {
                     hideNewWorkoutOptions();
                 }
                 Log.i(TAG, "change in data observed");
@@ -157,29 +153,23 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void copyExercisesWithId(int[] idArray) {
-/*        final Observer<ExerciseWithSets> observer = new Observer<ExerciseWithSets>() {
+        mGymLogViewModel.getExerciseWithSetByIds(idArray).observe(this, new Observer<List<ExerciseWithSets>>() {
+            private boolean firstRun = true;
+
             @Override
-            public void onChanged(@Nullable ExerciseWithSets exerciseWithSets) {
-                ExerciseWithSets newExerciseWithSets  = ExerciseWithSets.createNewFromExisting(exerciseWithSets);
-                newExerciseWithSets.getExercise().setExerciseDate(mDateOfExercise);
-                mGymLogViewModel.insertExercisesWithSets(newExerciseWithSets);
-                mGymLogViewModel.insertExercisesWithSets();
-                Log.i("dziab","Kopiuje cwiczenie");
-            }
-        };*/
-
-        for (final int id : idArray) {
-            mGymLogViewModel.getExerciseWithSetById(id).observe(this, new Observer<ExerciseWithSets>() {
-                @Override
-                public void onChanged(@Nullable ExerciseWithSets exerciseWithSets) {
-                    ExerciseWithSets newExerciseWithSets  = ExerciseWithSets.createNewFromExisting(exerciseWithSets);
-                    newExerciseWithSets.getExercise().setExerciseDate(mDateOfExercise);
-                    mGymLogViewModel.insertExercisesWithSets(newExerciseWithSets);
-
-                    Log.i("dziab","Kopiuje cwiczenie o id: " + id);
+            public void onChanged(@Nullable List<ExerciseWithSets> exerciseWithSets) {
+                // TODO[2]: this works, but not sure if it's bulletproof, read more about MutableLiveData,  MediatorLiveData and room false positives
+                // this check is required to prevent false positive, otherwise inserting new exercises signals that db was changed and onChange method is being called again creating endless loop
+                if (firstRun) {
+                    for (ExerciseWithSets eWs : exerciseWithSets) {
+                        ExerciseWithSets exerciseWithSetsToAdd = ExerciseWithSets.createNewFromExisting(eWs);
+                        exerciseWithSetsToAdd.getExercise().setExerciseDate(mDateOfExercise);
+                        mGymLogViewModel.insertExercisesWithSets(exerciseWithSetsToAdd);
+                        firstRun = false;
+                    }
                 }
-            });
-        }
+            }
+        });
     }
 
     @Override
@@ -218,12 +208,11 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == COPY_EXERCISES_REQUEST_CODE) {
+        if (requestCode == COPY_EXERCISES_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 int[] idsOfExercisesToCopy = data.getIntArrayExtra(CopyExercisesActivity.IDS_OF_EXERCISES_TO_COPY_TAG);
                 copyExercisesWithId(idsOfExercisesToCopy);
-            }
-            else if (resultCode == RESULT_CANCELED) {
+            } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "result canceled", Toast.LENGTH_SHORT).show();
             }
         }

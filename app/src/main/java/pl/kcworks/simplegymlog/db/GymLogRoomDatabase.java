@@ -10,9 +10,6 @@ public abstract class GymLogRoomDatabase extends RoomDatabase {
 
     private static volatile GymLogRoomDatabase INSTANCE;
 
-    public abstract ExerciseDao exerciseDao();
-    public abstract SingleSetDao singleSetDao();
-
     public static GymLogRoomDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (GymLogRoomDatabase.class) {
@@ -27,6 +24,9 @@ public abstract class GymLogRoomDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
+    public abstract ExerciseDao exerciseDao();
+
+    public abstract SingleSetDao singleSetDao();
 
 
 }

@@ -9,14 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExerciseWithSets {
-    @Embedded private Exercise exercise;
+    @Embedded
+    private Exercise exercise;
 
     @Relation(parentColumn = "exerciseId", entityColumn = "correspondingExerciseId")
     private List<SingleSet> exerciseSetList;
 
     // this empty constructor is required by room
-    // (because of another constructor that was created, compiler wasn't creating default (empty) constructor anymore.
-    // However the other constructor has @Ignore annotation so Room had no constructor to use)
+    // (because of another constructor that was created, java compiler wasn't creating default (empty) constructor anymore.
+    // However, the other constructor has @Ignore annotation so Room had no constructor to use)
     public ExerciseWithSets() {
     }
 

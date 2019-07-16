@@ -6,12 +6,10 @@ import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
-import java.util.Date;
-
 @Entity(tableName = "exercise_table", indices = {@Index("exerciseDate")})
 public class Exercise {
 
-    @PrimaryKey (autoGenerate = true)
+    @PrimaryKey(autoGenerate = true)
     private int exerciseId;
 
     // name of the exercise e.g. bench, deadlift etc.
@@ -38,6 +36,12 @@ public class Exercise {
         this.exerciseDate = exerciseDate;
     }
 
+    public static Exercise createNewFromExisting(Exercise existingExercise) {
+        return new Exercise(existingExercise.getExerciseName(),
+                existingExercise.getExerciseOrderInDay(),
+                existingExercise.getExerciseDate());
+    }
+
     @Override
     public String toString() {
         return "Exercise{" +
@@ -46,12 +50,6 @@ public class Exercise {
                 ", exerciseOrderInDay=" + exerciseOrderInDay +
                 ", exerciseDate=" + exerciseDate +
                 '}';
-    }
-
-    public static Exercise createNewFromExisting(Exercise existingExercise) {
-        return new Exercise(existingExercise.getExerciseName(),
-                existingExercise.getExerciseOrderInDay(),
-                existingExercise.getExerciseDate());
     }
 
     public int getExerciseId() {

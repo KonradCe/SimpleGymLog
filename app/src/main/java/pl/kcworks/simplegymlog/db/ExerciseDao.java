@@ -24,7 +24,7 @@ public interface ExerciseDao {
     @Query("SELECT * FROM exercise_table WHERE exerciseDate=:date")
     LiveData<List<Exercise>> getExercisesByDate(long date);
 
-    @Query ("DELETE FROM exercise_table")
+    @Query("DELETE FROM exercise_table")
     void deleteAllExercises();
 
     @Transaction
@@ -36,8 +36,8 @@ public interface ExerciseDao {
     LiveData<List<ExerciseWithSets>> getExercisesWithSetsForDate(long date);
 
     @Transaction
-    @Query("SELECT * from exercise_table WHERE exerciseId =:id")
-    LiveData<ExerciseWithSets> getExerciseWithSetsById(int id);
+    @Query("SELECT * from exercise_table WHERE exerciseId IN (:ids)")
+    LiveData<List<ExerciseWithSets>> getExerciseWithSetsByIds(int[] ids);
 
     @Transaction
     @Query("SELECT * from exercise_table WHERE exerciseDate LIKE :date")

@@ -23,7 +23,7 @@ public class DateConverterHelper {
         return DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
     }
 
-    public static int[] gymLogDateFormatToYearMonthDayInt (long gymLogFormatDate) {
+    public static int[] gymLogDateFormatToYearMonthDayInt(long gymLogFormatDate) {
         String gymLogDateInString = Long.toString(gymLogFormatDate);
         int year = Integer.parseInt(gymLogDateInString.substring(0, 4));
         int month = Integer.parseInt(gymLogDateInString.substring(4, 6));

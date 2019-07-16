@@ -28,5 +28,5 @@ public interface SingleSetDao {
     void updateSet(SingleSet singleSet);
 
     @Delete
-    void deleteSet (SingleSet singleSet);
+    void deleteSet(SingleSet singleSet);
 }

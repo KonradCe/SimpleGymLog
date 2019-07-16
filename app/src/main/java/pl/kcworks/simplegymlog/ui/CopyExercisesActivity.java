@@ -4,10 +4,10 @@ import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.util.LongSparseArray;
 import android.view.Menu;
@@ -31,9 +31,8 @@ import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 
 public class CopyExercisesActivity extends AppCompatActivity {
 
-    private final String TAG = "KCTag-" + WorkoutActivity.class.getSimpleName();
     public static final String IDS_OF_EXERCISES_TO_COPY_TAG = "IDS_OF_EXERCISES_TO_COPY_TAG";
-
+    private final String TAG = "KCTag-" + WorkoutActivity.class.getSimpleName();
     private MaterialCalendarView mCalendarView;
     private TextView mExercisesInSelectedDayTextView;
     private List<ExerciseWithSets> mAllExercisesWithSets;
@@ -87,7 +86,7 @@ public class CopyExercisesActivity extends AppCompatActivity {
     // TODO[3]: "this method does 2 things..." - it should do only one
     // this method does 2 things - first it creates a List<CalendarDay> for the purpose of feeding it to the setDecoratorsToDaysWithExercises(...) method,
     // then it creates a LongSparseArray of ArrayList of ExerciseWithSets
-    private List<CalendarDay> processListOfExercisesFromDb (List<ExerciseWithSets> allExercises) {
+    private List<CalendarDay> processListOfExercisesFromDb(List<ExerciseWithSets> allExercises) {
         List<CalendarDay> calendarDayList = new ArrayList<>();
         for (ExerciseWithSets exerciseWithSets : allExercises) {
             Exercise exercise = exerciseWithSets.getExercise();
@@ -97,8 +96,7 @@ public class CopyExercisesActivity extends AppCompatActivity {
                 ArrayList<ExerciseWithSets> exerciseWithSetsArrayList = new ArrayList<>();
                 exerciseWithSetsArrayList.add(exerciseWithSets);
                 exerciseWithListSparseArray.put(exercise.getExerciseDate(), exerciseWithSetsArrayList);
-            }
-            else {
+            } else {
                 exerciseWithListSparseArray.get(exercise.getExerciseDate()).add(exerciseWithSets);
             }
         }
@@ -114,19 +112,17 @@ public class CopyExercisesActivity extends AppCompatActivity {
         mSelectedExercisesWithSets = exerciseWithListSparseArray.get(dateInGymLogFormat);
         if (mSelectedExercisesWithSets == null) {
             mExercisesInSelectedDayTextView.setText("No exercises for selected day.");
-        }
-        else {
+        } else {
             mExercisesInSelectedDayTextView.setText(createDayInfoFromExerciseWithSetList(mSelectedExercisesWithSets));
         }
     }
 
-    private String createDayInfoFromExerciseWithSetList (List<ExerciseWithSets> exerciseWithSets) {
+    private String createDayInfoFromExerciseWithSetList(List<ExerciseWithSets> exerciseWithSets) {
         String exercisesInAday = "";
         for (ExerciseWithSets e : exerciseWithSets) {
             if (e.getExerciseSetList().size() == 1) {
                 exercisesInAday += "" + e.getExerciseSetList().size() + " set of ";
-            }
-            else {
+            } else {
                 exercisesInAday += "" + e.getExerciseSetList().size() + " sets of ";
             }
             exercisesInAday += e.getExercise().getExerciseName();
@@ -140,15 +136,15 @@ public class CopyExercisesActivity extends AppCompatActivity {
         Intent dataIntent = new Intent();
         if (mSelectedExercisesWithSets != null) {
             int[] idsOfExercisesToCopy = new int[mSelectedExercisesWithSets.size()];
-            for(int i = 0; i < mSelectedExercisesWithSets.size(); i++) {
+            for (int i = 0; i < mSelectedExercisesWithSets.size(); i++) {
                 idsOfExercisesToCopy[i] = mSelectedExercisesWithSets.get(i).getExercise().getExerciseId();
             }
             dataIntent.putExtra(IDS_OF_EXERCISES_TO_COPY_TAG, idsOfExercisesToCopy);
             setResult(RESULT_OK, dataIntent);
             finish();
-        }
-        else {
-            Toast.makeText(this, "no exercises in selected day", Toast.LENGTH_SHORT).show();;
+        } else {
+            Toast.makeText(this, "no exercises in selected day", Toast.LENGTH_SHORT).show();
+            ;
         }
 
     }

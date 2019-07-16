@@ -8,16 +8,16 @@ import android.arch.persistence.room.PrimaryKey;
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
-@Entity (
+@Entity(
         foreignKeys = @ForeignKey(
-                entity= Exercise.class,
+                entity = Exercise.class,
                 parentColumns = "exerciseId",
                 childColumns = "correspondingExerciseId",
                 onDelete = CASCADE),
         indices = @Index("correspondingExerciseId"))
 public class SingleSet {
 
-    @PrimaryKey (autoGenerate = true)
+    @PrimaryKey(autoGenerate = true)
     private int singleSetID;                // id
     private long correspondingExerciseId;   // parent exercise ID
     private int reps;
@@ -44,6 +44,14 @@ public class SingleSet {
         this.completed = completed;
     }
 
+    public static SingleSet createNewFromExisting(SingleSet existingSingleSet) {
+        return new SingleSet(existingSingleSet.getCorrespondingExerciseId(),
+                existingSingleSet.getReps(),
+                existingSingleSet.maxWeightPercentageInfo,
+                existingSingleSet.getWeight(),
+                existingSingleSet.isCompleted());
+    }
+
     // method for estimating if SingleSet needs to be updated in db by comparing two SingleSet objects
     public boolean needsUpdate(SingleSet ss) {
         if (correspondingExerciseId == ss.getCorrespondingExerciseId() &&
@@ -52,14 +60,6 @@ public class SingleSet {
             return false;
         }
         return true;
-    }
-
-    public static SingleSet createNewFromExisting(SingleSet existingSingleSet) {
-        return new SingleSet(existingSingleSet.getCorrespondingExerciseId(),
-                existingSingleSet.getReps(),
-                existingSingleSet.maxWeightPercentageInfo,
-                existingSingleSet.getWeight(),
-                existingSingleSet.isCompleted());
     }
 
     @Override

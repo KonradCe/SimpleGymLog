@@ -2,7 +2,6 @@ package pl.kcworks.simplegymlog.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Collections;
 import java.util.List;
@@ -75,8 +73,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                     newSet.setOnClickListener(holder);
                     holder.setListLinearLayout.addView(newSet);
                 }
-            }
-            else {
+            } else {
                 holder.noSetsInfoTextView.setVisibility(View.VISIBLE);
             }
 
@@ -95,7 +92,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         }
     }
 
-    class ExerciseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    class ExerciseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView exerciseNameTextView;
         private LinearLayout setListLinearLayout;
         private TextView noSetsInfoTextView;

@@ -5,10 +5,10 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,11 +25,11 @@ import java.util.Calendar;
 import java.util.List;
 
 import pl.kcworks.simplegymlog.DateConverterHelper;
-import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 import pl.kcworks.simplegymlog.R;
 import pl.kcworks.simplegymlog.db.Exercise;
 import pl.kcworks.simplegymlog.db.ExerciseWithSets;
 import pl.kcworks.simplegymlog.db.SingleSet;
+import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 import pl.kcworks.simplegymlog.viewmodel.SingleExerciseViewModel;
 
 public class AddExerciseActivity extends AppCompatActivity implements View.OnClickListener {
@@ -133,7 +133,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         mWeightMinusButton = findViewById(R.id.addExerciseActivity_bt_weightMinus);
         mWeightMinusButton.setOnClickListener(this);
         mWeightEditText = findViewById(R.id.addExerciseActivity_et_weight);
-        mWeightPlusButton= findViewById(R.id.addExerciseActivity_bt_weightPlus);
+        mWeightPlusButton = findViewById(R.id.addExerciseActivity_bt_weightPlus);
         mWeightPlusButton.setOnClickListener(this);
 
         mAddSetButton = findViewById(R.id.addExerciseActivity_bt_addSet);
@@ -221,8 +221,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         //TODO[2]: there should be a check if exercise name is not empty
         if (!mEditMode) {
             saveExerciseWithSets();
-        }
-        else {
+        } else {
             updateExercise();
             updateSets();
         }
@@ -305,9 +304,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             // adding the rest
             List<SingleSet> subList = newSingleSetList.subList(mCurrentSingleSetList.size(), newSingleSetList.size());
             mGymLogViewModel.insertMultipleSingleSets(subList);
-        }
-
-        else if (mCurrentSingleSetList.size() > newSingleSetList.size()) {
+        } else if (mCurrentSingleSetList.size() > newSingleSetList.size()) {
             // some sets were deleted - we need to update existing and delete the rest from db
             // updating existing
             for (int i = 0; i < newSingleSetList.size(); i++) {
@@ -325,9 +322,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             // deleting the rest
             List<SingleSet> subList = mCurrentSingleSetList.subList(newSingleSetList.size(), mCurrentSingleSetList.size());
             mGymLogViewModel.deleteMultipleSingleSets(subList);
-        }
-
-        else {
+        } else {
             // number of sets did not change - we only need to update
             for (int i = 0; i < mCurrentSingleSetList.size(); i++) {
                 if (mCurrentSingleSetList.get(i).needsUpdate(newSingleSetList.get(i))) {
@@ -345,44 +340,40 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
     // 4 methods changing interface accordingly to what buttons were pressed and if the weight will be added based on TM (mTmPercentageMode)
     private void repsMinus() {
-        if(!mRepsEditText.getText().toString().isEmpty()) {
+        if (!mRepsEditText.getText().toString().isEmpty()) {
             int reps = Integer.valueOf(mRepsEditText.getText().toString());
             if (reps > 0) {
                 reps--;
                 mRepsEditText.setText(Integer.toString(reps));
             }
-        }
-        else {
+        } else {
             mRepsEditText.setText("0");
         }
     }
 
     private void repsPlus() {
-        if(!mRepsEditText.getText().toString().isEmpty()) {
+        if (!mRepsEditText.getText().toString().isEmpty()) {
             int reps = Integer.valueOf(mRepsEditText.getText().toString());
             reps++;
             mRepsEditText.setText(Integer.toString(reps));
-            }
-        else {
+        } else {
             mRepsEditText.setText("1");
         }
     }
 
     private void weightMinus() {
-        if(!mWeightEditText.getText().toString().trim().isEmpty()) {
+        if (!mWeightEditText.getText().toString().trim().isEmpty()) {
             float weight = Float.valueOf(mWeightEditText.getText().toString());
             if (weight > 0) {
                 // TODO[2]: in the future value of the weight increment will be loaded from preferences (depends of units user chose: 5 for lbs and 2.5 for kg)
                 if (mTmPercentageMode) {
                     weight -= 5;
-                }
-                else {
+                } else {
                     weight -= 2.5;
                 }
                 mWeightEditText.setText(Float.toString(weight));
             }
-        }
-        else {
+        } else {
             if (mTmPercentageMode) {
                 mWeightEditText.setText("50");
             }
@@ -421,7 +412,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         if (isPercentage) {
             mWeightEditText.setHint("% of TM");
             mWeightEditText.setText("");
-            if(mWeightEditText.getText().toString().trim().length() != 0) {
+            if (mWeightEditText.getText().toString().trim().length() != 0) {
                 mWeightEditText.setText("70%");
             }
             SharedPreferences preferences = getSharedPreferences(PREFS_FILE, MODE_PRIVATE);
@@ -429,12 +420,10 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             mCurrentTrainingMax = preferences.getFloat(exerciseName, 0);
             if (mCurrentTrainingMax == 0) {
                 showTrainingMaxForExerciseDialog(exerciseName);
-            }
-            else {
+            } else {
                 displaySetTypeInfo();
             }
-        }
-        else {
+        } else {
             mWeightEditText.setHint("weight");
             mWeightEditText.setText("");
         }
@@ -476,8 +465,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     private void displaySetTypeInfo() {
         if (mTmPercentageMode) {
             mTrainingMaxInfoEditText.setText("weight based on % of Training Max \nCurrent Training Max for " + mExerciseNameEditText.getText().toString() + " is set at: " + mCurrentTrainingMax);
-        }
-        else {
+        } else {
             mTrainingMaxInfoEditText.setText("standard set with fixed weight");
         }
     }
@@ -504,12 +492,11 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
                     if (mTmPercentageMode) {
                         float weight = weightOrPercentage * mCurrentTrainingMax / 100;
                         addSet(reps, weight, weightOrPercentage + "% of " + mCurrentTrainingMax);
-                    }
-                    else {
+                    } else {
                         addSet(reps, weightOrPercentage, null);
                     }
                 } catch (NumberFormatException e) {
-                   Toast.makeText(this, "incorrect set numbers", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "incorrect set numbers", Toast.LENGTH_SHORT).show();
                 }
                 break;
 
@@ -521,7 +508,6 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
                 break;
         }
     }
-
 
 
 }
