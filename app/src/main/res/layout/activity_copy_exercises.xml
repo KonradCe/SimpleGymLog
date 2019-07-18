@@ -16,7 +16,7 @@
 
     <!--this is a simple trick to achieve "negatie" bottom margin -
     MaterialCalendarView had too big of a bottom margin, and space is tight -->
-    <android.support.v4.widget.Space
+    <androidx.legacy.widget.Space
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="-48dp"/>
