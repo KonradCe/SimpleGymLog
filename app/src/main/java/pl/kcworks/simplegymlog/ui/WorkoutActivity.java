@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import java.util.List;
 
 import pl.kcworks.simplegymlog.DateConverterHelper;
+import pl.kcworks.simplegymlog.GymLogRepository;
 import pl.kcworks.simplegymlog.R;
 import pl.kcworks.simplegymlog.db.ExerciseWithSets;
 import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
@@ -34,6 +36,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     private long mDateOfExercise;
     private GymLogViewModel mGymLogViewModel;
     private ExerciseAdapter mExerciseAdapter;
+    private int[] idsOfExercisesToCopyArray;
 
     private TextView mDateOfExerciseTextView;
     private ImageView mPreviousDayArrowImageView;
@@ -102,11 +105,6 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void loadExercisesForDate(long dateInGymLogFormat) {
-        Log.i(TAG, "getExercisesWithSets method is being observed - subscribed to ViewModel");
-        if (mGymLogViewModel.getExercisesWithSetsForDate(dateInGymLogFormat).hasObservers()) {
-//            mGymLogViewModel.getExercisesWithSetsForDate(dateInGymLogFormat).removeObservers(this);
-            Log.i("dziab", "mGymLogViewModel.getExercisesWithSetsForDate(dateInGymLogFormat) had observers, they were removed");
-        }
         mGymLogViewModel.getExercisesWithSetsForDate(dateInGymLogFormat).observe(this, new Observer<List<ExerciseWithSets>>() {
             @Override
             public void onChanged(@Nullable List<ExerciseWithSets> exercisesWithSets) {
@@ -152,24 +150,18 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         startActivityForResult(intent, COPY_EXERCISES_REQUEST_CODE);
     }
 
-    private void copyExercisesWithId(int[] idArray) {
-        mGymLogViewModel.getExerciseWithSetByIds(idArray).observe(this, new Observer<List<ExerciseWithSets>>() {
-            private boolean firstRun = true;
+    private void getExercisesWithSetsToCopyFromDb(int[] idArray) {
+        GetExercisesFromDbAsyncTask task = new GetExercisesFromDbAsyncTask(GymLogRepository.getInstance(getApplication()));
+        idsOfExercisesToCopyArray = idArray;
+        task.execute();
+    }
 
-            @Override
-            public void onChanged(@Nullable List<ExerciseWithSets> exerciseWithSets) {
-                // TODO[2]: this works, but not sure if it's bulletproof, read more about MutableLiveData,  MediatorLiveData and room false positives
-                // this check is required to prevent false positive, otherwise inserting new exercises signals that db was changed and onChange method is being called again creating endless loop
-                if (firstRun) {
-                    for (ExerciseWithSets eWs : exerciseWithSets) {
-                        ExerciseWithSets exerciseWithSetsToAdd = ExerciseWithSets.createNewFromExisting(eWs);
-                        exerciseWithSetsToAdd.getExercise().setExerciseDate(mDateOfExercise);
-                        mGymLogViewModel.insertExercisesWithSets(exerciseWithSetsToAdd);
-                        firstRun = false;
-                    }
-                }
-            }
-        });
+    private void insertCopiedExercisesWithSetsToDb(List<ExerciseWithSets> list) {
+        for (ExerciseWithSets eWs : list) {
+            ExerciseWithSets exerciseWithSetsToAdd = ExerciseWithSets.createNewFromExisting(eWs);
+            exerciseWithSetsToAdd.getExercise().setExerciseDate(mDateOfExercise);
+            mGymLogViewModel.insertExerciseWithSets(exerciseWithSetsToAdd);
+        }
     }
 
     @Override
@@ -211,10 +203,29 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         if (requestCode == COPY_EXERCISES_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 int[] idsOfExercisesToCopy = data.getIntArrayExtra(CopyExercisesActivity.IDS_OF_EXERCISES_TO_COPY_TAG);
-                copyExercisesWithId(idsOfExercisesToCopy);
+                getExercisesWithSetsToCopyFromDb(idsOfExercisesToCopy);
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "result canceled", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    private class GetExercisesFromDbAsyncTask extends AsyncTask <Void , Void, List<ExerciseWithSets>> {
+
+        GymLogRepository repository;
+
+        GetExercisesFromDbAsyncTask (GymLogRepository gymLogRepository) {
+            repository = gymLogRepository;
+        }
+
+        @Override
+        protected List<ExerciseWithSets> doInBackground(Void... voids) {
+            return repository.getExerciseWithSetsByIds(idsOfExercisesToCopyArray);
+        }
+
+        @Override
+        protected void onPostExecute(List<ExerciseWithSets> exerciseWithSets) {
+            insertCopiedExercisesWithSetsToDb(exerciseWithSets);
         }
     }
 }

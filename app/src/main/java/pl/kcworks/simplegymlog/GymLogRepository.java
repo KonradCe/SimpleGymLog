@@ -54,7 +54,7 @@ public class GymLogRepository {
         return mExerciseDao.getExercisesWithSetsForDate(date);
     }
 
-    public LiveData<List<ExerciseWithSets>> getExerciseWithSetsByIds(int[] ids) {
+    public List<ExerciseWithSets> getExerciseWithSetsByIds(int[] ids) {
         return mExerciseDao.getExerciseWithSetsByIds(ids);
     }
 

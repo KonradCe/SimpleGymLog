@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -62,7 +63,6 @@ public class CopyExercisesActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable List<ExerciseWithSets> exerciseWithSets) {
                 mAllExercisesWithSets = exerciseWithSets;
-                Log.i("dziab", "" + mAllExercisesWithSets.size());
                 setUpCalendar();
             }
         });
@@ -84,8 +84,8 @@ public class CopyExercisesActivity extends AppCompatActivity {
     }
 
     // TODO[3]: "this method does 2 things..." - it should do only one
-    // this method does 2 things - first it creates a List<CalendarDay> for the purpose of feeding it to the setDecoratorsToDaysWithExercises(...) method,
-    // then it creates a LongSparseArray of ArrayList of ExerciseWithSets
+    // this method does 2 things - first it creates a List<CalendarDay> of days with exercises for the purpose of feeding it to the setDecoratorsToDaysWithExercises(...) method,
+    // then it creates a LongSparseArray of ArrayList of ExerciseWithSets. We later use data from that list to present info about exercises in selected day.
     private List<CalendarDay> processListOfExercisesFromDb(List<ExerciseWithSets> allExercises) {
         List<CalendarDay> calendarDayList = new ArrayList<>();
         for (ExerciseWithSets exerciseWithSets : allExercises) {
@@ -118,18 +118,25 @@ public class CopyExercisesActivity extends AppCompatActivity {
     }
 
     private String createDayInfoFromExerciseWithSetList(List<ExerciseWithSets> exerciseWithSets) {
-        String exercisesInAday = "";
-        for (ExerciseWithSets e : exerciseWithSets) {
-            if (e.getExerciseSetList().size() == 1) {
-                exercisesInAday += "" + e.getExerciseSetList().size() + " set of ";
-            } else {
-                exercisesInAday += "" + e.getExerciseSetList().size() + " sets of ";
-            }
-            exercisesInAday += e.getExercise().getExerciseName();
-            exercisesInAday += "\n";
+        String exercisesInDayInfo;
+        if (exerciseWithSets.size() == 1) {
+            exercisesInDayInfo = "There is " + exerciseWithSets.size() + " exercise in selected day: \n";
+        }
+        else {
+            exercisesInDayInfo = "There are " + exerciseWithSets.size() + " exercises in selected day: \n";
         }
 
-        return exercisesInAday;
+        for (ExerciseWithSets e : exerciseWithSets) {
+            exercisesInDayInfo += e.getExercise().getExerciseName() + " - ";
+            if (e.getExerciseSetList().size() == 1) {
+                exercisesInDayInfo += "" + e.getExerciseSetList().size() + " set";
+            } else {
+                exercisesInDayInfo += "" + e.getExerciseSetList().size() + " sets";
+            }
+            exercisesInDayInfo += "\n";
+        }
+
+        return exercisesInDayInfo;
     }
 
     private void returnExerciseIdsFromSelectedDay() {
@@ -169,4 +176,5 @@ public class CopyExercisesActivity extends AppCompatActivity {
         setResult(Activity.RESULT_CANCELED);
         super.onBackPressed();
     }
+
 }

@@ -37,7 +37,7 @@ public interface ExerciseDao {
 
     @Transaction
     @Query("SELECT * from exercise_table WHERE exerciseId IN (:ids)")
-    LiveData<List<ExerciseWithSets>> getExerciseWithSetsByIds(int[] ids);
+    List<ExerciseWithSets> getExerciseWithSetsByIds(int[] ids);
 
     @Transaction
     @Query("SELECT * from exercise_table WHERE exerciseDate LIKE :date")

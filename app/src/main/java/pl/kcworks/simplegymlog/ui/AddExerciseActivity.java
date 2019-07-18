@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -21,7 +22,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import pl.kcworks.simplegymlog.DateConverterHelper;
@@ -34,7 +34,7 @@ import pl.kcworks.simplegymlog.viewmodel.SingleExerciseViewModel;
 
 public class AddExerciseActivity extends AppCompatActivity implements View.OnClickListener {
 
-    //TODO[3]: consider moving all db read and write work from this activity to WorkoutActivity. Would it be better to do all read and write (to/from db) work there?
+    //TODO[2]: consider moving all db read and write work from this activity to WorkoutActivity. Would it be better to do all read and write (to/from db) work there?
     // It would have to work by giving back serialized objects of exercises from here to WorkoutActivity/
 
     // TODO[3]: exercise name should probably be fixed - when exercise name can be edited at any time there can be chaos with sets based % of TM
@@ -56,7 +56,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     private GymLogViewModel mGymLogViewModel;
     private Exercise mCurrentExercise; // this variable is used when the activity is launched in EditMode
     private List<SingleSet> mCurrentSingleSetList;
-    private Calendar mCalendar;
+    private OnSetClickListener mOnSetClickListener;
 
     // VIEWS
     private EditText mExerciseNameEditText;
@@ -81,6 +81,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.activity_add_exercise);
 
         getDataFromIntent(getIntent());
+
         setUpViews();
 
         mGymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
@@ -105,10 +106,15 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void setUpViews() {
+        // this line prevents keyboard from opening up on activity start
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        mOnSetClickListener = new OnSetClickListener();
+
         mExerciseNameEditText = findViewById(R.id.addExerciseActivity_et_exerciseName);
         mExerciseDateTextView = findViewById(R.id.addExerciseActivity_tv_exerciseDate);
         // if exercise is editmode mExerciseDate wasn't initialized yet; in EditMode this is set later in populateViewWithExerciseInfoInEditMode method, called by subscribeToModel method
-        // TODO[3]: This solution is stupid and should be refactored
+        // TODO[2]: This solution is stupid and should be refactored  (read comment above)
         if (!mEditMode) {
             mExerciseDateTextView.setText(DateConverterHelper.fromLongToString(mExerciseDate));
         }
@@ -206,6 +212,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             }
         }
         setView.setTag(mSetNumber);
+        setView.setOnClickListener(mOnSetClickListener);
         mSetListLinearLayout.addView(setView);
     }
 
@@ -228,7 +235,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         finish();
     }
 
-    // TODO[3]: this method probably can be refactored to something cleaner, divided into more methods
+    // TODO[3]: this method probably can be refactored to something cleaner,
     private void saveExerciseWithSets() {
         String exerciseName = mExerciseNameEditText.getText().toString();
 
@@ -365,7 +372,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         if (!mWeightEditText.getText().toString().trim().isEmpty()) {
             float weight = Float.valueOf(mWeightEditText.getText().toString());
             if (weight > 0) {
-                // TODO[2]: in the future value of the weight increment will be loaded from preferences (depends of units user chose: 5 for lbs and 2.5 for kg)
+                // TODO[3]: in the future value of the weight increment will be loaded from preferences (depends of units user chose: 5 for lbs and 2.5 for kg)
                 if (mTmPercentageMode) {
                     weight -= 5;
                 } else {
@@ -509,6 +516,26 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    private class OnSetClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            TextView percentageTextView = view.findViewById(R.id.item_addSet_tv_percentageOfMax);
+            TextView setWeigthTextView = view.findViewById(R.id.item_addSet_tv_setWeight);
+            TextView setRepsTextView = view.findViewById(R.id.item_addSet_tv_setReps);
+
+            if (percentageTextView.getText() != "") {
+                mWeightIsBasedOnPercentageSwitch.setChecked(true);
+                mWeightEditText.setText(percentageTextView.getText().toString().split("%")[0]);
+            }
+            else {
+//                switchTypeOfSetsToPercentage(false);
+                mWeightIsBasedOnPercentageSwitch.setChecked(false);
+                mWeightEditText.setText(setWeigthTextView.getText());
+            }
+            mRepsEditText.setText(setRepsTextView.getText());
+
+        }
+    }
 
 }
 
