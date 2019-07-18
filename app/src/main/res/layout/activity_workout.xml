@@ -84,11 +84,21 @@
     </LinearLayout>
 
     <!--TODO[2]: replace with FAB-->
-    <Button
-        android:id="@+id/workout_bt_add_exercise"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="add exercise" />
+        android:layout_height="wrap_content">
+
+        <!-- Main content -->
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floating_action_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_margin="16dp"
+            app:srcCompat="@drawable/ic_chevron_left_black_24dp"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 
 

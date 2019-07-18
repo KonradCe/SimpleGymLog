@@ -78,7 +78,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         mNextDayArrowImageView.setOnClickListener(this);
         mExerciseRecyclerView = findViewById(R.id.workout_rv_exercises);
         mAddExercisesOptionsLinearLayout = findViewById(R.id.workout_ll_new_exercises_options);
-        mAddExerciseButton = findViewById(R.id.workout_bt_add_exercise);
+//        mAddExerciseButton = findViewById(R.id.workout_bt_add_exercise);
         mAddExerciseButton.setOnClickListener(this);
 
 
@@ -180,12 +180,12 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
                 break;
 
             // OR statement within switch
-            case (R.id.workout_bt_add_exercise_additional):
+/*            case (R.id.workout_bt_add_exercise_additional):
             case (R.id.workout_bt_add_exercise):
                 Intent intent = new Intent(this, AddExerciseActivity.class);
                 intent.putExtra(DATE_OF_EXERCISE_TAG, mDateOfExercise);
                 startActivity(intent);
-                break;
+                break;*/
 
             case (R.id.workout_bt_routine):
                 // add exercises from routine
