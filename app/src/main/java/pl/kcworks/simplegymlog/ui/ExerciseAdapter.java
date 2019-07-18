@@ -37,7 +37,6 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     public void setExercises(List<ExerciseWithSets> exercises) {
         mExercisesWithSets = exercises;
         notifyDataSetChanged();
-        Log.i(TAG, "setting list of ExerciseWithSets to adapter");
     }
 
     @NonNull

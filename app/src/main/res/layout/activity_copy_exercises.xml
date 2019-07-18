@@ -8,6 +8,11 @@
     tools:context=".ui.CopyExercisesActivity"
     android:padding="16dp">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CopyExerciseActivity"/>
+
     <com.prolificinteractive.materialcalendarview.MaterialCalendarView
         android:id="@+id/copyExerciseActivity_picker_calendar"
         android:layout_width="match_parent"

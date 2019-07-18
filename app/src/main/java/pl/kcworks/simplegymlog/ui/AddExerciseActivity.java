@@ -195,7 +195,6 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     // TODO[3]: this method shouldn't do both of those things, refactor - leave populating views with set info to populateViewWithSetsInfoInEditMode method? (DUH)
     // this method adds new set or populates view with existing sets
     private void addSet(Integer reps, Float weight, String percentageOfMaxInfo) {
-        Log.i(TAG, "addSet() was called with arguments: " + reps + " x " + weight);
         mSetNumber++;
         LinearLayout setView = (LinearLayout) getLayoutInflater().inflate(R.layout.item_add_set, null);
         TextView setNumber = setView.findViewById(R.id.item_addSet_tv_setNumber);
@@ -523,14 +522,15 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             TextView setWeigthTextView = view.findViewById(R.id.item_addSet_tv_setWeight);
             TextView setRepsTextView = view.findViewById(R.id.item_addSet_tv_setReps);
 
-            if (percentageTextView.getText() != "") {
+            if (!percentageTextView.getText().toString().matches("")) {
                 mWeightIsBasedOnPercentageSwitch.setChecked(true);
                 mWeightEditText.setText(percentageTextView.getText().toString().split("%")[0]);
+                Log.i(TAG, "set with percentage info was clicked");
             }
             else {
-//                switchTypeOfSetsToPercentage(false);
                 mWeightIsBasedOnPercentageSwitch.setChecked(false);
                 mWeightEditText.setText(setWeigthTextView.getText());
+                Log.i(TAG, "set without percentage info was clicked");
             }
             mRepsEditText.setText(setRepsTextView.getText());
 

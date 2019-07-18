@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/workout_menu_addFromRoutine"
+        android:title="add exercise from routine" />
+    <item
+        android:id="@+id/workout_menu_copy"
+        android:title="copy selected day"/>
+</menu>

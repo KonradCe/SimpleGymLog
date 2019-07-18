@@ -11,12 +11,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
@@ -43,7 +48,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     private ImageView mNextDayArrowImageView;
     private RecyclerView mExerciseRecyclerView;
     private LinearLayout mAddExercisesOptionsLinearLayout;
-    private Button mAddExerciseButton;
+    private FloatingActionButton mAddExerciseFaB;
 
     // additional buttons that show up only when there is no exercises for this day, probably will be replaced by FAB
     private Button mAddExercisesFromRoutineButton;
@@ -78,8 +83,8 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         mNextDayArrowImageView.setOnClickListener(this);
         mExerciseRecyclerView = findViewById(R.id.workout_rv_exercises);
         mAddExercisesOptionsLinearLayout = findViewById(R.id.workout_ll_new_exercises_options);
-//        mAddExerciseButton = findViewById(R.id.workout_bt_add_exercise);
-        mAddExerciseButton.setOnClickListener(this);
+        mAddExerciseFaB = findViewById(R.id.workout_fab_addExercise);
+        mAddExerciseFaB.setOnClickListener(this);
 
 
         // additional buttons that show up only when there are, probably will be replaced by FAB
@@ -123,13 +128,11 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     private void displayNewWorkoutOptions() {
         mExerciseRecyclerView.setVisibility(View.GONE);
         mAddExercisesOptionsLinearLayout.setVisibility(View.VISIBLE);
-        mAddExerciseButton.setVisibility(View.INVISIBLE);
     }
 
     private void hideNewWorkoutOptions() {
         mExerciseRecyclerView.setVisibility(View.VISIBLE);
         mAddExercisesOptionsLinearLayout.setVisibility(View.GONE);
-        mAddExerciseButton.setVisibility(View.VISIBLE);
     }
 
     private void loadPreviousDay() {
@@ -144,7 +147,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         displayCurrentDate();
     }
 
-    private void copyExercisesFromPreviousDayButton() {
+    private void startCopyExerciseActivity() {
         // copy exercises from previous day
         Intent intent = new Intent(this, CopyExercisesActivity.class);
         startActivityForResult(intent, COPY_EXERCISES_REQUEST_CODE);
@@ -176,16 +179,16 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
                 break;
 
             case (R.id.workout_bt_copy_previous):
-                copyExercisesFromPreviousDayButton();
+                startCopyExerciseActivity();
                 break;
 
             // OR statement within switch
-/*            case (R.id.workout_bt_add_exercise_additional):
-            case (R.id.workout_bt_add_exercise):
+            case (R.id.workout_bt_add_exercise_additional):
+            case (R.id.workout_fab_addExercise):
                 Intent intent = new Intent(this, AddExerciseActivity.class);
                 intent.putExtra(DATE_OF_EXERCISE_TAG, mDateOfExercise);
                 startActivity(intent);
-                break;*/
+                break;
 
             case (R.id.workout_bt_routine):
                 // add exercises from routine
@@ -208,6 +211,26 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
                 Toast.makeText(this, "result canceled", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.workout_activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.workout_menu_copy:
+                startCopyExerciseActivity();
+                break;
+            case R.id.workout_menu_addFromRoutine:
+                Toast.makeText(this, "not implemented yet", Toast.LENGTH_SHORT).show();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private class GetExercisesFromDbAsyncTask extends AsyncTask <Void , Void, List<ExerciseWithSets>> {

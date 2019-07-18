@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         setUpViews();
         // TODO[3]: make sure setting up the calendar doesn't take too long - we don't want a laggy startup;
-        //  put in async task if needed?
         calendarSetUp();
     }
 
@@ -64,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mCalendarView.setSelectedDate(LocalDate.now());
 
         mGymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
+        // TODO[2]: get only exercises for the current month so setting up the calendar won't take too long
         // TODO[3]: do not fetch every exercise after every update - get only those that were added
         mGymLogViewModel.getAllExercises().observe(this, new Observer<List<Exercise>>() {
             @Override

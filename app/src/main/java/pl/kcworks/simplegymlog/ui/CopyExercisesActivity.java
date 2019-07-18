@@ -164,7 +164,7 @@ public class CopyExercisesActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_copy) {
+        if (item.getItemId() == R.id.copy_menu_copyDay) {
             returnExerciseIdsFromSelectedDay();
         }
         return super.onOptionsItemSelected(item);
