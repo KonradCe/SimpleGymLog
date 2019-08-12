@@ -150,7 +150,7 @@ public class CopyExercisesActivity extends AppCompatActivity {
             finish();
         } else {
             Toast.makeText(this, "no exercises in selected day", Toast.LENGTH_SHORT).show();
-            ;
+
         }
 
     }

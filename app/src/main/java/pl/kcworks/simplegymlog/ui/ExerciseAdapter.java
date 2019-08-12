@@ -27,10 +27,8 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     private List<ExerciseWithSets> mExercisesWithSets = Collections.emptyList(); // cached copy of exercises
     private Exercise mCurrentExercise;
     private List<SingleSet> mCurrentSingleSets;
-    private Context mContext;
 
     ExerciseAdapter(Context context) {
-        mContext = context;
         mInflater = LayoutInflater.from(context);
     }
 
@@ -49,8 +47,6 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     @Override
     public void onBindViewHolder(@NonNull ExerciseViewHolder holder, int position) {
         if (!mExercisesWithSets.isEmpty()) {
-
-
             mCurrentExercise = mExercisesWithSets.get(position).getExercise();
             mCurrentSingleSets = mExercisesWithSets.get(position).getExerciseSetList();
 

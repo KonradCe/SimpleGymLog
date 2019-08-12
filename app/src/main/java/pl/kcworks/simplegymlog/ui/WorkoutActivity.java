@@ -233,6 +233,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         return super.onOptionsItemSelected(item);
     }
 
+    // TODO[1]: this should be static or leaks will occur
     private class GetExercisesFromDbAsyncTask extends AsyncTask <Void , Void, List<ExerciseWithSets>> {
 
         GymLogRepository repository;
