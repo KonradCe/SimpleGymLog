@@ -65,4 +65,8 @@ public class GymLogViewModel extends AndroidViewModel {
     public void deleteExercises(List<Exercise> exercises) {
         mGymLogRepository.deleteExercises(exercises);
     }
+
+    public void deleteSingleExercise(Exercise exercise) {
+        mGymLogRepository.deleteExercise(exercise);
+    }
 }

@@ -5,12 +5,18 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,6 +31,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     private static final String TAG = "KCTag-" + ExerciseAdapter.class.getSimpleName();
     private LayoutInflater mInflater;
     private List<ExerciseWithSets> mExercisesWithSets = Collections.emptyList(); // cached copy of exercises
+    private DeleteExerciseCallback callback;
 
     ExerciseAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
@@ -80,6 +87,11 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         }
     }
 
+
+    interface DeleteExerciseCallback{
+        void deleteExercise(int idOfExerciseToDelete);
+    }
+
     @Override
     public int getItemCount() {
         if (mExercisesWithSets != null) {
@@ -89,7 +101,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         }
     }
 
-    class ExerciseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ExerciseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
         private TextView exerciseNameTextView;
         private LinearLayout setListLinearLayout;
         private TextView noSetsInfoTextView;
@@ -104,6 +116,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
             editExerciseImageView = itemView.findViewById(R.id.rvitem_iv_editExercise);
 
             editExerciseImageView.setOnClickListener(this);
+            itemView.setOnCreateContextMenuListener(this);
         }
 
         @Override
@@ -125,5 +138,15 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
             */
 
         }
+
+
+
+        @Override
+        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+            //TODO[3]: export hardcoded string
+//            MenuItem delete = contextMenu.add(this.getAdapterPosition(),1, 1, "delete exercise");
+            contextMenu.add(this.getAdapterPosition(),1, 1, "delete exercise");
+        }
     }
+
 }

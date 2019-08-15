@@ -260,6 +260,13 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        Exercise exerciseToDelete = mExerciseAdapter.getmExercisesWithSets().get(item.getGroupId()).getExercise();
+        mGymLogViewModel.deleteSingleExercise(exerciseToDelete);
+        return true;
+    }
+
     // TODO[1]: this should be static or leaks will occur
     private static class GetExercisesFromDbAsyncTask extends AsyncTask <Integer , Void, List<ExerciseWithSets>> {
 

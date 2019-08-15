@@ -119,12 +119,17 @@ public class GymLogRepository {
     }
 
     public void deleteExercises(List<Exercise> exercises) {
-        DeleteExercisesesAsyncTask task = new DeleteExercisesesAsyncTask(mExerciseDao);
+        DeleteExercisesAsyncTask task = new DeleteExercisesAsyncTask(mExerciseDao);
 
         Exercise[] exerciseArray = new Exercise[exercises.size()];
         exercises.toArray(exerciseArray);
 
         task.execute(exerciseArray);
+    }
+
+    public void deleteExercise(Exercise exercise) {
+        DeleteExerciseAsyncTask task = new DeleteExerciseAsyncTask(mExerciseDao);
+        task.execute(exercise);
     }
 
     private static class InsertExerciseAsyncTask extends AsyncTask<Exercise, Void, Long> {
@@ -146,7 +151,7 @@ public class GymLogRepository {
         private ExerciseDao mAsyncExerciseDao;
         private SingleSetDao mAsyncSingleSetDao;
 
-        public InsertExerciseWithSetsAsyncTask(ExerciseDao mAsyncExerciseDao, SingleSetDao mAsyncSingleSetDao) {
+        InsertExerciseWithSetsAsyncTask(ExerciseDao mAsyncExerciseDao, SingleSetDao mAsyncSingleSetDao) {
             this.mAsyncExerciseDao = mAsyncExerciseDao;
             this.mAsyncSingleSetDao = mAsyncSingleSetDao;
         }
@@ -167,7 +172,7 @@ public class GymLogRepository {
     private static class UpdateExerciseAsyncTask extends AsyncTask<Exercise, Void, Void> {
         private ExerciseDao mAsyncExerciseDao;
 
-        public UpdateExerciseAsyncTask(ExerciseDao dao) {
+        UpdateExerciseAsyncTask(ExerciseDao dao) {
             mAsyncExerciseDao = dao;
         }
 
@@ -198,7 +203,7 @@ public class GymLogRepository {
     private static class UpdateSingleSetAsyncTask extends AsyncTask<SingleSet, Void, Void> {
         private SingleSetDao mAsyncSingleSetDao;
 
-        public UpdateSingleSetAsyncTask(SingleSetDao mAsyncSingleSetDao) {
+        UpdateSingleSetAsyncTask(SingleSetDao mAsyncSingleSetDao) {
             this.mAsyncSingleSetDao = mAsyncSingleSetDao;
         }
 
@@ -212,7 +217,7 @@ public class GymLogRepository {
     private static class DeleteSingleSetAsyncTask extends AsyncTask<SingleSet, Void, Void> {
         SingleSetDao mAsyncSingleSetDao;
 
-        public DeleteSingleSetAsyncTask(SingleSetDao mAsyncSingleSetDao) {
+        DeleteSingleSetAsyncTask(SingleSetDao mAsyncSingleSetDao) {
             this.mAsyncSingleSetDao = mAsyncSingleSetDao;
         }
 
@@ -225,10 +230,24 @@ public class GymLogRepository {
         }
     }
 
-    private static class DeleteExercisesesAsyncTask extends AsyncTask<Exercise, Void, Void> {
+    private static class DeleteExerciseAsyncTask extends AsyncTask<Exercise, Void, Void> {
         ExerciseDao exerciseDao;
 
-        public DeleteExercisesesAsyncTask(ExerciseDao exerciseDao) {
+        DeleteExerciseAsyncTask(ExerciseDao exerciseDao) {
+            this.exerciseDao = exerciseDao;
+        }
+
+        @Override
+        protected Void doInBackground(Exercise... exercises) {
+            exerciseDao.deleteExercise(exercises[0]);
+            return null;
+        }
+    }
+
+    private static class DeleteExercisesAsyncTask extends AsyncTask<Exercise, Void, Void> {
+        private ExerciseDao exerciseDao;
+
+        DeleteExercisesAsyncTask(ExerciseDao exerciseDao) {
             this.exerciseDao = exerciseDao;
         }
 
