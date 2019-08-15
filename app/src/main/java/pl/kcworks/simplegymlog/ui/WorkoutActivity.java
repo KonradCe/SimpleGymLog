@@ -23,11 +23,13 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import pl.kcworks.simplegymlog.DateConverterHelper;
 import pl.kcworks.simplegymlog.GymLogRepository;
 import pl.kcworks.simplegymlog.R;
+import pl.kcworks.simplegymlog.db.Exercise;
 import pl.kcworks.simplegymlog.db.ExerciseWithSets;
 import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 
@@ -167,6 +169,15 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    private void deleteExercisesInCurrentDay() {
+        List<ExerciseWithSets> exerciseWithSetsList = mExerciseAdapter.getmExercisesWithSets();
+        List<Exercise> exercisesToDelete = new ArrayList<>();
+        for (ExerciseWithSets eWs : exerciseWithSetsList) {
+            exercisesToDelete.add(eWs.getExercise());
+        }
+        mGymLogViewModel.deleteExercises(exercisesToDelete);
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -228,6 +239,10 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.workout_menu_addFromRoutine:
                 Toast.makeText(this, "not implemented yet", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.workout_menu_delete:
+                deleteExercisesInCurrentDay();
+                break;
         }
 
         return super.onOptionsItemSelected(item);

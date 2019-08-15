@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mGymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
         // TODO[2]: get only exercises for the current month so setting up the calendar won't take too long
         // TODO[3]: do not fetch every exercise after every update - get only those that were added
+        // TODO[2]: when exercises were deleted from a day update it so it will not look like it still has exercises
         mGymLogViewModel.getAllExercises().observe(this, new Observer<List<Exercise>>() {
             @Override
             public void onChanged(@Nullable List<Exercise> listOfAllExercises) {
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setDecoratorsToDaysWithExercises(List<Exercise> exerciseList) {
+        mCalendarView.removeDecorators();
         List<CalendarDay> listOfDaysWithExercises = new ArrayList<>();
         for (Exercise exercise : exerciseList) {
             int[] calendarDayNumbers = DateConverterHelper.gymLogDateFormatToYearMonthDayInt(exercise.getExerciseDate());

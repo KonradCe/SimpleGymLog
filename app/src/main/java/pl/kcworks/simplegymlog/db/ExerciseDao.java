@@ -2,6 +2,7 @@ package pl.kcworks.simplegymlog.db;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
@@ -21,11 +22,11 @@ public interface ExerciseDao {
     @Query("SELECT * FROM exercise_table ORDER BY exerciseId")
     LiveData<List<Exercise>> getAllExercises();
 
-    @Query("SELECT * FROM exercise_table WHERE exerciseDate=:date")
-    LiveData<List<Exercise>> getExercisesByDate(long date);
+//    @Query("DELETE FROM exercise_table")
+//    void deleteAllExercises();
 
-    @Query("DELETE FROM exercise_table")
-    void deleteAllExercises();
+    @Delete
+    void deleteExercise(Exercise exercise);
 
     @Transaction
     @Query("SELECT * from exercise_table ORDER BY exerciseDate")

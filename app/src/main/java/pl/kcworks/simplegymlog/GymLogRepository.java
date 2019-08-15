@@ -71,10 +71,6 @@ public class GymLogRepository {
         task.execute(exerciseWithSets);
     }
 
-    public void copyExerciseWithSetsToDate(ExerciseWithSets exerciseWithSets, long targetDate) {
-
-    }
-
     public long insertExercise(Exercise exercise) {
         InsertExerciseAsyncTask task = new InsertExerciseAsyncTask(mExerciseDao);
 
@@ -120,6 +116,15 @@ public class GymLogRepository {
     public void updateSingleSet(SingleSet singleSet) {
         UpdateSingleSetAsyncTask task = new UpdateSingleSetAsyncTask(mSingleSetDao);
         task.execute(singleSet);
+    }
+
+    public void deleteExercises(List<Exercise> exercises) {
+        DeleteExercisesesAsyncTask task = new DeleteExercisesesAsyncTask(mExerciseDao);
+
+        Exercise[] exerciseArray = new Exercise[exercises.size()];
+        exercises.toArray(exerciseArray);
+
+        task.execute(exerciseArray);
     }
 
     private static class InsertExerciseAsyncTask extends AsyncTask<Exercise, Void, Long> {
@@ -215,6 +220,22 @@ public class GymLogRepository {
         protected Void doInBackground(SingleSet... singleSets) {
             for (SingleSet ss : singleSets) {
                 mAsyncSingleSetDao.deleteSet(ss);
+            }
+            return null;
+        }
+    }
+
+    private static class DeleteExercisesesAsyncTask extends AsyncTask<Exercise, Void, Void> {
+        ExerciseDao exerciseDao;
+
+        public DeleteExercisesesAsyncTask(ExerciseDao exerciseDao) {
+            this.exerciseDao = exerciseDao;
+        }
+
+        @Override
+        protected Void doInBackground(Exercise... exercises) {
+            for (Exercise exercise : exercises) {
+                exerciseDao.deleteExercise(exercise);
             }
             return null;
         }

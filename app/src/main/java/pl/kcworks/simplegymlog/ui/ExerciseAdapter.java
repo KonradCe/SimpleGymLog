@@ -37,6 +37,10 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         notifyDataSetChanged();
     }
 
+    public List<ExerciseWithSets> getmExercisesWithSets() {
+        return mExercisesWithSets;
+    }
+
     @NonNull
     @Override
     public ExerciseViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {

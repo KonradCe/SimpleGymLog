@@ -61,4 +61,8 @@ public class GymLogViewModel extends AndroidViewModel {
     public void deleteMultipleSingleSets(List<SingleSet> singleSetList) {
         mGymLogRepository.deleteMultipleSingleSets(singleSetList);
     }
+
+    public void deleteExercises(List<Exercise> exercises) {
+        mGymLogRepository.deleteExercises(exercises);
+    }
 }
