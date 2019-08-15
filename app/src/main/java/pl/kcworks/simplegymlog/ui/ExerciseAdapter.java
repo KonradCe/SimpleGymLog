@@ -25,8 +25,6 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     private static final String TAG = "KCTag-" + ExerciseAdapter.class.getSimpleName();
     private LayoutInflater mInflater;
     private List<ExerciseWithSets> mExercisesWithSets = Collections.emptyList(); // cached copy of exercises
-    private Exercise mCurrentExercise;
-    private List<SingleSet> mCurrentSingleSets;
 
     ExerciseAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
@@ -51,19 +49,19 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     @Override
     public void onBindViewHolder(@NonNull ExerciseViewHolder holder, int position) {
         if (!mExercisesWithSets.isEmpty()) {
-            mCurrentExercise = mExercisesWithSets.get(position).getExercise();
-            mCurrentSingleSets = mExercisesWithSets.get(position).getExerciseSetList();
+            Exercise exercise = mExercisesWithSets.get(position).getExercise();
+            List<SingleSet> singleSetList = mExercisesWithSets.get(position).getExerciseSetList();
 
-            holder.exerciseNameTextView.setText(mCurrentExercise.getExerciseName());
+            holder.exerciseNameTextView.setText(exercise.getExerciseName());
             holder.setListLinearLayout.removeAllViews(); // in case we get recycled view where there are already some sets added
 
             // populating view with information about each SingleSet
-            if (mCurrentSingleSets.size() != 0) {
+            if (singleSetList.size() != 0) {
                 // in case when we get recycled view where noSetsInfoTextView is visible
                 holder.noSetsInfoTextView.setVisibility(View.GONE);
-                for (SingleSet set : mCurrentSingleSets) {
+                for (SingleSet set : singleSetList) {
                     LinearLayout newSet = (LinearLayout) mInflater.inflate(R.layout.item_rv_set, null);
-                    ((TextView) newSet.findViewById(R.id.rvitem_tv_setNumber)).setText(String.format("%d", mCurrentSingleSets.indexOf(set) + 1));
+                    ((TextView) newSet.findViewById(R.id.rvitem_tv_setNumber)).setText(String.format("%d", singleSetList.indexOf(set) + 1));
                     ((TextView) newSet.findViewById(R.id.rvitem_tv_setWeight)).setText("" + set.getWeight());
                     ((TextView) newSet.findViewById(R.id.rvitem_tv_setReps)).setText("" + set.getReps());
 
@@ -97,7 +95,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         private TextView noSetsInfoTextView;
         private ImageView editExerciseImageView;
 
-        public ExerciseViewHolder(@NonNull View itemView) {
+        ExerciseViewHolder(@NonNull View itemView) {
             super(itemView);
 
             exerciseNameTextView = itemView.findViewById(R.id.rvitem_tv_exercise_name);

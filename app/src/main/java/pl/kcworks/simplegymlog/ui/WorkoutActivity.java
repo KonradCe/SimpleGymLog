@@ -43,7 +43,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     private long mDateOfExercise;
     private GymLogViewModel mGymLogViewModel;
     private ExerciseAdapter mExerciseAdapter;
-    private int[] idsOfExercisesToCopyArray;
+
 
     private TextView mDateOfExerciseTextView;
     private ImageView mPreviousDayArrowImageView;
@@ -155,10 +155,22 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         startActivityForResult(intent, COPY_EXERCISES_REQUEST_CODE);
     }
 
-    private void getExercisesWithSetsToCopyFromDb(int[] idArray) {
-        GetExercisesFromDbAsyncTask task = new GetExercisesFromDbAsyncTask(GymLogRepository.getInstance(getApplication()));
-        idsOfExercisesToCopyArray = idArray;
-        task.execute();
+    private void getExercisesWithSetsToCopyFromDb(int[] idIntArray) {
+        AsyncResponse asyncResponse = new AsyncResponse() {
+            @Override
+            public void onTaskCompleted(List<ExerciseWithSets> exerciseWithSets) {
+                insertCopiedExercisesWithSetsToDb(exerciseWithSets);
+            }
+        };
+        GetExercisesFromDbAsyncTask task = new GetExercisesFromDbAsyncTask(GymLogRepository.getInstance(getApplication()), asyncResponse);
+        // TODO[3]: this conversion from int[] to Integer[] has to be done twice, first one way, than the other, this is ineffective and something should be done about that
+        // we read and write to db using int[] but we need ids in Integer[] in order to pass them as a parameter to the AsyncTask
+        Integer[] idsToCopyIntegerArray = new Integer[idIntArray.length];
+        for (int i = 0; i < idsToCopyIntegerArray.length; i++) {
+            idsToCopyIntegerArray[i] = idIntArray[i];
+        }
+
+        task.execute(idsToCopyIntegerArray);
     }
 
     private void insertCopiedExercisesWithSetsToDb(List<ExerciseWithSets> list) {
@@ -249,22 +261,29 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     // TODO[1]: this should be static or leaks will occur
-    private class GetExercisesFromDbAsyncTask extends AsyncTask <Void , Void, List<ExerciseWithSets>> {
+    private static class GetExercisesFromDbAsyncTask extends AsyncTask <Integer , Void, List<ExerciseWithSets>> {
 
-        GymLogRepository repository;
+        private GymLogRepository repository;
+        private AsyncResponse listener;
+        private
 
-        GetExercisesFromDbAsyncTask (GymLogRepository gymLogRepository) {
-            repository = gymLogRepository;
+        GetExercisesFromDbAsyncTask(GymLogRepository repository, AsyncResponse listener) {
+            this.repository = repository;
+            this.listener = listener;
         }
 
         @Override
-        protected List<ExerciseWithSets> doInBackground(Void... voids) {
-            return repository.getExerciseWithSetsByIds(idsOfExercisesToCopyArray);
+        protected List<ExerciseWithSets> doInBackground(Integer... ints) {
+            int[] idIntArray = new int[ints.length];
+            for (int i = 0; i < ints.length; i++) {
+                idIntArray[i] = ints[i];
+            }
+            return repository.getExerciseWithSetsByIds(idIntArray);
         }
 
         @Override
         protected void onPostExecute(List<ExerciseWithSets> exerciseWithSets) {
-            insertCopiedExercisesWithSetsToDb(exerciseWithSets);
+            listener.onTaskCompleted(exerciseWithSets);
         }
     }
 }
