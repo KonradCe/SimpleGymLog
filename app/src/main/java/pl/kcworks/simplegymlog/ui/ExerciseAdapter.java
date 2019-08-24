@@ -6,25 +6,20 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Collections;
 import java.util.List;
 
 import pl.kcworks.simplegymlog.R;
-import pl.kcworks.simplegymlog.db.Exercise;
-import pl.kcworks.simplegymlog.db.ExerciseWithSets;
-import pl.kcworks.simplegymlog.db.SingleSet;
+import pl.kcworks.simplegymlog.model.Exercise;
+import pl.kcworks.simplegymlog.model.ExerciseWithSets;
+import pl.kcworks.simplegymlog.model.SingleSet;
 
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder> {
 

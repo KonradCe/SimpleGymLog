@@ -1,9 +1,12 @@
-package pl.kcworks.simplegymlog.db;
+package pl.kcworks.simplegymlog.model.db;
 
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import android.content.Context;
+
+import pl.kcworks.simplegymlog.model.Exercise;
+import pl.kcworks.simplegymlog.model.SingleSet;
 
 @Database(entities = {Exercise.class, SingleSet.class}, version = 1, exportSchema = false)
 public abstract class GymLogRoomDatabase extends RoomDatabase {

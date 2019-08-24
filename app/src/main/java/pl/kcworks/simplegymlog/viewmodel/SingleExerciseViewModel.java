@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.annotation.NonNull;
 
-import pl.kcworks.simplegymlog.GymLogRepository;
-import pl.kcworks.simplegymlog.db.ExerciseWithSets;
+import pl.kcworks.simplegymlog.model.GymLogRepository;
+import pl.kcworks.simplegymlog.model.ExerciseWithSets;
 
 public class SingleExerciseViewModel extends AndroidViewModel {
 

@@ -1,4 +1,4 @@
-package pl.kcworks.simplegymlog.db;
+package pl.kcworks.simplegymlog.model;
 
 import androidx.room.Entity;
 import androidx.room.ForeignKey;

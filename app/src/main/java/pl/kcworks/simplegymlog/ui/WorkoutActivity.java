@@ -27,10 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.kcworks.simplegymlog.DateConverterHelper;
-import pl.kcworks.simplegymlog.GymLogRepository;
+import pl.kcworks.simplegymlog.model.GymLogRepository;
 import pl.kcworks.simplegymlog.R;
-import pl.kcworks.simplegymlog.db.Exercise;
-import pl.kcworks.simplegymlog.db.ExerciseWithSets;
+import pl.kcworks.simplegymlog.model.Exercise;
+import pl.kcworks.simplegymlog.model.ExerciseWithSets;
 import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 
 public class WorkoutActivity extends AppCompatActivity implements View.OnClickListener {

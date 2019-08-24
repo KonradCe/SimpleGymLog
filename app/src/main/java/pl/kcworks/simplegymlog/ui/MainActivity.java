@@ -24,7 +24,7 @@ import java.util.List;
 
 import pl.kcworks.simplegymlog.DateConverterHelper;
 import pl.kcworks.simplegymlog.R;
-import pl.kcworks.simplegymlog.db.Exercise;
+import pl.kcworks.simplegymlog.model.Exercise;
 import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {

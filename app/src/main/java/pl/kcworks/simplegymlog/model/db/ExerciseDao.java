@@ -1,4 +1,4 @@
-package pl.kcworks.simplegymlog.db;
+package pl.kcworks.simplegymlog.model.db;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -9,6 +9,9 @@ import androidx.room.Transaction;
 import androidx.room.Update;
 
 import java.util.List;
+
+import pl.kcworks.simplegymlog.model.Exercise;
+import pl.kcworks.simplegymlog.model.ExerciseWithSets;
 
 @Dao
 public interface ExerciseDao {

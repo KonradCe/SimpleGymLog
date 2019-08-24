@@ -26,9 +26,9 @@ import java.util.List;
 
 import pl.kcworks.simplegymlog.DateConverterHelper;
 import pl.kcworks.simplegymlog.R;
-import pl.kcworks.simplegymlog.db.Exercise;
-import pl.kcworks.simplegymlog.db.ExerciseWithSets;
-import pl.kcworks.simplegymlog.db.SingleSet;
+import pl.kcworks.simplegymlog.model.Exercise;
+import pl.kcworks.simplegymlog.model.ExerciseWithSets;
+import pl.kcworks.simplegymlog.model.SingleSet;
 import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 import pl.kcworks.simplegymlog.viewmodel.SingleExerciseViewModel;
 
