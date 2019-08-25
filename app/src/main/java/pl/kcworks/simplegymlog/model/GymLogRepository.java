@@ -9,12 +9,14 @@ import java.util.concurrent.ExecutionException;
 
 import pl.kcworks.simplegymlog.model.db.ExerciseDao;
 import pl.kcworks.simplegymlog.model.db.GymLogRoomDatabase;
+import pl.kcworks.simplegymlog.model.db.RoutineDao;
 import pl.kcworks.simplegymlog.model.db.SingleSetDao;
 
 public class GymLogRepository {
 
     private static GymLogRepository sInstance;
 
+    private RoutineDao routineDao;
     private ExerciseDao mExerciseDao;
     private SingleSetDao mSingleSetDao;
 
@@ -24,6 +26,7 @@ public class GymLogRepository {
 
     private GymLogRepository(Application application) {
         GymLogRoomDatabase db = GymLogRoomDatabase.getDatabase(application);
+        routineDao = db.routineDao();
         mExerciseDao = db.exerciseDao();
         mSingleSetDao = db.singleSetDao();
     }
@@ -37,6 +40,10 @@ public class GymLogRepository {
             }
         }
         return sInstance;
+    }
+
+    public LiveData<List<Routine>> getAllRoutines() {
+        return routineDao.getAllRoutines();
     }
 
     public LiveData<List<Exercise>> getAllExercises() {
@@ -61,6 +68,11 @@ public class GymLogRepository {
 
     public LiveData<ExerciseWithSets> getmSingleExerciseWithSets(int exerciseId) {
         return mExerciseDao.getSingleExercisesWithSets(exerciseId);
+    }
+
+    public void insertRoutine(Routine routine) {
+        InsertRoutineAsyncTask task = new InsertRoutineAsyncTask(routineDao);
+        task.execute(routine);
     }
 
     public void insertExercisesWithSets(ExerciseWithSets exerciseWithSets) {
@@ -127,6 +139,20 @@ public class GymLogRepository {
     public void deleteExercise(Exercise exercise) {
         DeleteExerciseAsyncTask task = new DeleteExerciseAsyncTask(mExerciseDao);
         task.execute(exercise);
+    }
+
+    private static class InsertRoutineAsyncTask extends AsyncTask<Routine, Void, Void> {
+        private RoutineDao routineDao;
+
+        public InsertRoutineAsyncTask(RoutineDao routineDao) {
+            this.routineDao = routineDao;
+        }
+
+        @Override
+        protected Void doInBackground(Routine... routines) {
+            routineDao.insert(routines[0]);
+            return null;
+        }
     }
 
     private static class InsertExerciseAsyncTask extends AsyncTask<Exercise, Void, Long> {
@@ -212,7 +238,7 @@ public class GymLogRepository {
     }
 
     private static class DeleteSingleSetAsyncTask extends AsyncTask<SingleSet, Void, Void> {
-        SingleSetDao mAsyncSingleSetDao;
+        private SingleSetDao mAsyncSingleSetDao;
 
         DeleteSingleSetAsyncTask(SingleSetDao mAsyncSingleSetDao) {
             this.mAsyncSingleSetDao = mAsyncSingleSetDao;
@@ -228,7 +254,7 @@ public class GymLogRepository {
     }
 
     private static class DeleteExerciseAsyncTask extends AsyncTask<Exercise, Void, Void> {
-        ExerciseDao exerciseDao;
+        private ExerciseDao exerciseDao;
 
         DeleteExerciseAsyncTask(ExerciseDao exerciseDao) {
             this.exerciseDao = exerciseDao;

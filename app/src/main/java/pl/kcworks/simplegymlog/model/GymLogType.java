@@ -2,7 +2,7 @@ package pl.kcworks.simplegymlog.model;
 
 public enum GymLogType {
     ROUTINE,
-    WORKOUT,
+    DAY,
     EXERCISE,
     SET
 }

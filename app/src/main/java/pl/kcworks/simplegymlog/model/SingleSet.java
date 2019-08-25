@@ -35,6 +35,14 @@ public class SingleSet implements GymLogListItem{
         this.completed = completed;
     }
 
+    // constructor for the routine
+    @Ignore
+    public SingleSet(int reps, String maxWeightPercentageInfo, float weight) {
+        this.reps = reps;
+        this.maxWeightPercentageInfo = maxWeightPercentageInfo;
+        this.weight = weight;
+    }
+
     public SingleSet(int singleSetID, long correspondingExerciseId, int reps, String maxWeightPercentageInfo, float weight, boolean completed) {
         this.singleSetID = singleSetID;
         this.correspondingExerciseId = correspondingExerciseId;
@@ -130,7 +138,7 @@ public class SingleSet implements GymLogListItem{
     }
 
     @Override
-    public String getName() {
+    public String getValueToPresent() {
         return reps + " x " + weight;
     }
 
@@ -139,8 +147,4 @@ public class SingleSet implements GymLogListItem{
         return GymLogType.SET;
     }
 
-    @Override
-    public int getId() {
-        return singleSetID;
-    }
 }

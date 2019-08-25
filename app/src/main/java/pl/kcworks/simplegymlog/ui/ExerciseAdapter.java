@@ -26,18 +26,17 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     private static final String TAG = "KCTag-" + ExerciseAdapter.class.getSimpleName();
     private LayoutInflater mInflater;
     private List<ExerciseWithSets> mExercisesWithSets = Collections.emptyList(); // cached copy of exercises
-    private DeleteExerciseCallback callback;
 
     ExerciseAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
     }
 
-    public void setExercises(List<ExerciseWithSets> exercises) {
+    void setExercises(List<ExerciseWithSets> exercises) {
         mExercisesWithSets = exercises;
         notifyDataSetChanged();
     }
 
-    public List<ExerciseWithSets> getmExercisesWithSets() {
+    List<ExerciseWithSets> getmExercisesWithSets() {
         return mExercisesWithSets;
     }
 
@@ -80,11 +79,6 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
             // Covers the case of data not being ready yet.
             holder.exerciseNameTextView.setText("no excersises to show!");
         }
-    }
-
-
-    interface DeleteExerciseCallback{
-        void deleteExercise(int idOfExerciseToDelete);
     }
 
     @Override

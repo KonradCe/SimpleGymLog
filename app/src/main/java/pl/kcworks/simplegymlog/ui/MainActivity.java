@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG = "KCtag-" + MainActivity.class.getSimpleName();
 
     private Button mStartNewWorkoutButton;
+    private Button customizeRoutineButton;
     private MaterialCalendarView mCalendarView;
 
     private GymLogViewModel mGymLogViewModel;
@@ -50,6 +51,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void setUpViews() {
         mStartNewWorkoutButton = findViewById(R.id.mainActivity_bt_start_workout);
         mStartNewWorkoutButton.setOnClickListener(this);
+
+        customizeRoutineButton = findViewById(R.id.mainActivity_bt_customize_routine);
+        customizeRoutineButton.setOnClickListener(this);
 
         mCalendarView = findViewById(R.id.mainActivity_picker_calendar);
     }
@@ -95,6 +99,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startWorkoutIntent.putExtra(WorkoutActivity.DATE_OF_EXERCISE_TAG, getSelectedDay());
                 startActivity(startWorkoutIntent);
                 break;
+
+            case (R.id.mainActivity_bt_customize_routine):
+                Intent intent = new Intent(this, RoutineSelector.class);
+                startActivity(intent);
+                break;
         }
     }
 
@@ -103,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         private final List<CalendarDay> dates;
         private final int color;
 
-        public DaysWithExerciseDecorator(Collection<CalendarDay> dates, int color) {
+        DaysWithExerciseDecorator(Collection<CalendarDay> dates, int color) {
             this.dates = new ArrayList<>(dates);
             this.color = color;
         }

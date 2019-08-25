@@ -2,9 +2,8 @@ package pl.kcworks.simplegymlog.model;
 
 public interface GymLogListItem {
 
-    String getName();
+    String getValueToPresent();
 
     GymLogType getType();
 
-    int getId();
 }

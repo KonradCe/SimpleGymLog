@@ -36,7 +36,14 @@ public class Exercise implements GymLogListItem {
         this.exerciseDate = exerciseDate;
     }
 
-    public static Exercise createNewFromExisting(Exercise existingExercise) {
+    // constructor for the routine
+    @Ignore
+    public Exercise(@NonNull String exerciseName, int exerciseOrderInDay) {
+        this.exerciseName = exerciseName;
+        this.exerciseOrderInDay = exerciseOrderInDay;
+    }
+
+    static Exercise createNewFromExisting(Exercise existingExercise) {
         return new Exercise(existingExercise.getExerciseName(),
                 existingExercise.getExerciseOrderInDay(),
                 existingExercise.getExerciseDate());
@@ -86,7 +93,7 @@ public class Exercise implements GymLogListItem {
     }
 
     @Override
-    public String getName() {
+    public String getValueToPresent() {
         return exerciseName;
     }
 
@@ -95,8 +102,5 @@ public class Exercise implements GymLogListItem {
         return GymLogType.EXERCISE;
     }
 
-    @Override
-    public int getId() {
-        return exerciseId;
-    }
+
 }
