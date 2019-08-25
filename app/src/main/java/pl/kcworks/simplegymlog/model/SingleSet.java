@@ -15,7 +15,7 @@ import static androidx.room.ForeignKey.CASCADE;
                 childColumns = "correspondingExerciseId",
                 onDelete = CASCADE),
         indices = @Index("correspondingExerciseId"))
-public class SingleSet {
+public class SingleSet implements GymLogListItem{
 
     @PrimaryKey(autoGenerate = true)
     private int singleSetID;                // id
@@ -127,5 +127,20 @@ public class SingleSet {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    @Override
+    public String getName() {
+        return reps + " x " + weight;
+    }
+
+    @Override
+    public GymLogType getType() {
+        return GymLogType.SET;
+    }
+
+    @Override
+    public int getId() {
+        return singleSetID;
     }
 }

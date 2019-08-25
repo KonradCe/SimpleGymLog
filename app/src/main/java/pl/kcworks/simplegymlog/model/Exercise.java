@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey;
 import androidx.annotation.NonNull;
 
 @Entity(tableName = "exercise_table", indices = {@Index("exerciseDate")})
-public class Exercise {
+public class Exercise implements GymLogListItem {
 
     @PrimaryKey(autoGenerate = true)
     private int exerciseId;
@@ -83,5 +83,20 @@ public class Exercise {
 
     public void setExerciseDate(long exerciseDate) {
         this.exerciseDate = exerciseDate;
+    }
+
+    @Override
+    public String getName() {
+        return exerciseName;
+    }
+
+    @Override
+    public GymLogType getType() {
+        return GymLogType.EXERCISE;
+    }
+
+    @Override
+    public int getId() {
+        return exerciseId;
     }
 }
