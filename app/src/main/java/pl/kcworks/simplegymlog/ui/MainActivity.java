@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case (R.id.mainActivity_bt_customize_routine):
-                Intent intent = new Intent(this, RoutineSelector.class);
+                Intent intent = new Intent(this, RoutineSelectorActivity.class);
                 startActivity(intent);
                 break;
         }

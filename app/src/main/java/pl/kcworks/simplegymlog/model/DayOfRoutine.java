@@ -11,17 +11,28 @@ public class DayOfRoutine implements GymLogListItem{
         this.exerciseWithSetsList = exerciseWithSetsList;
     }
 
+    public String getDayName() {
+        return dayName;
+    }
+
+    public void setDayName(String dayName) {
+        this.dayName = dayName;
+    }
+
+    public List<ExerciseWithSets> getExerciseWithSetsList() {
+        return exerciseWithSetsList;
+    }
+
+    public void setExerciseWithSetsList(List<ExerciseWithSets> exerciseWithSetsList) {
+        this.exerciseWithSetsList = exerciseWithSetsList;
+    }
+
     @Override
     public String toString() {
         return "DayOfRoutine{" +
                 "dayName='" + dayName + '\'' +
                 ", exerciseWithSetsList=" + exerciseWithSetsList +
                 '}';
-    }
-
-    @Override
-    public String getValueToPresent() {
-        return dayName;
     }
 
     @Override

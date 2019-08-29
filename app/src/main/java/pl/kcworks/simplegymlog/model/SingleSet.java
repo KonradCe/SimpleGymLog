@@ -138,11 +138,6 @@ public class SingleSet implements GymLogListItem{
     }
 
     @Override
-    public String getValueToPresent() {
-        return reps + " x " + weight;
-    }
-
-    @Override
     public GymLogType getType() {
         return GymLogType.SET;
     }

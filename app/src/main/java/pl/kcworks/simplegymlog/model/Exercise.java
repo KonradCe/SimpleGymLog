@@ -93,11 +93,6 @@ public class Exercise implements GymLogListItem {
     }
 
     @Override
-    public String getValueToPresent() {
-        return exerciseName;
-    }
-
-    @Override
     public GymLogType getType() {
         return GymLogType.EXERCISE;
     }

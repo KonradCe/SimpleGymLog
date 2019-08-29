@@ -104,7 +104,10 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
             noSetsInfoTextView = itemView.findViewById(R.id.rvitem_tv_noSetsInfo);
             editExerciseImageView = itemView.findViewById(R.id.rvitem_iv_editExercise);
 
-            editExerciseImageView.setOnClickListener(this);
+            if (!editExerciseImageView.hasOnClickListeners()) {
+                editExerciseImageView.setOnClickListener(this);
+            }
+
             itemView.setOnCreateContextMenuListener(this);
         }
 

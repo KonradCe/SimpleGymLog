@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -20,11 +21,14 @@ import pl.kcworks.simplegymlog.R;
 import pl.kcworks.simplegymlog.model.DayOfRoutine;
 import pl.kcworks.simplegymlog.model.Exercise;
 import pl.kcworks.simplegymlog.model.ExerciseWithSets;
+import pl.kcworks.simplegymlog.model.GymLogListItem;
 import pl.kcworks.simplegymlog.model.Routine;
 import pl.kcworks.simplegymlog.model.SingleSet;
 import pl.kcworks.simplegymlog.viewmodel.RoutineViewModel;
 
-public class RoutineSelector extends AppCompatActivity implements View.OnClickListener {
+public class RoutineSelectorActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private static final String TAG = "KCTag-" + ExerciseAdapter.class.getSimpleName();
 
     private Button addRoutineButton;
     private RecyclerView routineRecyclerView;
@@ -63,6 +67,30 @@ public class RoutineSelector extends AppCompatActivity implements View.OnClickLi
                 }
             }
         });
+
+        RoutineAdapter.RoutineAdapterClickListener listener = new RoutineAdapter.RoutineAdapterClickListener() {
+            @Override
+            public void onItemClicked(GymLogListItem clickedView) {
+                switch (clickedView.getType()) {
+                    case ROUTINE:
+                        Log.i(TAG, "edit routine button was clicked");
+                        break;
+                    case DAY:
+                        Log.i(TAG, "edit day button was clicked");
+                        break;
+                    case EXERCISE:
+                        Log.i(TAG, "edit exercise button was clicked");
+                        break;
+                    case RV_ADD_DAY_BT:
+                        Log.i(TAG, "add day button was clicked");
+                        break;
+                    case RV_ADD_EXERCISE_BT:
+                        Log.i(TAG, "add exercise button was clicked");
+                        break;
+                }
+            }
+        };
+        adapter.setListener(listener);
     }
 
     private void insertDummyRoutineToDb() {
@@ -82,12 +110,14 @@ public class RoutineSelector extends AppCompatActivity implements View.OnClickLi
         exerciseWithSetsList.add(exerciseWithSets);
 
 
-        DayOfRoutine dayOfRoutine = new DayOfRoutine("dzien A", exerciseWithSetsList);
+        List<DayOfRoutine> dayOfRoutineList = new ArrayList<>();
+        dayOfRoutineList.add(new DayOfRoutine("dzien A", exerciseWithSetsList));
+        dayOfRoutineList.add(new DayOfRoutine("dzien B", exerciseWithSetsList));
 
         Random r = new Random();
         int randomInt = r.nextInt(100);
 
-        Routine routine = new Routine("routine " + randomInt, Collections.singletonList(dayOfRoutine));
+        Routine routine = new Routine("routine " + randomInt, dayOfRoutineList);
 
         routineViewModel.insertRoutine(routine);
     }

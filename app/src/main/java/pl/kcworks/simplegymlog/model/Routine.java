@@ -71,11 +71,6 @@ public class Routine implements GymLogListItem {
     }
 
     @Override
-    public String getValueToPresent() {
-        return routineName;
-    }
-
-    @Override
     public GymLogType getType() {
         return GymLogType.ROUTINE;
     }
