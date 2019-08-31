@@ -1,19 +1,20 @@
 package pl.kcworks.simplegymlog.ui;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -73,7 +74,7 @@ public class RoutineSelectorActivity extends AppCompatActivity implements View.O
             public void onItemClicked(GymLogListItem clickedView) {
                 switch (clickedView.getType()) {
                     case ROUTINE:
-                        Log.i(TAG, "edit routine button was clicked");
+                        onEditRoutineClick((Routine) clickedView);
                         break;
                     case DAY:
                         Log.i(TAG, "edit day button was clicked");
@@ -91,6 +92,35 @@ public class RoutineSelectorActivity extends AppCompatActivity implements View.O
             }
         };
         adapter.setListener(listener);
+    }
+
+    private void onEditRoutineClick(final Routine routine) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final EditText editText = new EditText(this);
+        editText.setText(routine.getRoutineName());
+        editText.setSelectAllOnFocus(true);
+
+        builder.setTitle("Edit routine name")
+                .setView(editText)
+                .setCancelable(true)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        routine.setRoutineName(editText.getText().toString());
+                        routineViewModel.updateRoutine(routine);
+                    }
+                })
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    private void onEditDayClick(final DayOfRoutine dayOfRoutine) {
+        // handle edit day click
     }
 
     private void insertDummyRoutineToDb() {
@@ -129,4 +159,5 @@ public class RoutineSelectorActivity extends AppCompatActivity implements View.O
             insertDummyRoutineToDb();
         }
     }
+
 }

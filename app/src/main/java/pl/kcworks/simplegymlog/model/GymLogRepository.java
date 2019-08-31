@@ -2,6 +2,8 @@ package pl.kcworks.simplegymlog.model;
 
 import android.app.Application;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import android.os.AsyncTask;
 
 import java.util.List;
@@ -72,6 +74,11 @@ public class GymLogRepository {
 
     public void insertRoutine(Routine routine) {
         InsertRoutineAsyncTask task = new InsertRoutineAsyncTask(routineDao);
+        task.execute(routine);
+    }
+
+    public void updateRoutine(Routine routine) {
+        UpdateRoutineAsyncTask task = new UpdateRoutineAsyncTask(routineDao);
         task.execute(routine);
     }
 
@@ -151,6 +158,20 @@ public class GymLogRepository {
         @Override
         protected Void doInBackground(Routine... routines) {
             routineDao.insert(routines[0]);
+            return null;
+        }
+    }
+
+    private static class UpdateRoutineAsyncTask extends AsyncTask<Routine, Void, Void> {
+        private RoutineDao routineDao;
+
+        public UpdateRoutineAsyncTask(RoutineDao routineDao) {
+            this.routineDao = routineDao;
+        }
+
+        @Override
+        protected Void doInBackground(Routine... routines) {
+            routineDao.update(routines[0]);
             return null;
         }
     }
