@@ -10,7 +10,7 @@ import java.util.List;
 import pl.kcworks.simplegymlog.model.db.DataTypeConverter;
 
 @Entity
-public class DayOfRoutine implements GymLogListItem{
+public class DayOfRoutine implements GymLogListItem, Comparable<DayOfRoutine>{
 
     @PrimaryKey(autoGenerate = true)
     private int dayId;
@@ -78,4 +78,9 @@ public class DayOfRoutine implements GymLogListItem{
         return GymLogType.DAY;
     }
 
+
+    @Override
+    public int compareTo(DayOfRoutine dayOfRoutine) {
+        return dayName.compareTo(dayOfRoutine.getDayName());
+    }
 }

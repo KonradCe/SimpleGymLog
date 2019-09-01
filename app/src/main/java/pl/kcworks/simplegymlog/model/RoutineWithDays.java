@@ -4,6 +4,7 @@ import androidx.room.Embedded;
 import androidx.room.Ignore;
 import androidx.room.Relation;
 
+import java.util.Collections;
 import java.util.List;
 
 public class RoutineWithDays implements GymLogListItem{
@@ -32,6 +33,11 @@ public class RoutineWithDays implements GymLogListItem{
     }
 
     public List<DayOfRoutine> getDayOfRoutineList() {
+        return dayOfRoutineList;
+    }
+
+    public List<DayOfRoutine> getSortedDayOuRoutineList() {
+        Collections.sort(dayOfRoutineList);
         return dayOfRoutineList;
     }
 

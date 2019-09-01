@@ -1,6 +1,5 @@
 package pl.kcworks.simplegymlog.ui;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,16 +50,16 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
     void setRoutineWithDaysList(List<RoutineWithDays> routineWithDaysList) {
-        gymLogItems = flattenRoutineList(routineWithDaysList);
+        gymLogItems = flattenRoutineWithDaysList(routineWithDaysList);
         notifyDataSetChanged();
     }
 
-    private List<GymLogListItem> flattenRoutineList(List<RoutineWithDays> routineWithDaysList) {
+    private List<GymLogListItem> flattenRoutineWithDaysList(List<RoutineWithDays> routineWithDaysList) {
         List<GymLogListItem> flatList = new ArrayList<>();
 
         for (RoutineWithDays routineWithDays : routineWithDaysList) {
             flatList.add(routineWithDays.getRoutine());
-            flatList.addAll(flattenDayList(routineWithDays.getDayOfRoutineList()));
+            flatList.addAll(flattenDayList(routineWithDays.getSortedDayOuRoutineList()));
             RvExtras addDayButtonRvExtra = new RvExtras(GymLogType.RV_ADD_DAY_BT);
             addDayButtonRvExtra.setParent(routineWithDays.getRoutine());
             flatList.add(addDayButtonRvExtra);
