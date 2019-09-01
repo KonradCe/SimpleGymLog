@@ -8,30 +8,36 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
+import pl.kcworks.simplegymlog.model.DayOfRoutine;
 import pl.kcworks.simplegymlog.model.GymLogRepository;
 import pl.kcworks.simplegymlog.model.Routine;
+import pl.kcworks.simplegymlog.model.RoutineWithDays;
 
 public class RoutineViewModel extends AndroidViewModel {
 
     private GymLogRepository repository;
-    private LiveData<List<Routine>> routineList;
+    private LiveData<List<RoutineWithDays>> routineWithDaysList;
 
     public RoutineViewModel(@NonNull Application application) {
         super(application);
         repository = GymLogRepository.getInstance(application);
-        routineList = repository.getAllRoutines();
+        routineWithDaysList = repository.getAllRoutinesWithDays();
     }
 
-    public LiveData<List<Routine>> getRoutineList() {
-        return routineList;
+    public LiveData<List<RoutineWithDays>> getRoutineWithDaysList() {
+        return routineWithDaysList;
     }
 
-    public void insertRoutine(Routine routine) {
-        repository.insertRoutine(routine);
+    public void insertRoutine(RoutineWithDays routineWithDays) {
+        repository.insertRoutineWithDays(routineWithDays);
     }
 
     public void updateRoutine(Routine routine) {
         repository.updateRoutine(routine);
+    }
+
+    public void updateDayOfRoutine(DayOfRoutine dayOfRoutine) {
+        repository.updateDayOfRoutine(dayOfRoutine);
     }
 
 }

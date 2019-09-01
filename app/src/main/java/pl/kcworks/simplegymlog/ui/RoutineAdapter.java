@@ -21,6 +21,7 @@ import pl.kcworks.simplegymlog.model.ExerciseWithSets;
 import pl.kcworks.simplegymlog.model.GymLogListItem;
 import pl.kcworks.simplegymlog.model.GymLogType;
 import pl.kcworks.simplegymlog.model.Routine;
+import pl.kcworks.simplegymlog.model.RoutineWithDays;
 import pl.kcworks.simplegymlog.model.SingleSet;
 
 public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -49,19 +50,19 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     };
 
 
-    void setRoutineList(List<Routine> routineList) {
-        gymLogItems = flattenRoutineList(routineList);
+    void setRoutineWithDaysList(List<RoutineWithDays> routineWithDaysList) {
+        gymLogItems = flattenRoutineList(routineWithDaysList);
         notifyDataSetChanged();
     }
 
-    private List<GymLogListItem> flattenRoutineList(List<Routine> routineList) {
+    private List<GymLogListItem> flattenRoutineList(List<RoutineWithDays> routineWithDaysList) {
         List<GymLogListItem> flatList = new ArrayList<>();
 
-        for (Routine routine : routineList) {
-            flatList.add(routine);
-            flatList.addAll(flattenDayList(routine.getDaysOfRoutineList()));
+        for (RoutineWithDays routineWithDays : routineWithDaysList) {
+            flatList.add(routineWithDays.getRoutine());
+            flatList.addAll(flattenDayList(routineWithDays.getDayOfRoutineList()));
             RvExtras addDayButtonRvExtra = new RvExtras(GymLogType.RV_ADD_DAY_BT);
-            addDayButtonRvExtra.setParent(routine);
+            addDayButtonRvExtra.setParent(routineWithDays.getRoutine());
             flatList.add(addDayButtonRvExtra);
             flatList.add(new RvExtras(GymLogType.RV_DIVIDER));
         }

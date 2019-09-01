@@ -5,11 +5,12 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import android.content.Context;
 
+import pl.kcworks.simplegymlog.model.DayOfRoutine;
 import pl.kcworks.simplegymlog.model.Exercise;
 import pl.kcworks.simplegymlog.model.Routine;
 import pl.kcworks.simplegymlog.model.SingleSet;
 
-@Database(entities = {Routine.class, Exercise.class, SingleSet.class}, version = 1, exportSchema = false)
+@Database(entities = {Routine.class, DayOfRoutine.class, Exercise.class, SingleSet.class}, version = 1, exportSchema = false)
 public abstract class GymLogRoomDatabase extends RoomDatabase {
 
     private static volatile GymLogRoomDatabase INSTANCE;
@@ -29,6 +30,8 @@ public abstract class GymLogRoomDatabase extends RoomDatabase {
     }
 
     public abstract RoutineDao routineDao();
+
+    public abstract DayOfRoutineDao dayOfRoutineDao();
 
     public abstract ExerciseDao exerciseDao();
 

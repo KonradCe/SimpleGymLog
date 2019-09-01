@@ -1,14 +1,52 @@
 package pl.kcworks.simplegymlog.model;
 
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
 import java.util.List;
 
+import pl.kcworks.simplegymlog.model.db.DataTypeConverter;
+
+@Entity
 public class DayOfRoutine implements GymLogListItem{
+
+    @PrimaryKey(autoGenerate = true)
+    private int dayId;
+    private long parentRoutineId;
     private String dayName;
+
+    @TypeConverters(DataTypeConverter.class)
     private List<ExerciseWithSets> exerciseWithSetsList;
 
+    public DayOfRoutine(int dayId, long parentRoutineId, String dayName, List<ExerciseWithSets> exerciseWithSetsList) {
+        this.dayId = dayId;
+        this.parentRoutineId = parentRoutineId;
+        this.dayName = dayName;
+        this.exerciseWithSetsList = exerciseWithSetsList;
+    }
+
+    @Ignore
     public DayOfRoutine(String dayName, List<ExerciseWithSets> exerciseWithSetsList) {
         this.dayName = dayName;
         this.exerciseWithSetsList = exerciseWithSetsList;
+    }
+
+    public int getDayId() {
+        return dayId;
+    }
+
+    public void setDayId(int dayId) {
+        this.dayId = dayId;
+    }
+
+    public long getParentRoutineId() {
+        return parentRoutineId;
+    }
+
+    public void setParentRoutineId(long parentRoutineId) {
+        this.parentRoutineId = parentRoutineId;
     }
 
     public String getDayName() {

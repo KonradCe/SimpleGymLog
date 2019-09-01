@@ -2,13 +2,13 @@ package pl.kcworks.simplegymlog.model;
 
 import android.app.Application;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import android.os.AsyncTask;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import pl.kcworks.simplegymlog.model.db.DayOfRoutineDao;
 import pl.kcworks.simplegymlog.model.db.ExerciseDao;
 import pl.kcworks.simplegymlog.model.db.GymLogRoomDatabase;
 import pl.kcworks.simplegymlog.model.db.RoutineDao;
@@ -19,8 +19,9 @@ public class GymLogRepository {
     private static GymLogRepository sInstance;
 
     private RoutineDao routineDao;
-    private ExerciseDao mExerciseDao;
-    private SingleSetDao mSingleSetDao;
+    private DayOfRoutineDao dayOfRoutineDao;
+    private ExerciseDao exerciseDao;
+    private SingleSetDao singleSetDao;
 
     private LiveData<List<ExerciseWithSets>> mExercisesWithSets;
 
@@ -29,8 +30,9 @@ public class GymLogRepository {
     private GymLogRepository(Application application) {
         GymLogRoomDatabase db = GymLogRoomDatabase.getDatabase(application);
         routineDao = db.routineDao();
-        mExerciseDao = db.exerciseDao();
-        mSingleSetDao = db.singleSetDao();
+        dayOfRoutineDao = db.dayOfRoutineDao();
+        exerciseDao = db.exerciseDao();
+        singleSetDao = db.singleSetDao();
     }
 
     public static GymLogRepository getInstance(Application application) {
@@ -44,37 +46,37 @@ public class GymLogRepository {
         return sInstance;
     }
 
-    public LiveData<List<Routine>> getAllRoutines() {
-        return routineDao.getAllRoutines();
+    public LiveData<List<RoutineWithDays>> getAllRoutinesWithDays() {
+        return routineDao.getAllRoutinesWithDays();
     }
 
     public LiveData<List<Exercise>> getAllExercises() {
-        return mExerciseDao.getAllExercises();
+        return exerciseDao.getAllExercises();
     }
 
     public LiveData<List<ExerciseWithSets>> getAllExercisesWithSets() {
-        return mExerciseDao.getAllExercisesWithSets();
+        return exerciseDao.getAllExercisesWithSets();
     }
 
     public LiveData<List<ExerciseWithSets>> getExercisesWithSetsForDate(long date) {
-        return mExerciseDao.getExercisesWithSetsForDate(date);
+        return exerciseDao.getExercisesWithSetsForDate(date);
     }
 
     public List<ExerciseWithSets> getExerciseWithSetsByIds(int[] ids) {
-        return mExerciseDao.getExerciseWithSetsByIds(ids);
+        return exerciseDao.getExerciseWithSetsByIds(ids);
     }
 
     public LiveData<List<Exercise>> getExercisesForMonth(long date) {
-        return mExerciseDao.getExercisesForMonth(date + "%");
+        return exerciseDao.getExercisesForMonth(date + "%");
     }
 
     public LiveData<ExerciseWithSets> getmSingleExerciseWithSets(int exerciseId) {
-        return mExerciseDao.getSingleExercisesWithSets(exerciseId);
+        return exerciseDao.getSingleExercisesWithSets(exerciseId);
     }
 
-    public void insertRoutine(Routine routine) {
-        InsertRoutineAsyncTask task = new InsertRoutineAsyncTask(routineDao);
-        task.execute(routine);
+    public void insertRoutineWithDays(RoutineWithDays routineWithDays) {
+        InsertRoutineWithDaysAsyncTask task = new InsertRoutineWithDaysAsyncTask(routineDao, dayOfRoutineDao);
+        task.execute(routineWithDays);
     }
 
     public void updateRoutine(Routine routine) {
@@ -82,13 +84,18 @@ public class GymLogRepository {
         task.execute(routine);
     }
 
+    public void updateDayOfRoutine(DayOfRoutine dayOfRoutine) {
+        UpdateDayOfRoutineAsyncTask task = new UpdateDayOfRoutineAsyncTask(dayOfRoutineDao);
+        task.execute(dayOfRoutine);
+    }
+
     public void insertExercisesWithSets(ExerciseWithSets exerciseWithSets) {
-        InsertExerciseWithSetsAsyncTask task = new InsertExerciseWithSetsAsyncTask(mExerciseDao, mSingleSetDao);
+        InsertExerciseWithSetsAsyncTask task = new InsertExerciseWithSetsAsyncTask(exerciseDao, singleSetDao);
         task.execute(exerciseWithSets);
     }
 
     public long insertExercise(Exercise exercise) {
-        InsertExerciseAsyncTask task = new InsertExerciseAsyncTask(mExerciseDao);
+        InsertExerciseAsyncTask task = new InsertExerciseAsyncTask(exerciseDao);
 
         try {
             // using .get() method on AsyncTask in this place denies the whole purpose of AsyncTask - using get we still have to wait for results from the task on the UI thread;
@@ -104,12 +111,12 @@ public class GymLogRepository {
     }
 
     public void updateExercise(Exercise exercise) {
-        UpdateExerciseAsyncTask task = new UpdateExerciseAsyncTask(mExerciseDao);
+        UpdateExerciseAsyncTask task = new UpdateExerciseAsyncTask(exerciseDao);
         task.execute(exercise);
     }
 
     public void insertMultipleSingleSets(List<SingleSet> singleSetList) {
-        InsertSetsAsyncTask task = new InsertSetsAsyncTask(mSingleSetDao);
+        InsertSetsAsyncTask task = new InsertSetsAsyncTask(singleSetDao);
 
         // conversion from List to array for the AsyncTask
         SingleSet[] ssArray = new SingleSet[singleSetList.size()];
@@ -119,7 +126,7 @@ public class GymLogRepository {
     }
 
     public void deleteMultipleSingleSets(List<SingleSet> singleSetList) {
-        DeleteSingleSetAsyncTask task = new DeleteSingleSetAsyncTask(mSingleSetDao);
+        DeleteSingleSetAsyncTask task = new DeleteSingleSetAsyncTask(singleSetDao);
 
         // conversion from List to array for the AsyncTask
         SingleSet[] ssArray = new SingleSet[singleSetList.size()];
@@ -130,12 +137,12 @@ public class GymLogRepository {
     }
 
     public void updateSingleSet(SingleSet singleSet) {
-        UpdateSingleSetAsyncTask task = new UpdateSingleSetAsyncTask(mSingleSetDao);
+        UpdateSingleSetAsyncTask task = new UpdateSingleSetAsyncTask(singleSetDao);
         task.execute(singleSet);
     }
 
     public void deleteExercises(List<Exercise> exercises) {
-        DeleteExercisesAsyncTask task = new DeleteExercisesAsyncTask(mExerciseDao);
+        DeleteExercisesAsyncTask task = new DeleteExercisesAsyncTask(exerciseDao);
 
         Exercise[] exerciseArray = new Exercise[exercises.size()];
         exercises.toArray(exerciseArray);
@@ -144,20 +151,29 @@ public class GymLogRepository {
     }
 
     public void deleteExercise(Exercise exercise) {
-        DeleteExerciseAsyncTask task = new DeleteExerciseAsyncTask(mExerciseDao);
+        DeleteExerciseAsyncTask task = new DeleteExerciseAsyncTask(exerciseDao);
         task.execute(exercise);
     }
 
-    private static class InsertRoutineAsyncTask extends AsyncTask<Routine, Void, Void> {
+    private static class InsertRoutineWithDaysAsyncTask extends AsyncTask<RoutineWithDays, Void, Void> {
         private RoutineDao routineDao;
+        private DayOfRoutineDao dayOfRoutineDao;
 
-        public InsertRoutineAsyncTask(RoutineDao routineDao) {
+        public InsertRoutineWithDaysAsyncTask(RoutineDao routineDao, DayOfRoutineDao dayOfRoutineDao) {
             this.routineDao = routineDao;
+            this.dayOfRoutineDao = dayOfRoutineDao;
         }
 
+
         @Override
-        protected Void doInBackground(Routine... routines) {
-            routineDao.insert(routines[0]);
+        protected Void doInBackground(RoutineWithDays... routineWithDays) {
+            Routine routine = routineWithDays[0].getRoutine();
+            List<DayOfRoutine> dayOfRoutineList = routineWithDays[0].getDayOfRoutineList();
+            long routineId = routineDao.insert(routine);
+            for (DayOfRoutine dayOfRoutine : dayOfRoutineList) {
+                dayOfRoutine.setParentRoutineId(routineId);
+            }
+            dayOfRoutineDao.insertMultiple(dayOfRoutineList);
             return null;
         }
     }
@@ -165,13 +181,27 @@ public class GymLogRepository {
     private static class UpdateRoutineAsyncTask extends AsyncTask<Routine, Void, Void> {
         private RoutineDao routineDao;
 
-        public UpdateRoutineAsyncTask(RoutineDao routineDao) {
+        UpdateRoutineAsyncTask(RoutineDao routineDao) {
             this.routineDao = routineDao;
         }
 
         @Override
         protected Void doInBackground(Routine... routines) {
             routineDao.update(routines[0]);
+            return null;
+        }
+    }
+
+    private static class UpdateDayOfRoutineAsyncTask extends AsyncTask<DayOfRoutine, Void, Void> {
+        DayOfRoutineDao dayOfRoutineDao;
+
+        UpdateDayOfRoutineAsyncTask(DayOfRoutineDao dayOfRoutineDao) {
+            this.dayOfRoutineDao = dayOfRoutineDao;
+        }
+
+        @Override
+        protected Void doInBackground(DayOfRoutine... dayOfRoutines) {
+            dayOfRoutineDao.update(dayOfRoutines[0]);
             return null;
         }
     }
