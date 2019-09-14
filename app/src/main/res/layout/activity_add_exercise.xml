@@ -19,8 +19,7 @@
         android:id="@+id/addExerciseActivity_et_exerciseName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="name of the exercise"
-        android:inputType="text"
+        android:hint="exercise name"
         android:selectAllOnFocus="true" />
 
     <LinearLayout

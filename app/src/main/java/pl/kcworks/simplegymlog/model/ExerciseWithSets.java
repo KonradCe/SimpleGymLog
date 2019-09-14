@@ -30,7 +30,7 @@ public class ExerciseWithSets {
     public static ExerciseWithSets createNewFromExisting(ExerciseWithSets existingExerciseWithSets) {
         List<SingleSet> newSingleSetList = new ArrayList<>();
         for (SingleSet ss : existingExerciseWithSets.getExerciseSetList()) {
-            newSingleSetList.add(SingleSet.createNewFromExisting(ss));
+            newSingleSetList.add(SingleSet.createNewSetFromExisting(ss));
         }
         return new ExerciseWithSets(Exercise.createNewFromExisting(existingExerciseWithSets.getExercise()), newSingleSetList);
     }
@@ -50,6 +50,8 @@ public class ExerciseWithSets {
     public void setExerciseSetList(List<SingleSet> exerciseSetList) {
         this.exerciseSetList = exerciseSetList;
     }
+
+
 
     @Override
     public String toString() {

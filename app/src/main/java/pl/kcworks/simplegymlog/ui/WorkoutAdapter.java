@@ -19,15 +19,17 @@ import java.util.List;
 import pl.kcworks.simplegymlog.R;
 import pl.kcworks.simplegymlog.model.Exercise;
 import pl.kcworks.simplegymlog.model.ExerciseWithSets;
+import pl.kcworks.simplegymlog.model.GymLogType;
 import pl.kcworks.simplegymlog.model.SingleSet;
+import pl.kcworks.simplegymlog.model.db.DataTypeConverter;
 
-public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder> {
+public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.ExerciseViewHolder> {
 
-    private static final String TAG = "KCTag-" + ExerciseAdapter.class.getSimpleName();
+    private static final String TAG = "KCTag-" + WorkoutAdapter.class.getSimpleName();
     private LayoutInflater mInflater;
     private List<ExerciseWithSets> mExercisesWithSets = Collections.emptyList(); // cached copy of exercises
 
-    ExerciseAdapter(Context context) {
+    WorkoutAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
     }
 
@@ -113,11 +115,12 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
         @Override
         public void onClick(View view) {
-            Log.i(TAG, "something in adapter was clicked id: " + view.getId());
             // edit exercise button
             if (view.getId() == R.id.rvitem_iv_editExercise) {
+                ExerciseWithSets exerciseWithSetsToEdit = mExercisesWithSets.get(getAdapterPosition());
                 Intent editExerciseIntent = new Intent(view.getContext(), AddExerciseActivity.class);
-                editExerciseIntent.putExtra(AddExerciseActivity.UPDATE_EXERCISE_ID_EXTRA, mExercisesWithSets.get(getAdapterPosition()).getExercise().getExerciseId());
+
+                editExerciseIntent.putExtra(AddExerciseActivity.UPDATE_EXERCISE_EXTRA, DataTypeConverter.exerciseWithSetsToString(exerciseWithSetsToEdit));
                 view.getContext().startActivity(editExerciseIntent);
             }
             // TODO[3]: don't know the proper way to access db from here, but this function is not essential at this point
@@ -140,5 +143,10 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
             contextMenu.add(this.getAdapterPosition(),1, 1, "delete exercise");
         }
     }
+
+    public interface WorkoutAdapterClickListener {
+        void onItemClicked(GymLogType itemClicked);
+    }
+
 
 }

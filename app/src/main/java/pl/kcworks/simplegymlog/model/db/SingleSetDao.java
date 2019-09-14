@@ -24,11 +24,17 @@ public interface SingleSetDao {
     LiveData<List<SingleSet>> getAllSingleSets();
 
     @Query("SELECT * FROM singleset WHERE correspondingExerciseId=:exerciseId")
-    LiveData<List<SingleSet>> getSingleSetsForExercise(int exerciseId);
+    List<SingleSet> getSingleSetsForExercise(int exerciseId);
 
     @Update
     void updateSet(SingleSet singleSet);
 
+    @Update
+    void updateMultipleSets(List<SingleSet> singleSetList);
+
     @Delete
     void deleteSet(SingleSet singleSet);
+
+    @Delete
+    void deleteMultipleSets(List<SingleSet> singleSetList);
 }

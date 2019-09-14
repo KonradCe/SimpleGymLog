@@ -25,7 +25,7 @@ import pl.kcworks.simplegymlog.model.SingleSet;
 
 public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final String TAG = "KCTag-" + ExerciseAdapter.class.getSimpleName();
+    private static final String TAG = "KCTag-" + WorkoutAdapter.class.getSimpleName();
 
     private static final int TYPE_ROUTINE = 0;
     private static final int TYPE_DAY = 1;
@@ -53,6 +53,8 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         gymLogItems = flattenRoutineWithDaysList(routineWithDaysList);
         notifyDataSetChanged();
     }
+
+
 
     private List<GymLogListItem> flattenRoutineWithDaysList(List<RoutineWithDays> routineWithDaysList) {
         List<GymLogListItem> flatList = new ArrayList<>();
@@ -204,7 +206,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private void onBindSetItem(@NonNull SetViewHolder holder, int position) {
         SingleSet set = (SingleSet) gymLogItems.get(position);
         holder.setRepsTextView.setText(Integer.toString(set.getReps()));
-        holder.setWeightTextView.setText(Float.toString(set.getWeight()));
+        holder.setWeightTextView.setText(Double.toString(set.getWeight()));
     }
 
     @Override

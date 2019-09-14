@@ -16,7 +16,7 @@ public class SingleExerciseViewModel extends AndroidViewModel {
 
     public SingleExerciseViewModel(Application application, GymLogRepository repository, int exerciseId) {
         super(application);
-        exerciseWithSets = repository.getmSingleExerciseWithSets(exerciseId);
+        exerciseWithSets = repository.getSingleExerciseWithSets(exerciseId);
     }
 
     public LiveData<ExerciseWithSets> getExerciseWithSets() {

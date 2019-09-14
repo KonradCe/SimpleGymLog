@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import pl.kcworks.simplegymlog.model.DayOfRoutine;
 import pl.kcworks.simplegymlog.model.ExerciseWithSets;
 
 public class DataTypeConverter {
@@ -36,6 +35,26 @@ public class DataTypeConverter {
         JsonAdapter<List<ExerciseWithSets>> jsonAdapter = moshi.adapter(type);
         return jsonAdapter.toJson(exerciseWithSetsList);
     }
+
+    public static String exerciseWithSetsToString(ExerciseWithSets exerciseWithSets) {
+        Moshi moshi = new Moshi.Builder().build();
+        JsonAdapter<ExerciseWithSets> jsonAdapter = moshi.adapter(ExerciseWithSets.class);
+
+        return jsonAdapter.toJson(exerciseWithSets);
+    }
+
+    public static ExerciseWithSets stringToExerciseWithSets(String json) {
+        Moshi moshi = new Moshi.Builder().build();
+        JsonAdapter<ExerciseWithSets> jsonAdapter = moshi.adapter(ExerciseWithSets.class);
+
+        try {
+            return jsonAdapter.fromJson(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }
 
 // DataTypeConverter

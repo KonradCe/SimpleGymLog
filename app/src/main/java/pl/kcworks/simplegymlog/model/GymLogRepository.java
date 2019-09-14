@@ -23,10 +23,6 @@ public class GymLogRepository {
     private ExerciseDao exerciseDao;
     private SingleSetDao singleSetDao;
 
-    private LiveData<List<ExerciseWithSets>> mExercisesWithSets;
-
-    private long newExerciseId = -1;
-
     private GymLogRepository(Application application) {
         GymLogRoomDatabase db = GymLogRoomDatabase.getDatabase(application);
         routineDao = db.routineDao();
@@ -66,11 +62,7 @@ public class GymLogRepository {
         return exerciseDao.getExerciseWithSetsByIds(ids);
     }
 
-    public LiveData<List<Exercise>> getExercisesForMonth(long date) {
-        return exerciseDao.getExercisesForMonth(date + "%");
-    }
-
-    public LiveData<ExerciseWithSets> getmSingleExerciseWithSets(int exerciseId) {
+    public LiveData<ExerciseWithSets> getSingleExerciseWithSets(int exerciseId) {
         return exerciseDao.getSingleExercisesWithSets(exerciseId);
     }
 
@@ -89,56 +81,14 @@ public class GymLogRepository {
         task.execute(dayOfRoutine);
     }
 
-    public void insertExercisesWithSets(ExerciseWithSets exerciseWithSets) {
+    public void insertExerciseWithSets(ExerciseWithSets exerciseWithSets) {
         InsertExerciseWithSetsAsyncTask task = new InsertExerciseWithSetsAsyncTask(exerciseDao, singleSetDao);
         task.execute(exerciseWithSets);
     }
 
-    public long insertExercise(Exercise exercise) {
-        InsertExerciseAsyncTask task = new InsertExerciseAsyncTask(exerciseDao);
-
-        try {
-            // using .get() method on AsyncTask in this place denies the whole purpose of AsyncTask - using get we still have to wait for results from the task on the UI thread;
-            // still, for this moment I don't know how to do this task* any other way and inserting ONLY exercise should not take that long anyway
-            // *this task - task of inserting exercise into db and getting its newly created id
-            newExerciseId = task.execute(exercise).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return newExerciseId;
-    }
-
-    public void updateExercise(Exercise exercise) {
-        UpdateExerciseAsyncTask task = new UpdateExerciseAsyncTask(exerciseDao);
-        task.execute(exercise);
-    }
-
-    public void insertMultipleSingleSets(List<SingleSet> singleSetList) {
-        InsertSetsAsyncTask task = new InsertSetsAsyncTask(singleSetDao);
-
-        // conversion from List to array for the AsyncTask
-        SingleSet[] ssArray = new SingleSet[singleSetList.size()];
-        singleSetList.toArray(ssArray);
-
-        task.execute(ssArray);
-    }
-
-    public void deleteMultipleSingleSets(List<SingleSet> singleSetList) {
-        DeleteSingleSetAsyncTask task = new DeleteSingleSetAsyncTask(singleSetDao);
-
-        // conversion from List to array for the AsyncTask
-        SingleSet[] ssArray = new SingleSet[singleSetList.size()];
-        singleSetList.toArray(ssArray);
-
-        task.execute(ssArray);
-
-    }
-
-    public void updateSingleSet(SingleSet singleSet) {
-        UpdateSingleSetAsyncTask task = new UpdateSingleSetAsyncTask(singleSetDao);
-        task.execute(singleSet);
+    public void updateExerciseWithSets(ExerciseWithSets exerciseWithSets) {
+        UpdateExerciseWithSetsAsyncTask task = new UpdateExerciseWithSetsAsyncTask(exerciseDao, singleSetDao);
+        task.execute(exerciseWithSets);
     }
 
     public void deleteExercises(List<Exercise> exercises) {
@@ -206,21 +156,6 @@ public class GymLogRepository {
         }
     }
 
-    private static class InsertExerciseAsyncTask extends AsyncTask<Exercise, Void, Long> {
-        private ExerciseDao mAsyncExerciseDao;
-
-        InsertExerciseAsyncTask(ExerciseDao exerciseDao) {
-            mAsyncExerciseDao = exerciseDao;
-        }
-
-        @Override
-        protected Long doInBackground(Exercise... exercises) {
-            long newExerciseId = mAsyncExerciseDao.insert(exercises[0]);
-            return newExerciseId;
-        }
-
-    }
-
     private static class InsertExerciseWithSetsAsyncTask extends AsyncTask<ExerciseWithSets, Void, Void> {
         private ExerciseDao mAsyncExerciseDao;
         private SingleSetDao mAsyncSingleSetDao;
@@ -243,63 +178,25 @@ public class GymLogRepository {
         }
     }
 
-    private static class UpdateExerciseAsyncTask extends AsyncTask<Exercise, Void, Void> {
-        private ExerciseDao mAsyncExerciseDao;
+    private static class UpdateExerciseWithSetsAsyncTask extends AsyncTask<ExerciseWithSets, Void, Void> {
 
-        UpdateExerciseAsyncTask(ExerciseDao dao) {
-            mAsyncExerciseDao = dao;
+        private ExerciseDao exerciseDao;
+        private SingleSetDao singleSetDao;
+
+        UpdateExerciseWithSetsAsyncTask(ExerciseDao exerciseDao, SingleSetDao singleSetDao) {
+            this.exerciseDao = exerciseDao;
+            this.singleSetDao = singleSetDao;
         }
 
         @Override
-        protected Void doInBackground(Exercise... exercises) {
-            mAsyncExerciseDao.update(exercises[0]);
-            return null;
-        }
-    }
+        protected Void doInBackground(ExerciseWithSets... exerciseWithSets) {
+            Exercise exercise = exerciseWithSets[0].getExercise();
+            exerciseDao.update(exercise);
 
-    private static class InsertSetsAsyncTask extends AsyncTask<SingleSet, Void, Void> {
-        private SingleSetDao mAsyncSingleSetDao;
-
-        InsertSetsAsyncTask(SingleSetDao singleSetDao) {
-            mAsyncSingleSetDao = singleSetDao;
-        }
-
-        @Override
-        protected Void doInBackground(SingleSet... singleSets) {
-            for (SingleSet set : singleSets) {
-                mAsyncSingleSetDao.insert(set);
-            }
-
-            return null;
-        }
-    }
-
-    private static class UpdateSingleSetAsyncTask extends AsyncTask<SingleSet, Void, Void> {
-        private SingleSetDao mAsyncSingleSetDao;
-
-        UpdateSingleSetAsyncTask(SingleSetDao mAsyncSingleSetDao) {
-            this.mAsyncSingleSetDao = mAsyncSingleSetDao;
-        }
-
-        @Override
-        protected Void doInBackground(SingleSet... singleSets) {
-            mAsyncSingleSetDao.updateSet(singleSets[0]);
-            return null;
-        }
-    }
-
-    private static class DeleteSingleSetAsyncTask extends AsyncTask<SingleSet, Void, Void> {
-        private SingleSetDao mAsyncSingleSetDao;
-
-        DeleteSingleSetAsyncTask(SingleSetDao mAsyncSingleSetDao) {
-            this.mAsyncSingleSetDao = mAsyncSingleSetDao;
-        }
-
-        @Override
-        protected Void doInBackground(SingleSet... singleSets) {
-            for (SingleSet ss : singleSets) {
-                mAsyncSingleSetDao.deleteSet(ss);
-            }
+            List<SingleSet> singleSetListToAdd = exerciseWithSets[0].getExerciseSetList();
+            List<SingleSet> singleSetListToDelete = singleSetDao.getSingleSetsForExercise(exercise.getExerciseId());
+            singleSetDao.deleteMultipleSets(singleSetListToDelete);
+            singleSetDao.insertMultiple(singleSetListToAdd);
             return null;
         }
     }

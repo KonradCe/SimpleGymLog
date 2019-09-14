@@ -21,54 +21,48 @@ public class SingleSet implements GymLogListItem{
     private int singleSetID;                // id
     private long correspondingExerciseId;   // parent exercise ID
     private int reps;
-    private String maxWeightPercentageInfo;      // states if weight for each set is calculated as a percentage of maximum weight user can perform for 1 rep
-    private float weight;
+    private double weight;
+    private double trainingMax;
+    private int percentageOfTm;             // percentage in int -> 100% = 100, 50% = 50 etc.
     private boolean completed;              // states if the set was marked as completed
 
+
     // CONSTRUCTORS
-    @Ignore
-    public SingleSet(long correspondingExerciseId, int reps, String maxWeightPercentageInfo, float weight, boolean completed) {
-        this.correspondingExerciseId = correspondingExerciseId;
-        this.reps = reps;
-        this.maxWeightPercentageInfo = maxWeightPercentageInfo;
-        this.weight = weight;
-        this.completed = completed;
-    }
-
-    // constructor for the routine
-    @Ignore
-    public SingleSet(int reps, String maxWeightPercentageInfo, float weight) {
-        this.reps = reps;
-        this.maxWeightPercentageInfo = maxWeightPercentageInfo;
-        this.weight = weight;
-    }
-
-    public SingleSet(int singleSetID, long correspondingExerciseId, int reps, String maxWeightPercentageInfo, float weight, boolean completed) {
+    public SingleSet(int singleSetID, long correspondingExerciseId, int reps, double weight, double trainingMax, int percentageOfTm, boolean completed) {
         this.singleSetID = singleSetID;
         this.correspondingExerciseId = correspondingExerciseId;
         this.reps = reps;
-        this.maxWeightPercentageInfo = maxWeightPercentageInfo;
         this.weight = weight;
+        this.trainingMax = trainingMax;
+        this.percentageOfTm = percentageOfTm;
         this.completed = completed;
     }
 
-    public static SingleSet createNewFromExisting(SingleSet existingSingleSet) {
+    @Ignore
+    public SingleSet(long correspondingExerciseId, int reps, double weight, double trainingMax, int percentageOfTm, boolean completed) {
+        this.correspondingExerciseId = correspondingExerciseId;
+        this.reps = reps;
+        this.weight = weight;
+        this.trainingMax = trainingMax;
+        this.percentageOfTm = percentageOfTm;
+        this.completed = completed;
+    }
+
+    @Ignore
+    public SingleSet(int reps, double weight) {
+        this.reps = reps;
+        this.weight = weight;
+    }
+
+    public static SingleSet createNewSetFromExisting(SingleSet existingSingleSet) {
         return new SingleSet(existingSingleSet.getCorrespondingExerciseId(),
                 existingSingleSet.getReps(),
-                existingSingleSet.maxWeightPercentageInfo,
                 existingSingleSet.getWeight(),
+                existingSingleSet.getTrainingMax(),
+                existingSingleSet.getPercentageOfTm(),
                 existingSingleSet.isCompleted());
     }
 
-    // method for estimating if SingleSet needs to be updated in db by comparing two SingleSet objects
-    public boolean needsUpdate(SingleSet ss) {
-        if (correspondingExerciseId == ss.getCorrespondingExerciseId() &&
-                reps == ss.getReps() &&
-                weight == ss.getWeight()) {
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public String toString() {
@@ -77,8 +71,14 @@ public class SingleSet implements GymLogListItem{
                 ", correspondingExerciseId=" + correspondingExerciseId +
                 ", reps=" + reps +
                 ", weight=" + weight +
+                ", trainingMax=" + trainingMax +
+                ", percentageOfTm=" + percentageOfTm +
                 ", completed=" + completed +
                 '}';
+    }
+
+    public boolean isBasedOnTm() {
+        return trainingMax != 0;
     }
 
     // GETTERS AND SETTERS
@@ -106,27 +106,29 @@ public class SingleSet implements GymLogListItem{
         this.reps = reps;
     }
 
-    public String getMaxWeightPercentageInfo() {
-        return maxWeightPercentageInfo;
-    }
-
-    public void setMaxWeightPercentageInfo(String maxWeightPercentageInfo) {
-        this.maxWeightPercentageInfo = maxWeightPercentageInfo;
-    }
-
-    public boolean hasMaxWeightPercentageInfo() {
-        if (maxWeightPercentageInfo != null) {
-            return true;
-        }
-        return false;
-    }
-
-    public float getWeight() {
+    public double getWeight() {
         return weight;
     }
 
-    public void setWeight(float weight) {
+    public void setWeight(double weight) {
         this.weight = weight;
+    }
+
+    public double getTrainingMax() {
+        return trainingMax;
+    }
+
+    public void setTrainingMax(double trainingMax) {
+        this.trainingMax = trainingMax;
+    }
+
+    public int getPercentageOfTm() {
+
+        return percentageOfTm;
+    }
+
+    public void setPercentageOfTm(int percentageOfTm) {
+        this.percentageOfTm = percentageOfTm;
     }
 
     public boolean isCompleted() {
@@ -136,6 +138,7 @@ public class SingleSet implements GymLogListItem{
     public void setCompleted(boolean completed) {
         this.completed = completed;
     }
+
 
     @Override
     public GymLogType getType() {

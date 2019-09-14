@@ -31,6 +31,7 @@ import pl.kcworks.simplegymlog.model.GymLogRepository;
 import pl.kcworks.simplegymlog.R;
 import pl.kcworks.simplegymlog.model.Exercise;
 import pl.kcworks.simplegymlog.model.ExerciseWithSets;
+import pl.kcworks.simplegymlog.model.GymLogType;
 import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 
 public class WorkoutActivity extends AppCompatActivity implements View.OnClickListener {
@@ -42,7 +43,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     // TODO[3]: not sure if this variable is needed yet
     private long mDateOfExercise;
     private GymLogViewModel mGymLogViewModel;
-    private ExerciseAdapter mExerciseAdapter;
+    private WorkoutAdapter mWorkoutAdapter;
 
 
     private TextView mDateOfExerciseTextView;
@@ -70,7 +71,6 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         mGymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
         loadExercisesForDate(mDateOfExercise);
 
-        Log.i(TAG, "Date of exercise: " + mDateOfExercise);
     }
 
     private void grabDataFromIntent() {
@@ -105,10 +105,9 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void setupRecyclerView() {
-        mExerciseAdapter = new ExerciseAdapter(this);
-        mExerciseRecyclerView.setAdapter(mExerciseAdapter);
+        mWorkoutAdapter = new WorkoutAdapter(this);
         mExerciseRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        Log.i(TAG, "setting up RecyclerView");
+        mExerciseRecyclerView.setAdapter(mWorkoutAdapter);
     }
 
     private void loadExercisesForDate(long dateInGymLogFormat) {
@@ -120,9 +119,8 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
                 } else {
                     hideNewWorkoutOptions();
                 }
-                Log.i(TAG, "change in data observed");
-                mExerciseAdapter.setExercises(exercisesWithSets);
-                mExerciseAdapter.notifyDataSetChanged();
+                mWorkoutAdapter.setExercises(exercisesWithSets);
+                mWorkoutAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -182,7 +180,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void deleteExercisesInCurrentDay() {
-        List<ExerciseWithSets> exerciseWithSetsList = mExerciseAdapter.getmExercisesWithSets();
+        List<ExerciseWithSets> exerciseWithSetsList = mWorkoutAdapter.getmExercisesWithSets();
         List<Exercise> exercisesToDelete = new ArrayList<>();
         for (ExerciseWithSets eWs : exerciseWithSetsList) {
             exercisesToDelete.add(eWs.getExercise());
@@ -205,7 +203,6 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
                 startCopyExerciseActivity();
                 break;
 
-            // OR statement within switch
             case (R.id.workout_bt_add_exercise_additional):
             case (R.id.workout_fab_addExercise):
                 Intent intent = new Intent(this, AddExerciseActivity.class);
@@ -262,7 +259,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        Exercise exerciseToDelete = mExerciseAdapter.getmExercisesWithSets().get(item.getGroupId()).getExercise();
+        Exercise exerciseToDelete = mWorkoutAdapter.getmExercisesWithSets().get(item.getGroupId()).getExercise();
         mGymLogViewModel.deleteSingleExercise(exerciseToDelete);
         return true;
     }

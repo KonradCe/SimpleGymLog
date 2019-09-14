@@ -30,7 +30,7 @@ import pl.kcworks.simplegymlog.viewmodel.RoutineViewModel;
 
 public class RoutineSelectorActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final String TAG = "KCTag-" + ExerciseAdapter.class.getSimpleName();
+    private static final String TAG = "KCTag-" + WorkoutAdapter.class.getSimpleName();
 
     private Button addRoutineButton;
     private RecyclerView routineRecyclerView;
@@ -146,11 +146,12 @@ public class RoutineSelectorActivity extends AppCompatActivity implements View.O
 
     private void insertDummyRoutineToDb() {
         List<SingleSet> singleSetList = new ArrayList<>();
-        singleSetList.add(new SingleSet(1, null,  100));
-        singleSetList.add(new SingleSet(2, null,  100));
-        singleSetList.add(new SingleSet(3, null,  100));
-        singleSetList.add(new SingleSet(4, null,  100));
-        singleSetList.add(new SingleSet(5, null,  100));
+        singleSetList.add(new SingleSet(1,  100));
+        singleSetList.add(new SingleSet(2,  200));
+        singleSetList.add(new SingleSet(3,  300));
+        singleSetList.add(new SingleSet(4,  400));
+        singleSetList.add(new SingleSet(5,  500));
+
 
         Exercise exercise = new Exercise("cwiczenie 1", 2);
 

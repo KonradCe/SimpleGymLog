@@ -6,6 +6,8 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import androidx.annotation.NonNull;
 
+import org.jetbrains.annotations.NotNull;
+
 @Entity(tableName = "exercise_table", indices = {@Index("exerciseDate")})
 public class Exercise implements GymLogListItem {
 
@@ -22,7 +24,7 @@ public class Exercise implements GymLogListItem {
     // exerciseDate if the exercise
     private long exerciseDate;
 
-    public Exercise(int exerciseId, @NonNull String exerciseName, int exerciseOrderInDay, long exerciseDate) {
+    public Exercise(int exerciseId, @NotNull String exerciseName, int exerciseOrderInDay, long exerciseDate) {
         this.exerciseId = exerciseId;
         this.exerciseName = exerciseName;
         this.exerciseOrderInDay = exerciseOrderInDay;

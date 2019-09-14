@@ -10,7 +10,6 @@ import java.util.List;
 import pl.kcworks.simplegymlog.model.GymLogRepository;
 import pl.kcworks.simplegymlog.model.Exercise;
 import pl.kcworks.simplegymlog.model.ExerciseWithSets;
-import pl.kcworks.simplegymlog.model.SingleSet;
 
 public class GymLogViewModel extends AndroidViewModel {
 
@@ -33,33 +32,8 @@ public class GymLogViewModel extends AndroidViewModel {
         return mGymLogRepository.getAllExercises();
     }
 
-    public LiveData<List<Exercise>> getExerciseForMonth(long date) {
-        return mGymLogRepository.getExercisesForMonth(date);
-    }
-
-
     public void insertExerciseWithSets(ExerciseWithSets exerciseWithSets) {
-        mGymLogRepository.insertExercisesWithSets(exerciseWithSets);
-    }
-
-    public long insertExercise(Exercise exercise) {
-        return mGymLogRepository.insertExercise(exercise);
-    }
-
-    public void updateExercise(Exercise exercise) {
-        mGymLogRepository.updateExercise(exercise);
-    }
-
-    public void insertMultipleSingleSets(List<SingleSet> singleSetList) {
-        mGymLogRepository.insertMultipleSingleSets(singleSetList);
-    }
-
-    public void updateSingleSet(SingleSet singleSet) {
-        mGymLogRepository.updateSingleSet(singleSet);
-    }
-
-    public void deleteMultipleSingleSets(List<SingleSet> singleSetList) {
-        mGymLogRepository.deleteMultipleSingleSets(singleSetList);
+        mGymLogRepository.insertExerciseWithSets(exerciseWithSets);
     }
 
     public void deleteExercises(List<Exercise> exercises) {
