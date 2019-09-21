@@ -23,6 +23,10 @@ public class Routine implements GymLogListItem {
         this.routineName = routineName;
     }
 
+    public static Routine createEmpty() {
+        return new Routine("");
+    }
+
     public int getRoutineId() {
         return routineId;
     }

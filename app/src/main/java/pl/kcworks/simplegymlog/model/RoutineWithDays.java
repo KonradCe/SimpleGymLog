@@ -24,6 +24,12 @@ public class RoutineWithDays implements GymLogListItem{
         this.dayOfRoutineList = dayOfRoutineList;
     }
 
+    public static RoutineWithDays createEmpty() {
+        Routine routine = Routine.createEmpty();
+        List<DayOfRoutine> dayOfRoutineList = DayOfRoutine.createEmpty();
+        return new RoutineWithDays(routine, dayOfRoutineList);
+    }
+
     public Routine getRoutine() {
         return routine;
     }

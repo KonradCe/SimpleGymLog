@@ -32,12 +32,15 @@ import pl.kcworks.simplegymlog.R;
 import pl.kcworks.simplegymlog.model.Exercise;
 import pl.kcworks.simplegymlog.model.ExerciseWithSets;
 import pl.kcworks.simplegymlog.model.GymLogType;
+import pl.kcworks.simplegymlog.model.db.DataTypeConverter;
 import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
+import pl.kcworks.simplegymlog.viewmodel.RoutineSelectorViewModel;
 
 public class WorkoutActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String DATE_OF_EXERCISE_TAG = "DATE_OF_EXERCISE_TAG";
     private static final int COPY_EXERCISES_REQUEST_CODE = 31416;
+    private static final int SELECT_DAY_OF_ROUTINE_REQUEST_CODE = 31417;
     // TODO[3]: standardize field names and widgets ids
     private final String TAG = "KCTag-" + WorkoutActivity.class.getSimpleName();
     // TODO[3]: not sure if this variable is needed yet
@@ -205,13 +208,15 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
 
             case (R.id.workout_bt_add_exercise_additional):
             case (R.id.workout_fab_addExercise):
-                Intent intent = new Intent(this, AddExerciseActivity.class);
-                intent.putExtra(DATE_OF_EXERCISE_TAG, mDateOfExercise);
-                startActivity(intent);
+                Intent addExerciseActivityIntent = new Intent(this, AddExerciseActivity.class);
+                addExerciseActivityIntent.putExtra(DATE_OF_EXERCISE_TAG, mDateOfExercise);
+                startActivity(addExerciseActivityIntent);
                 break;
 
             case (R.id.workout_bt_routine):
-                // add exercises from routine
+                Intent selectDayOfRoutineIntent = new Intent(this, RoutineSelectorActivity.class);
+                selectDayOfRoutineIntent.putExtra(RoutineSelectorActivity.SELECTOR_ACTIVITY_MODE, RoutineSelectorActivity.SELECT_DAY);
+                startActivityForResult(selectDayOfRoutineIntent, SELECT_DAY_OF_ROUTINE_REQUEST_CODE);
                 break;
 
         }
@@ -227,7 +232,17 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
             if (resultCode == Activity.RESULT_OK) {
                 int[] idsOfExercisesToCopy = data.getIntArrayExtra(CopyExercisesActivity.IDS_OF_EXERCISES_TO_COPY_TAG);
                 getExercisesWithSetsToCopyFromDb(idsOfExercisesToCopy);
-            } else if (resultCode == RESULT_CANCELED) {
+            }
+            else if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(this, "result canceled", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else if (requestCode == SELECT_DAY_OF_ROUTINE_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                String dayOfRoutineJson = data.getStringExtra(RoutineSelectorActivity.DAY_OUF_ROUTINE_STRING_EXTRA);
+                mGymLogViewModel.insertDayOfRoutineAsExercises(DataTypeConverter.stringToDayOfRoutine(dayOfRoutineJson), mDateOfExercise);
+            }
+            else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "result canceled", Toast.LENGTH_SHORT).show();
             }
         }
@@ -264,7 +279,6 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         return true;
     }
 
-    // TODO[1]: this should be static or leaks will occur
     private static class GetExercisesFromDbAsyncTask extends AsyncTask <Integer , Void, List<ExerciseWithSets>> {
 
         private GymLogRepository repository;

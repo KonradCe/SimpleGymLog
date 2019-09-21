@@ -10,6 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.RoutineSelectorActivity"></activity>
+        <activity android:name=".ui.RoutineEditorActivity" />
         <activity android:name=".ui.CopyExercisesActivity" /> <!-- TODO[3]: this is an excuse of a solution. It blocks screen rotation so changes done to the exercise while editing won't reset -->
         <activity
             android:name=".ui.AddExerciseActivity"

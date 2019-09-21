@@ -25,6 +25,17 @@ public interface RoutineDao {
     @Query("SELECT * FROM routines_table ORDER BY routineId")
     LiveData<List<RoutineWithDays>> getAllRoutinesWithDays();
 
+    @Query("SELECT * FROM routines_table ORDER BY routineId")
+    LiveData<List<Routine>> getAllRoutines();
+
+    @Transaction
+    @Query("SELECT * FROM routines_table WHERE routineId=:id")
+    LiveData<RoutineWithDays> getRoutinesWithDaysById(int id);
+
+
+
+
+
 }
 
 

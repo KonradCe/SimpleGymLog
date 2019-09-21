@@ -53,16 +53,15 @@ public class ExerciseViewModel extends AndroidViewModel {
         exerciseWithSetsMutableLiveData.setValue(exerciseWithSets);
     }
 
-    public void saveToDb(boolean isInEditMode) {
+    public void saveToDb(AddExerciseActivity.ActivityMode mode) {
         ExerciseWithSets exerciseWithSets = exerciseWithSetsMutableLiveData.getValue();
 
-        if(isInEditMode) {
-            repository.updateExerciseWithSets(exerciseWithSets);
-        }
-        else {
+        if(mode == AddExerciseActivity.ActivityMode.ADD_EXERCISE) {
             repository.insertExerciseWithSets(exerciseWithSets);
         }
-
+        else if (mode == AddExerciseActivity.ActivityMode.EDIT_EXERCISE) {
+            repository.updateExerciseWithSets(exerciseWithSets);
+        }
     }
 
     public void setToAddModifyRepsBy(int modifier) {
@@ -72,7 +71,7 @@ public class ExerciseViewModel extends AndroidViewModel {
         singleSetToAddMutableLiveData.setValue(singleSet);
     }
 
-    public void addSet(boolean isInEditMode) {
+    public void addSet() {
         ExerciseWithSets exerciseWithSets = exerciseWithSetsMutableLiveData.getValue();
         SingleSet singleSet = singleSetToAddMutableLiveData.getValue();
         SingleSet singleSetToAdd = SingleSet.createNewSetFromExisting(singleSet);

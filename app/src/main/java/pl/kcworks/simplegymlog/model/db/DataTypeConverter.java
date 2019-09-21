@@ -10,12 +10,13 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import pl.kcworks.simplegymlog.model.DayOfRoutine;
 import pl.kcworks.simplegymlog.model.ExerciseWithSets;
 
 public class DataTypeConverter {
 
     @TypeConverter
-    public static List<ExerciseWithSets> fromStringToExerciseWithSetsList(String json) {
+    public static List<ExerciseWithSets> stringToExerciseWithSetsList(String json) {
         Moshi moshi = new Moshi.Builder().build();
         Type type = Types.newParameterizedType(List.class, ExerciseWithSets.class);
         JsonAdapter<List<ExerciseWithSets>> jsonAdapter = moshi.adapter(type);
@@ -29,7 +30,7 @@ public class DataTypeConverter {
     }
 
     @TypeConverter
-    public static String fromExerciseWithSetsListToString (List<ExerciseWithSets> exerciseWithSetsList) {
+    public static String exerciseWithSetsListToString(List<ExerciseWithSets> exerciseWithSetsList) {
         Moshi moshi = new Moshi.Builder().build();
         Type type = Types.newParameterizedType(List.class, ExerciseWithSets.class);
         JsonAdapter<List<ExerciseWithSets>> jsonAdapter = moshi.adapter(type);
@@ -55,6 +56,24 @@ public class DataTypeConverter {
         return null;
     }
 
+    public static String dayOfRoutineToString(DayOfRoutine dayOfRoutine) {
+        Moshi moshi = new Moshi.Builder().build();
+        JsonAdapter<DayOfRoutine> jsonAdapter = moshi.adapter(DayOfRoutine.class);
+
+        return jsonAdapter.toJson(dayOfRoutine);
+    }
+
+    public static DayOfRoutine stringToDayOfRoutine(String json) {
+        Moshi moshi = new Moshi.Builder().build();
+        JsonAdapter<DayOfRoutine> jsonAdapter = moshi.adapter(DayOfRoutine.class);
+
+        try {
+            return jsonAdapter.fromJson(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }
 
-// DataTypeConverter

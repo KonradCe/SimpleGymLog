@@ -13,23 +13,34 @@ import pl.kcworks.simplegymlog.model.GymLogRepository;
 import pl.kcworks.simplegymlog.model.Routine;
 import pl.kcworks.simplegymlog.model.RoutineWithDays;
 
-public class RoutineViewModel extends AndroidViewModel {
+public class RoutineEditorViewModel extends AndroidViewModel {
 
     private GymLogRepository repository;
-    private LiveData<List<RoutineWithDays>> routineWithDaysList;
+    private RoutineWithDays cachedRoutineWithDays;
 
-    public RoutineViewModel(@NonNull Application application) {
+    public RoutineEditorViewModel(@NonNull Application application) {
         super(application);
         repository = GymLogRepository.getInstance(application);
-        routineWithDaysList = repository.getAllRoutinesWithDays();
     }
 
-    public LiveData<List<RoutineWithDays>> getRoutineWithDaysList() {
-        return routineWithDaysList;
+    public RoutineWithDays getCachedRoutineWithDays() {
+        return cachedRoutineWithDays;
+    }
+
+    public void setCachedRoutineWithDays(RoutineWithDays cachedRoutineWithDays) {
+        this.cachedRoutineWithDays = cachedRoutineWithDays;
+    }
+
+    public LiveData<RoutineWithDays> getRoutineWithDaysById(int routineId) {
+        return repository.getRoutinesWithDaysById(routineId);
     }
 
     public void insertRoutine(RoutineWithDays routineWithDays) {
         repository.insertRoutineWithDays(routineWithDays);
+    }
+
+    public void insertDayOfRoutine(DayOfRoutine dayOfRoutine) {
+        repository.insertDayOfRoutine(dayOfRoutine);
     }
 
     public void updateRoutine(Routine routine) {

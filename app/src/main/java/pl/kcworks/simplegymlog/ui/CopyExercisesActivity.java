@@ -32,7 +32,7 @@ import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 public class CopyExercisesActivity extends AppCompatActivity {
 
     public static final String IDS_OF_EXERCISES_TO_COPY_TAG = "IDS_OF_EXERCISES_TO_COPY_TAG";
-    private final String TAG = "KCTag-" + WorkoutActivity.class.getSimpleName();
+    private final String TAG = "KCTag-" + CopyExercisesActivity.class.getSimpleName();
     private MaterialCalendarView mCalendarView;
     private TextView mExercisesInSelectedDayTextView;
     private List<ExerciseWithSets> mAllExercisesWithSets;

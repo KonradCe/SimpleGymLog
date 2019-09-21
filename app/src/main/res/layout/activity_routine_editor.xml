@@ -15,9 +15,9 @@
         android:layout_weight="1"/>
 
     <Button
-        android:id="@+id/bt_add_routine"
+        android:id="@+id/bt_add_day"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:text="add routine"/>
+        android:text="add day of routine"/>
 
 </LinearLayout>

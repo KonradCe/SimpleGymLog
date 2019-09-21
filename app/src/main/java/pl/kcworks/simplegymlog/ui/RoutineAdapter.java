@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,7 +26,7 @@ import pl.kcworks.simplegymlog.model.SingleSet;
 
 public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final String TAG = "KCTag-" + WorkoutAdapter.class.getSimpleName();
+    private static final String TAG = "KCTag-" + RoutineAdapter.class.getSimpleName();
 
     private static final int TYPE_ROUTINE = 0;
     private static final int TYPE_DAY = 1;
@@ -36,6 +37,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int DECORATOR_ADD_DAY_BT = 11;
     private static final int DECORATOR_ADD_EXERCISE_BT = 12;
 
+    private AdapterMode adapterMode;
     private List<GymLogListItem> gymLogItems = Collections.emptyList();
     private RoutineAdapterClickListener listener;
     private View.OnClickListener clickListener = new View.OnClickListener() {
@@ -48,12 +50,20 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     };
 
+    public RoutineAdapter(AdapterMode adapterMode) {
+        this.adapterMode = adapterMode;
+    }
 
     void setRoutineWithDaysList(List<RoutineWithDays> routineWithDaysList) {
         gymLogItems = flattenRoutineWithDaysList(routineWithDaysList);
         notifyDataSetChanged();
     }
 
+    void setRoutineList(List<Routine> routineList) {
+        List<GymLogListItem> gymLogListItems = (List<GymLogListItem>)(List<?>) routineList;
+        gymLogItems = gymLogListItems;
+        notifyDataSetChanged();
+    }
 
 
     private List<GymLogListItem> flattenRoutineWithDaysList(List<RoutineWithDays> routineWithDaysList) {
@@ -62,37 +72,49 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         for (RoutineWithDays routineWithDays : routineWithDaysList) {
             flatList.add(routineWithDays.getRoutine());
             flatList.addAll(flattenDayList(routineWithDays.getSortedDayOuRoutineList()));
-            RvExtras addDayButtonRvExtra = new RvExtras(GymLogType.RV_ADD_DAY_BT);
-            addDayButtonRvExtra.setParent(routineWithDays.getRoutine());
-            flatList.add(addDayButtonRvExtra);
-            flatList.add(new RvExtras(GymLogType.RV_DIVIDER));
+
         }
 
         return flatList;
     }
 
-    private List<GymLogListItem> flattenDayList(List<DayOfRoutine> dayOfRoutineList) {
+    private List<GymLogListItem> flattenDayList(List<DayOfRoutine> dayOfRoutineList ) {
         List<GymLogListItem> flatList = new ArrayList<>();
         for (DayOfRoutine dayOfRoutine : dayOfRoutineList) {
             flatList.add(dayOfRoutine);
-            flatList.addAll(flattenExerciseWithSetsList(dayOfRoutine.getExerciseWithSetsList()));
+            flatList.addAll(flattenExerciseWithSetsList(dayOfRoutine.getExerciseWithSetsList(), dayOfRoutine.getDayId()));
             RvExtras addExerciseButtonRvExtra =new RvExtras(GymLogType.RV_ADD_EXERCISE_BT);
             addExerciseButtonRvExtra.setParent(dayOfRoutine);
             flatList.add(addExerciseButtonRvExtra);
+            flatList.add(new RvExtras(GymLogType.RV_DIVIDER));
         }
         return flatList;
     }
 
-    private List<GymLogListItem> flattenExerciseWithSetsList (List<ExerciseWithSets> exerciseWithSetsList) {
+    private List<GymLogListItem> flattenExerciseWithSetsList (List<ExerciseWithSets> exerciseWithSetsList, int dayId) {
         List<GymLogListItem> flatList = new ArrayList<>();
         for (ExerciseWithSets exerciseWithSets : exerciseWithSetsList) {
-            flatList.add(exerciseWithSets.getExercise());
+            Exercise exercise =exerciseWithSets.getExercise();
+            exercise.setExerciseId(dayId);
+            exercise.setExerciseOrderInDay(exerciseWithSetsList.indexOf(exerciseWithSets));
+            flatList.add(exercise);
             flatList.addAll(exerciseWithSets.getExerciseSetList());
         }
         return flatList;
     }
 
-    public void setListener(RoutineAdapterClickListener listener) {
+    private GymLogListItem getParentOfType(int position, GymLogType parentType) {
+        GymLogListItem parent = null;
+        do {
+            position--;
+            parent = gymLogItems.get(position);
+        }
+        while (parent.getType() != parentType);
+
+        return parent;
+    }
+
+    void setListener(RoutineAdapterClickListener listener) {
         this.listener = listener;
     }
 
@@ -185,28 +207,53 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private void onBindRoutineItem(@NonNull RoutineViewHolder holder, int position) {
         Routine routine = ((Routine) gymLogItems.get(position));
         holder.routineNameTextView.setText(routine.getRoutineName());
-        holder.editRoutineImageView.setOnClickListener(clickListener);
-        holder.editRoutineImageView.setTag(routine);
+        if (adapterMode == AdapterMode.SELECT_ROUTINE) {
+            holder.editRoutineImageView.setVisibility(View.GONE);
+            holder.routineRowLinearLayout.setOnClickListener(clickListener);
+            holder.routineRowLinearLayout.setTag(routine);
+        }
+        else if (adapterMode == AdapterMode.EDIT_ROUTINE) {
+            holder.editRoutineImageView.setOnClickListener(clickListener);
+            holder.editRoutineImageView.setTag(routine);
+        }
     }
 
     private void onBindDayItem(@NonNull DayViewHolder holder, int position) {
         DayOfRoutine day = (DayOfRoutine) gymLogItems.get(position);
         holder.dayNameTextView.setText(day.getDayName());
-        holder.editDayImageView.setOnClickListener(clickListener);
-        holder.editDayImageView.setTag(day);
+        if (adapterMode == AdapterMode.SELECT_ROUTINE) {
+            holder.editDayImageView.setVisibility(View.GONE);
+            holder.dayRowLinearLayout.setOnClickListener(clickListener);
+            holder.dayRowLinearLayout.setTag(day);
+        }
+        else if (adapterMode == AdapterMode.EDIT_ROUTINE) {
+            holder.editDayImageView.setOnClickListener(clickListener);
+            holder.editDayImageView.setTag(day);
+        }
     }
 
     private void onBindExerciseItem(@NonNull ExerciseViewHolder holder, int position) {
         Exercise exercise = (Exercise) gymLogItems.get(position);
         holder.exerciseNameTextView.setText(exercise.getExerciseName());
-        holder.editExerciseImageView.setOnClickListener(clickListener);
-        holder.editExerciseImageView.setTag(exercise);
+        if (adapterMode == AdapterMode.SELECT_ROUTINE) {
+            holder.editExerciseImageView.setVisibility(View.GONE);
+            holder.exerciseRowLinearLayout.setOnClickListener(clickListener);
+            holder.exerciseRowLinearLayout.setTag(getParentOfType(position, GymLogType.DAY));
+        }
+        else if (adapterMode == AdapterMode.EDIT_ROUTINE) {
+            holder.editExerciseImageView.setOnClickListener(clickListener);
+            holder.editExerciseImageView.setTag(exercise);
+        }
     }
 
     private void onBindSetItem(@NonNull SetViewHolder holder, int position) {
         SingleSet set = (SingleSet) gymLogItems.get(position);
         holder.setRepsTextView.setText(Integer.toString(set.getReps()));
         holder.setWeightTextView.setText(Double.toString(set.getWeight()));
+        if (adapterMode == AdapterMode.SELECT_ROUTINE) {
+            holder.setRowLinearLayout.setOnClickListener(clickListener);
+            holder.setRowLinearLayout.setTag(getParentOfType(position, GymLogType.DAY));
+        }
     }
 
     @Override
@@ -215,11 +262,13 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     class RoutineViewHolder extends RecyclerView.ViewHolder {
-            private TextView routineNameTextView;
-            private ImageView editRoutineImageView;
+        private LinearLayout routineRowLinearLayout;
+        private TextView routineNameTextView;
+        private ImageView editRoutineImageView;
 
         RoutineViewHolder(@NonNull View itemView) {
             super(itemView);
+            routineRowLinearLayout = itemView.findViewById(R.id.ll_routine_row);
             routineNameTextView = itemView.findViewById(R.id.tv_routine_name);
             editRoutineImageView = itemView.findViewById(R.id.iv_edit_routine);
         }
@@ -227,40 +276,45 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     class DayViewHolder extends RecyclerView.ViewHolder {
+        private LinearLayout dayRowLinearLayout;
         private TextView dayNameTextView;
         private ImageView editDayImageView;
 
         DayViewHolder(@NonNull View itemView) {
             super(itemView);
+            dayRowLinearLayout = itemView.findViewById(R.id.ll_day_row);
             dayNameTextView = itemView.findViewById(R.id.tv_day_name);
             editDayImageView = itemView.findViewById(R.id.iv_edit_day);
         }
     }
 
     class ExerciseViewHolder extends RecyclerView.ViewHolder {
+        private LinearLayout exerciseRowLinearLayout;
         private TextView exerciseNameTextView;
         private ImageView editExerciseImageView;
 
         ExerciseViewHolder(@NonNull View itemView) {
             super(itemView);
+            exerciseRowLinearLayout = itemView.findViewById(R.id.ll_exercise_row);
             exerciseNameTextView = itemView.findViewById(R.id.tv_exercise_name);
             editExerciseImageView = itemView.findViewById(R.id.iv_edit_exercise);
         }
     }
 
     class SetViewHolder extends RecyclerView.ViewHolder {
+        private LinearLayout setRowLinearLayout;
         private TextView setRepsTextView;
         private TextView setWeightTextView;
 
         SetViewHolder(@NonNull View itemView) {
             super(itemView);
+            setRowLinearLayout = itemView.findViewById(R.id.ll_set_row);
             setRepsTextView = itemView.findViewById(R.id.tv_set_reps);
             setWeightTextView = itemView.findViewById(pl.kcworks.simplegymlog.R.id.tv_set_weight);
         }
     }
 
-
-    private class RvExtras implements GymLogListItem, ConnectButtonWithObject{
+    class RvExtras implements GymLogListItem, ConnectWithParentObject {
 
         GymLogType type;
         GymLogListItem correspondingObject;
@@ -295,11 +349,14 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         void onItemClicked(GymLogListItem clickedView);
     }
 
-    private interface ConnectButtonWithObject {
-
+    private interface ConnectWithParentObject {
         void setParent(GymLogListItem parent);
         GymLogListItem getParent();
     }
 
-
+    enum AdapterMode{
+        SELECT_ROUTINE,
+        SELECT_DAY,
+        EDIT_ROUTINE
+    }
 }

@@ -2,6 +2,8 @@ package pl.kcworks.simplegymlog.ui;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -30,13 +31,13 @@ import java.util.List;
 
 import pl.kcworks.simplegymlog.DateConverterHelper;
 import pl.kcworks.simplegymlog.R;
+import pl.kcworks.simplegymlog.model.DayOfRoutine;
 import pl.kcworks.simplegymlog.model.Exercise;
 import pl.kcworks.simplegymlog.model.ExerciseWithSets;
 import pl.kcworks.simplegymlog.model.SingleSet;
 import pl.kcworks.simplegymlog.model.db.DataTypeConverter;
 import pl.kcworks.simplegymlog.viewmodel.ExerciseViewModel;
 
-import static java.lang.Thread.sleep;
 
 public class AddExerciseActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -47,10 +48,15 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
     public static final String TAG = "KCtag-" + AddExerciseActivity.class.getSimpleName();
     public static final String UPDATE_EXERCISE_EXTRA = "UPDATE_EXERCISE_EXTRA";
+    public static final String ROUTINE_ADD_EXERCISE = "ROUTINE_ADD_EXERCISE";
+    public static final String ROUTINE_EDIT_EXERCISE = "ROUTINE_EDIT_EXERCISE";
+    public static final String ROUTINE_EDIT_EXERCISE_ORDER = "ROUTINE_EDIT_EXERCISE_ORDER";
+    public static final String ROUTINE_RESULT = "ROUTINE_RESULT";
+
     private static final String PREFS_FILE = "EXERCISE_MAXES";
 
     private int setNumber = 0;     // variable to keep track and display number of sets added by the user
-    private boolean editMode = false; // states if activity was started to edit existing exercise (true) or if to add new (false)
+    private ActivityMode activityMode; 
     private boolean tmPercentageMode = false; // states if the weight of the exercise is determined by the maximum weight user can train with - Training Max or TM
     private long exerciseDate;
     private long mLastClickTime = 0; // this variable prevents from double clicking on the save button (this would result in "double saving"
@@ -99,7 +105,6 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         exerciseViewModel.getSingleSetToAddMutableLiveData().observe(this, new Observer<SingleSet>() {
             @Override
             public void onChanged(SingleSet singleSet) {
-                Log.i(TAG, singleSet.toString());
                 updateSetToAddRelatedViews(singleSet);
             }
         });
@@ -108,15 +113,37 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     private void getDataFromIntent(Intent intent) {
         // check if the activity was launched to edit exercise - and if so to act on it
         ExerciseWithSets exerciseWithSets;
+        
+        // check if exercise is in edit mode -> we are modifying existing exercise
         if (getIntent().hasExtra(UPDATE_EXERCISE_EXTRA)) {
-            editMode = true;
+            activityMode = ActivityMode.EDIT_EXERCISE;
             saveExerciseButton.setText("Update exercise");
 
             String json = intent.getStringExtra(UPDATE_EXERCISE_EXTRA);
             exerciseWithSets = DataTypeConverter.stringToExerciseWithSets(json);
         }
+        
+        // if true we are adding new exercise to routine
+        else if (getIntent().hasExtra(ROUTINE_ADD_EXERCISE)) {
+            activityMode = ActivityMode.ADD_EXERCISE_TO_ROUTINE;
+
+            Exercise exercise = new Exercise("", 5);
+            List<SingleSet> singleSetList = new ArrayList<>();
+            exerciseWithSets = new ExerciseWithSets(exercise, singleSetList);
+        }
+        
+        // if true we are modifying exercise from routine
+        else if (getIntent().hasExtra(ROUTINE_EDIT_EXERCISE)) {
+            activityMode = ActivityMode.EDIT_EXERCISE_FROM_ROUTINE;
+
+            String json = intent.getStringExtra(ROUTINE_EDIT_EXERCISE);
+            int exerciseOrderInDay = intent.getIntExtra(ROUTINE_EDIT_EXERCISE_ORDER, -1);
+
+            exerciseWithSets = DataTypeConverter.stringToDayOfRoutine(json).getExerciseWithSetsList().get(exerciseOrderInDay);
+        }
 
         else {
+            activityMode = ActivityMode.ADD_EXERCISE;
             // TODO[1] value of exerciseOrderInDay should be calculated accordingly
             exerciseDate = intent.getLongExtra(WorkoutActivity.DATE_OF_EXERCISE_TAG, 19901029);
             Exercise exercise = new Exercise("", 5, exerciseDate);
@@ -164,6 +191,8 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         repsMinusButton = findViewById(R.id.addExerciseActivity_bt_repsMinus);
         repsMinusButton.setOnClickListener(this);
         repsEditText = findViewById(R.id.addExerciseActivity_et_reps);
+        // TODO[1]: when modifing reps with a button it sets SingleSetToAdd field 2 times;
+        //  pressing button -> sets reps +1 -> SetToAdd changes and notifies observer -> repsEditText.setText(reps+1) -> onTextChangeListener sets again value of reps
         repsEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -228,7 +257,11 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         Exercise exercise = exerciseWithSets.getExercise();
         List<SingleSet> singleSetList = exerciseWithSets.getExerciseSetList();
 
-        exerciseDateTextView.setText(DateConverterHelper.fromLongToString(exercise.getExerciseDate()));
+        try {
+            exerciseDateTextView.setText(DateConverterHelper.fromLongToString(exercise.getExerciseDate()));
+        } catch (StringIndexOutOfBoundsException ignored) {
+        }
+
         exerciseNameEditText.setText(exercise.getExerciseName());
 
 
@@ -263,26 +296,21 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         LinearLayout setView = (LinearLayout) getLayoutInflater().inflate(R.layout.item_add_set, null);
         TextView setNumberTextView = setView.findViewById(R.id.item_addSet_tv_setNumber);
         setNumberTextView.setText(Integer.toString(setNumber));
-        if (singleSet.getReps() != 0 && singleSet.getWeight() != 0) {
-            TextView setReps = setView.findViewById(R.id.item_addSet_tv_setReps);
-            setReps.setText(Integer.toString(singleSet.getReps()));
-            TextView setWeight = setView.findViewById(R.id.item_addSet_tv_setWeight);
-            setWeight.setText(Double.toString(singleSet.getWeight()));
+        TextView setReps = setView.findViewById(R.id.item_addSet_tv_setReps);
+        setReps.setText(Integer.toString(singleSet.getReps()));
+        TextView setWeight = setView.findViewById(R.id.item_addSet_tv_setWeight);
+        setWeight.setText(Double.toString(singleSet.getWeight()));
 
-            if (singleSet.isBasedOnTm()) {
-                TextView percentageOfMaxTextView = setView.findViewById(R.id.item_addSet_tv_percentageOfMax);
-                percentageOfMaxTextView.setVisibility(View.VISIBLE);
-                String percentageOfMaxInfo = singleSet.getPercentageOfTm() + "% of " + singleSet.getTrainingMax();
-                percentageOfMaxTextView.setText(percentageOfMaxInfo);
-            }
-            setView.setTag(this.setNumber);
-            setView.setOnClickListener(onSetClickListener);
-            setListLinearLayout.addView(setView);
+        if (singleSet.isBasedOnTm()) {
+            TextView percentageOfMaxTextView = setView.findViewById(R.id.item_addSet_tv_percentageOfMax);
+            percentageOfMaxTextView.setVisibility(View.VISIBLE);
+            String percentageOfMaxInfo = singleSet.getPercentageOfTm() + "% of " + singleSet.getTrainingMax();
+            percentageOfMaxTextView.setText(percentageOfMaxInfo);
         }
+        setView.setTag(this.setNumber);
+        setView.setOnClickListener(onSetClickListener);
+        setListLinearLayout.addView(setView);
 
-        else {
-            Toast.makeText(this, "set can not have 0 reps or 0 weight", Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void removeLastSet() {
@@ -290,8 +318,42 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void onSaveButtonPress() {
-        exerciseViewModel.saveToDb(editMode);
+        switch (activityMode) {
+            case ADD_EXERCISE:
+            case EDIT_EXERCISE:
+                exerciseViewModel.saveToDb(activityMode);
+                break;
+            case ADD_EXERCISE_TO_ROUTINE:
+                addNewExerciseToRoutine();
+                break;
+            case EDIT_EXERCISE_FROM_ROUTINE:
+                updateExerciseInRoutine();
+
+                break;
+        }
         finish();
+    }
+
+    private void addNewExerciseToRoutine() {
+        ExerciseWithSets exerciseWithSetsToAdd = exerciseViewModel.getExerciseWithSetsMutableLiveData().getValue();
+        String dayOfRoutineJson = getIntent().getStringExtra(ROUTINE_ADD_EXERCISE);
+        DayOfRoutine dayOfRoutine = DataTypeConverter.stringToDayOfRoutine(dayOfRoutineJson);
+        dayOfRoutine.getExerciseWithSetsList().add(exerciseWithSetsToAdd);
+
+        Intent intent = new Intent();
+        intent.putExtra(ROUTINE_RESULT, DataTypeConverter.dayOfRoutineToString(dayOfRoutine));
+        setResult(Activity.RESULT_OK, intent);
+    }
+
+    private void updateExerciseInRoutine() {
+        ExerciseWithSets exerciseWithSetsToAdd = exerciseViewModel.getExerciseWithSetsMutableLiveData().getValue();
+        String dayOfRoutineJson = getIntent().getStringExtra(ROUTINE_EDIT_EXERCISE);
+        DayOfRoutine dayOfRoutine = DataTypeConverter.stringToDayOfRoutine(dayOfRoutineJson);
+        dayOfRoutine.getExerciseWithSetsList().set(getIntent().getIntExtra(ROUTINE_EDIT_EXERCISE_ORDER, -1), exerciseWithSetsToAdd);
+
+        Intent intent = new Intent();
+        intent.putExtra(ROUTINE_RESULT, DataTypeConverter.dayOfRoutineToString(dayOfRoutine));
+        setResult(Activity.RESULT_OK, intent);
     }
 
     // 4 methods changing interface accordingly to what buttons were pressed and if the weight will be added based on TM (tmPercentageMode)
@@ -378,7 +440,12 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
                 weightPlus();
                 break;
             case (R.id.addExerciseActivity_bt_addSet):
-                exerciseViewModel.addSet(editMode);
+                if (exerciseViewModel.getSingleSetToAddMutableLiveData().getValue().getReps() == 0) {
+                    Toast.makeText(this, "set can not have 0 reps", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    exerciseViewModel.addSet();
+                }
                 break;
 
             case (R.id.addExerciseActivity_bt_deleteSet):
@@ -413,6 +480,13 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             repsEditText.setText(setRepsTextView.getText());
 
         }
+    }
+    
+    public enum ActivityMode{
+        ADD_EXERCISE,
+        EDIT_EXERCISE,
+        ADD_EXERCISE_TO_ROUTINE,
+        EDIT_EXERCISE_FROM_ROUTINE
     }
 
 }

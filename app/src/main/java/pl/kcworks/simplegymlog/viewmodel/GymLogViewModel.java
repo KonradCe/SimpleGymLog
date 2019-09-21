@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
+import pl.kcworks.simplegymlog.model.DayOfRoutine;
 import pl.kcworks.simplegymlog.model.GymLogRepository;
 import pl.kcworks.simplegymlog.model.Exercise;
 import pl.kcworks.simplegymlog.model.ExerciseWithSets;
@@ -42,5 +43,12 @@ public class GymLogViewModel extends AndroidViewModel {
 
     public void deleteSingleExercise(Exercise exercise) {
         mGymLogRepository.deleteExercise(exercise);
+    }
+
+    public void insertDayOfRoutineAsExercises(DayOfRoutine dayOfRoutine, long dateOfExercise) {
+        for (ExerciseWithSets exerciseWithSets : dayOfRoutine.getExerciseWithSetsList()) {
+            exerciseWithSets.getExercise().setExerciseDate(dateOfExercise);
+        }
+        mGymLogRepository.insertDayOfRoutineAsExercises(dayOfRoutine);
     }
 }

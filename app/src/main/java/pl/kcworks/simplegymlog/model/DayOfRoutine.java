@@ -5,6 +5,7 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import pl.kcworks.simplegymlog.model.db.DataTypeConverter;
@@ -31,6 +32,10 @@ public class DayOfRoutine implements GymLogListItem, Comparable<DayOfRoutine>{
     public DayOfRoutine(String dayName, List<ExerciseWithSets> exerciseWithSetsList) {
         this.dayName = dayName;
         this.exerciseWithSetsList = exerciseWithSetsList;
+    }
+
+    public static List<DayOfRoutine> createEmpty() {
+        return new ArrayList<DayOfRoutine>();
     }
 
     public int getDayId() {

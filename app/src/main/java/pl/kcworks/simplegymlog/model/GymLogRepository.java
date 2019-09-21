@@ -4,6 +4,7 @@ import android.app.Application;
 import androidx.lifecycle.LiveData;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -13,9 +14,11 @@ import pl.kcworks.simplegymlog.model.db.ExerciseDao;
 import pl.kcworks.simplegymlog.model.db.GymLogRoomDatabase;
 import pl.kcworks.simplegymlog.model.db.RoutineDao;
 import pl.kcworks.simplegymlog.model.db.SingleSetDao;
+import pl.kcworks.simplegymlog.ui.WorkoutActivity;
 
 public class GymLogRepository {
 
+    private final String TAG = "KCTag-" + GymLogRepository.class.getSimpleName();
     private static GymLogRepository sInstance;
 
     private RoutineDao routineDao;
@@ -46,6 +49,14 @@ public class GymLogRepository {
         return routineDao.getAllRoutinesWithDays();
     }
 
+    public LiveData<RoutineWithDays> getRoutinesWithDaysById(int routineId) {
+        return routineDao.getRoutinesWithDaysById(routineId);
+    }
+
+    public LiveData<List<Routine>> getRoutines() {
+        return routineDao.getAllRoutines();
+    }
+
     public LiveData<List<Exercise>> getAllExercises() {
         return exerciseDao.getAllExercises();
     }
@@ -69,6 +80,16 @@ public class GymLogRepository {
     public void insertRoutineWithDays(RoutineWithDays routineWithDays) {
         InsertRoutineWithDaysAsyncTask task = new InsertRoutineWithDaysAsyncTask(routineDao, dayOfRoutineDao);
         task.execute(routineWithDays);
+    }
+
+    public void insertDayOfRoutine(DayOfRoutine dayOfRoutine) {
+        InsertDayOfRoutineAsyncTask task = new InsertDayOfRoutineAsyncTask(dayOfRoutineDao);
+        task.execute(dayOfRoutine);
+    }
+
+    public void insertDayOfRoutineAsExercises(DayOfRoutine dayOfRoutine) {
+        InsertDayOufRoutineAsExercisesAsyncTask task = new InsertDayOufRoutineAsExercisesAsyncTask(exerciseDao, singleSetDao);
+        task.execute(dayOfRoutine);
     }
 
     public void updateRoutine(Routine routine) {
@@ -109,7 +130,7 @@ public class GymLogRepository {
         private RoutineDao routineDao;
         private DayOfRoutineDao dayOfRoutineDao;
 
-        public InsertRoutineWithDaysAsyncTask(RoutineDao routineDao, DayOfRoutineDao dayOfRoutineDao) {
+        InsertRoutineWithDaysAsyncTask(RoutineDao routineDao, DayOfRoutineDao dayOfRoutineDao) {
             this.routineDao = routineDao;
             this.dayOfRoutineDao = dayOfRoutineDao;
         }
@@ -124,6 +145,48 @@ public class GymLogRepository {
                 dayOfRoutine.setParentRoutineId(routineId);
             }
             dayOfRoutineDao.insertMultiple(dayOfRoutineList);
+            return null;
+        }
+    }
+
+    private static class InsertDayOfRoutineAsyncTask extends AsyncTask<DayOfRoutine, Void, Void> {
+        private DayOfRoutineDao dayOfRoutineDao;
+
+        InsertDayOfRoutineAsyncTask(DayOfRoutineDao dayOfRoutineDao) {
+            this.dayOfRoutineDao = dayOfRoutineDao;
+        }
+
+
+        @Override
+        protected Void doInBackground(DayOfRoutine... daysOfRoutine) {
+            DayOfRoutine dayOfRoutine = daysOfRoutine[0];
+            dayOfRoutineDao.insert(dayOfRoutine);
+            return null;
+        }
+    }
+
+    private static class InsertDayOufRoutineAsExercisesAsyncTask extends AsyncTask<DayOfRoutine, Void, Void> {
+        private ExerciseDao exerciseDao;
+        private SingleSetDao singleSetDao;
+
+        public InsertDayOufRoutineAsExercisesAsyncTask(ExerciseDao exerciseDao, SingleSetDao singleSetDao) {
+            this.exerciseDao = exerciseDao;
+            this.singleSetDao = singleSetDao;
+        }
+
+        @Override
+        protected Void doInBackground(DayOfRoutine... dayOfRoutines) {
+            List<ExerciseWithSets> exerciseWithSetsList = dayOfRoutines[0].getExerciseWithSetsList();
+            for (ExerciseWithSets exerciseWithSets : exerciseWithSetsList) {
+                Exercise exerciseToInsert = Exercise.createNewFromExisting(exerciseWithSets.getExercise());
+                long exerciseId = exerciseDao.insert(exerciseToInsert);
+                List<SingleSet> singleSetList = exerciseWithSets.getExerciseSetList();
+                for (SingleSet ss : singleSetList) {
+                    ss.setCorrespondingExerciseId(exerciseId);
+                }
+                singleSetDao.insertMultiple(singleSetList);
+
+            }
             return null;
         }
     }
