@@ -33,5 +33,9 @@ public class RoutineSelectorViewModel extends AndroidViewModel {
         repository.insertRoutineWithDays(routineWithDays);
     }
 
+    public void deleteSingleRoutine(Routine routine) {
+        repository.deleteRoutine(routine);
+    }
+
 
 }

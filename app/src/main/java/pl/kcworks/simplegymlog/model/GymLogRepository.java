@@ -126,6 +126,11 @@ public class GymLogRepository {
         task.execute(exercise);
     }
 
+    public void deleteRoutine(Routine routine) {
+        DeleteRoutineAsyncTask task = new DeleteRoutineAsyncTask(routineDao);
+        task.execute(routine);
+    }
+
     private static class InsertRoutineWithDaysAsyncTask extends AsyncTask<RoutineWithDays, Void, Void> {
         private RoutineDao routineDao;
         private DayOfRoutineDao dayOfRoutineDao;
@@ -290,6 +295,20 @@ public class GymLogRepository {
             for (Exercise exercise : exercises) {
                 exerciseDao.deleteExercise(exercise);
             }
+            return null;
+        }
+    }
+
+    private static class DeleteRoutineAsyncTask extends AsyncTask<Routine, Void, Void> {
+        private RoutineDao routineDao;
+
+        public DeleteRoutineAsyncTask(RoutineDao routineDao) {
+            this.routineDao = routineDao;
+        }
+
+        @Override
+        protected Void doInBackground(Routine... routines) {
+            routineDao.delete(routines[0]);
             return null;
         }
     }

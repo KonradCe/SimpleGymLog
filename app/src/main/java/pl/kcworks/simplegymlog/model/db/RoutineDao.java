@@ -2,6 +2,7 @@ package pl.kcworks.simplegymlog.model.db;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
@@ -20,6 +21,9 @@ public interface RoutineDao {
 
     @Update
     void update(Routine routine);
+
+    @Delete
+    void delete(Routine routine);
 
     @Transaction
     @Query("SELECT * FROM routines_table ORDER BY routineId")

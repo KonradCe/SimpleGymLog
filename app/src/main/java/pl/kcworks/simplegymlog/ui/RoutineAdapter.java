@@ -1,6 +1,8 @@
 package pl.kcworks.simplegymlog.ui;
 
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -50,6 +52,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     };
 
+
     public RoutineAdapter(AdapterMode adapterMode) {
         this.adapterMode = adapterMode;
     }
@@ -64,6 +67,10 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         notifyDataSetChanged();
     }
 
+    public List<GymLogListItem> getGymLogItems() {
+        return gymLogItems;
+    }
+
     private List<GymLogListItem> flattenRoutineOnlyList(List<Routine> routineList) {
         ArrayList<GymLogListItem> list = new ArrayList<>();
 
@@ -75,7 +82,6 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return list;
 
     }
-
 
     private List<GymLogListItem> flattenRoutineWithDaysList(List<RoutineWithDays> routineWithDaysList) {
         List<GymLogListItem> flatList = new ArrayList<>();
@@ -274,7 +280,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return gymLogItems.size();
     }
 
-    class RoutineViewHolder extends RecyclerView.ViewHolder {
+    class RoutineViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         private LinearLayout routineRowLinearLayout;
         private TextView routineNameTextView;
         private Button editRoutineButton;
@@ -284,6 +290,14 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             routineRowLinearLayout = itemView.findViewById(R.id.ll_routine_row);
             routineNameTextView = itemView.findViewById(R.id.tv_routine_name);
             editRoutineButton = itemView.findViewById(R.id.iv_edit_routine);
+
+            itemView.setOnCreateContextMenuListener(this);
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+            //TODO[3]: export hardcoded string
+            contextMenu.add(this.getAdapterPosition(),1, 1, "delete routine");
         }
 
     }

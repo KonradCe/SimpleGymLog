@@ -145,19 +145,11 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.Exercise
 
         }
 
-
-
         @Override
         public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
             //TODO[3]: export hardcoded string
-//            MenuItem delete = contextMenu.add(this.getAdapterPosition(),1, 1, "delete exercise");
             contextMenu.add(this.getAdapterPosition(),1, 1, "delete exercise");
         }
     }
-
-    public interface WorkoutAdapterClickListener {
-        void onItemClicked(GymLogType itemClicked);
-    }
-
 
 }

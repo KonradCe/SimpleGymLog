@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +23,7 @@ import pl.kcworks.simplegymlog.R;
 import pl.kcworks.simplegymlog.model.DayOfRoutine;
 import pl.kcworks.simplegymlog.model.Exercise;
 import pl.kcworks.simplegymlog.model.GymLogListItem;
+import pl.kcworks.simplegymlog.model.GymLogType;
 import pl.kcworks.simplegymlog.model.Routine;
 import pl.kcworks.simplegymlog.model.RoutineWithDays;
 import pl.kcworks.simplegymlog.model.SingleSet;
@@ -176,5 +178,14 @@ public class RoutineSelectorActivity extends AppCompatActivity implements View.O
         if (view.getId() == R.id.bt_add_routine) {
             addNewRoutine();
         }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        GymLogListItem listItem = adapter.getGymLogItems().get(item.getGroupId());
+        if (listItem.getType() == GymLogType.ROUTINE) {
+            routineSelectorViewModel.deleteSingleRoutine((Routine) listItem);
+        }
+        return true;
     }
 }
