@@ -1,24 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ll_day_row"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingTop="@dimen/very_small_margin"
+    android:paddingBottom="@dimen/very_small_margin"
+    android:layout_marginLeft="@dimen/routine_adapter_day"
     android:gravity="center_vertical"
-    android:layout_marginLeft="16dp">
+    android:orientation="horizontal">
 
     <TextView
         android:id="@+id/tv_day_name"
+        style="@style/TextAppearance.MaterialComponents.Headline6"
         android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_height="wrap_content"
-        tools:text="text"/>
+        tools:text="text" />
 
-    <ImageView
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/iv_edit_day"
+        style="@style/IconOnlyButton"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_edit_black_24dp"/>
+        android:layout_height="@dimen/routine_adapter_button_height"
+        app:icon="@drawable/ic_edit_black_24dp" />
 
 </LinearLayout>

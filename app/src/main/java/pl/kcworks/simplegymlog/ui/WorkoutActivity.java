@@ -10,13 +10,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,10 +30,8 @@ import pl.kcworks.simplegymlog.model.GymLogRepository;
 import pl.kcworks.simplegymlog.R;
 import pl.kcworks.simplegymlog.model.Exercise;
 import pl.kcworks.simplegymlog.model.ExerciseWithSets;
-import pl.kcworks.simplegymlog.model.GymLogType;
 import pl.kcworks.simplegymlog.model.db.DataTypeConverter;
 import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
-import pl.kcworks.simplegymlog.viewmodel.RoutineSelectorViewModel;
 
 public class WorkoutActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -50,8 +47,8 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
 
 
     private TextView mDateOfExerciseTextView;
-    private ImageView mPreviousDayArrowImageView;
-    private ImageView mNextDayArrowImageView;
+    private Button mPreviousDayArrowButton;
+    private Button mNextDayArrowButton;
     private RecyclerView mExerciseRecyclerView;
     private LinearLayout mAddExercisesOptionsLinearLayout;
     private FloatingActionButton mAddExerciseFaB;
@@ -82,10 +79,10 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
 
     private void setupViews() {
         mDateOfExerciseTextView = findViewById(R.id.workout_tv_exerciseDate);
-        mPreviousDayArrowImageView = findViewById(R.id.workout_iv_leftArrow);
-        mPreviousDayArrowImageView.setOnClickListener(this);
-        mNextDayArrowImageView = findViewById(R.id.workout_iv_rightArrow);
-        mNextDayArrowImageView.setOnClickListener(this);
+        mPreviousDayArrowButton = findViewById(R.id.workout_bt_leftArrow);
+        mPreviousDayArrowButton.setOnClickListener(this);
+        mNextDayArrowButton = findViewById(R.id.workout_bt_rightArrow);
+        mNextDayArrowButton.setOnClickListener(this);
         mExerciseRecyclerView = findViewById(R.id.workout_rv_exercises);
         mAddExercisesOptionsLinearLayout = findViewById(R.id.workout_ll_new_exercises_options);
         mAddExerciseFaB = findViewById(R.id.workout_fab_addExercise);
@@ -99,8 +96,6 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         mCopyPreviousWorkoutButton.setOnClickListener(this);
         mAddExerciseAdditionalButton = findViewById(R.id.workout_bt_add_exercise_additional);
         mAddExerciseAdditionalButton.setOnClickListener(this);
-
-
     }
 
     private void displayCurrentDate() {
@@ -194,11 +189,11 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case (R.id.workout_iv_leftArrow):
+            case (R.id.workout_bt_leftArrow):
                 loadPreviousDay();
                 break;
 
-            case (R.id.workout_iv_rightArrow):
+            case (R.id.workout_bt_rightArrow):
                 loadNextDay();
                 break;
 
@@ -258,12 +253,6 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.workout_menu_copy:
-                startCopyExerciseActivity();
-                break;
-            case R.id.workout_menu_addFromRoutine:
-                Toast.makeText(this, "not implemented yet", Toast.LENGTH_SHORT).show();
-                break;
             case R.id.workout_menu_delete:
                 deleteExercisesInCurrentDay();
                 break;

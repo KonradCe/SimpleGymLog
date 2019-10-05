@@ -63,6 +63,14 @@ public class SingleSet implements GymLogListItem{
                 existingSingleSet.isCompleted());
     }
 
+    public void updateWeightForCurrentPercentageOfTm(double roundingFactor) {
+        weight = roundTo((percentageOfTm * trainingMax) / 100, roundingFactor);
+    }
+
+    private double roundTo(double numberToRound, double roundingFactor) {
+        return Math.round(numberToRound / roundingFactor) * roundingFactor;
+    }
+
 
     @Override
     public String toString() {
@@ -123,7 +131,6 @@ public class SingleSet implements GymLogListItem{
     }
 
     public int getPercentageOfTm() {
-
         return percentageOfTm;
     }
 

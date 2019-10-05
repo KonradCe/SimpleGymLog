@@ -4,14 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log;
+
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.android.material.button.MaterialButton;
 
 import java.util.Collections;
 import java.util.List;
@@ -45,7 +46,7 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.Exercise
     @NonNull
     @Override
     public ExerciseViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = mInflater.inflate(R.layout.item_rv_exercise, viewGroup, false);
+        View itemView = mInflater.inflate(R.layout.item_card_view_exercise, viewGroup, false);
         return new ExerciseViewHolder(itemView);
     }
 
@@ -62,19 +63,26 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.Exercise
             if (singleSetList.size() != 0) {
                 // in case when we get recycled view where noSetsInfoTextView is visible
                 holder.noSetsInfoTextView.setVisibility(View.GONE);
+                holder.exerciseTopRow.setVisibility(View.VISIBLE);
                 for (SingleSet set : singleSetList) {
-                    LinearLayout newSet = (LinearLayout) mInflater.inflate(R.layout.item_rv_set, null);
-                    ((TextView) newSet.findViewById(R.id.rvitem_tv_setNumber)).setText(String.format("%d", singleSetList.indexOf(set) + 1));
-                    ((TextView) newSet.findViewById(R.id.rvitem_tv_setWeight)).setText("" + set.getWeight());
-                    ((TextView) newSet.findViewById(R.id.rvitem_tv_setReps)).setText("" + set.getReps());
+                    SetView setView = new SetView(mInflater.getContext());
+                    setView.setNumber(singleSetList.indexOf(set)  + 1);
+                    setView.setWeight(set.getWeight());
+                    setView.setReps(set.getReps());
 
-                    newSet.setTag(set.getSingleSetID());
+                    if(set.isBasedOnTm()) {
+                        setView.setTrainingMax(set.getTrainingMax());
+                        setView.setPercentageOfTm(set.getPercentageOfTm());
+                    }
 
-                    newSet.setOnClickListener(holder);
-                    holder.setListLinearLayout.addView(newSet);
+                    setView.setTag(set.getSingleSetID());
+
+                    setView.setOnClickListener(holder);
+                    holder.setListLinearLayout.addView(setView);
                 }
             } else {
                 holder.noSetsInfoTextView.setVisibility(View.VISIBLE);
+                holder.exerciseTopRow.setVisibility(View.GONE);
             }
 
         } else {
@@ -95,19 +103,22 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.Exercise
     class ExerciseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
         private TextView exerciseNameTextView;
         private LinearLayout setListLinearLayout;
+        private LinearLayout exerciseTopRow;
         private TextView noSetsInfoTextView;
-        private ImageView editExerciseImageView;
+        private MaterialButton editExerciseButton;
 
         ExerciseViewHolder(@NonNull View itemView) {
             super(itemView);
 
             exerciseNameTextView = itemView.findViewById(R.id.rvitem_tv_exercise_name);
             setListLinearLayout = itemView.findViewById(R.id.rvitem_ll_sets);
+            exerciseTopRow = itemView.findViewById(R.id.ll_exercise_top_row);
             noSetsInfoTextView = itemView.findViewById(R.id.rvitem_tv_noSetsInfo);
-            editExerciseImageView = itemView.findViewById(R.id.rvitem_iv_editExercise);
+            editExerciseButton = itemView.findViewById(R.id.rvitem_iv_editExercise);
 
-            if (!editExerciseImageView.hasOnClickListeners()) {
-                editExerciseImageView.setOnClickListener(this);
+
+            if (!editExerciseButton.hasOnClickListeners()) {
+                editExerciseButton.setOnClickListener(this);
             }
 
             itemView.setOnCreateContextMenuListener(this);

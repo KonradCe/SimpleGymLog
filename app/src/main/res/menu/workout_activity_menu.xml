@@ -2,12 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/workout_menu_addFromRoutine"
-        android:title="add exercises from routine" />
-    <item
-        android:id="@+id/workout_menu_copy"
-        android:title="copy different day"/>
-    <item
         android:id="@+id/workout_menu_delete"
-        android:title="delete all exercises in this day"/>
+        android:title="Delete all exercises in this day"/>
 </menu>

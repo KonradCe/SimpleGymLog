@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/MainView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="add exercise activity" />
-    <TextView
         android:id="@+id/addExerciseActivity_tv_exerciseDate"
+        style="@style/TextAppearance.MaterialComponents.Subtitle2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="date" />
 
     <EditText
         android:id="@+id/addExerciseActivity_et_exerciseName"
+        style="@style/TextAppearance.MaterialComponents.Headline6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="exercise name"
@@ -27,26 +27,36 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical">
+
         <TextView
-            android:id="@+id/addExerciseActivity_tv_trainingMaxInfo"
+            style="@style/TextAppearance.MaterialComponents.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="standard set with fixed weight"
             android:layout_weight="1"/>
+
         <Switch
             android:id="@+id/addExerciseActivity_sw_isBasedOnPercentage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="16dp"/>
+            android:thumbTint="@color/colorPrimary"
+            android:trackTint="@color/colorPrimaryLight"/>
+
+        <TextView
+            style="@style/TextAppearance.MaterialComponents.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:text="set based on % of RM"
+            android:layout_weight="1"/>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="8dp">
+        android:orientation="vertical">
 
 
         <LinearLayout
@@ -56,16 +66,17 @@
 
             <Button
                 android:id="@+id/addExerciseActivity_bt_repsMinus"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="2"
-                android:text="-" />
+                style="@style/IconOnlyButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_remove_black_24dp"/>
 
             <EditText
                 android:id="@+id/addExerciseActivity_et_reps"
+                style="@style/TextAppearance.MaterialComponents.Headline6"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="4"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:hint="reps"
                 android:inputType="number"
@@ -73,43 +84,53 @@
 
             <Button
                 android:id="@+id/addExerciseActivity_bt_repsPlus"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="2"
-                android:text="+" />
+                style="@style/IconOnlyButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:icon="@drawable/ic_add_black_24dp" />
 
         </LinearLayout>
 
         <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/addExerciseActivity_bt_weightMinus"
+            style="@style/IconOnlyButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_remove_black_24dp"/>
+
+        <EditText
+            android:id="@+id/addExerciseActivity_et_weight"
+            style="@style/TextAppearance.MaterialComponents.Headline6"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="weight"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:inputType="numberSigned|numberDecimal"
+            android:selectAllOnFocus="true" />
+
+        <Button
+            android:id="@+id/addExerciseActivity_bt_weightPlus"
+            style="@style/IconOnlyButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_add_black_24dp"/>
+
+    </LinearLayout>
+        <TextView
+            android:id="@+id/addExerciseActivity_tv_percentage_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/addExerciseActivity_bt_weightMinus"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="2"
-                android:text="-" />
-
-            <EditText
-                android:id="@+id/addExerciseActivity_et_weight"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="4"
-                android:gravity="center"
-                android:hint="weight"
-                android:inputType="numberSigned|numberDecimal"
-                android:selectAllOnFocus="true" />
-
-            <Button
-                android:id="@+id/addExerciseActivity_bt_weightPlus"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="2"
-                android:text="+" />
-
-        </LinearLayout>
+            android:gravity="center_horizontal"
+            style="@style/TextAppearance.MaterialComponents.Headline6"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:text="75% of 200 is 150"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -118,6 +139,7 @@
 
             <Button
                 android:id="@+id/addExerciseActivity_bt_addSet"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -125,12 +147,14 @@
 
             <Button
                 android:id="@+id/addExerciseActivity_bt_deleteSet"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="delete set" />
         </LinearLayout>
 
+        <include layout="@layout/set_list_top_row"/>
 
     </LinearLayout>
 

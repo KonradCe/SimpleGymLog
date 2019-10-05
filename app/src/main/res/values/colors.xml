@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorPrimary">#1565c0</color>
+    <color name="colorPrimaryDark">#003c8f</color>
+    <color name="colorPrimaryLight">#5e92f3</color>
+
+    <color name="colorSecondary">#bbdefb</color>
+    <color name="colorSecondaryDark">#8aacc8</color>
+    <color name="colorSecondaryLight">#eeffff</color>
+
     <color name="colorAccent">#D81B60</color>
-    <color name="calendarDayWithExerciseColor">#fc77db</color>
 </resources>

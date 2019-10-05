@@ -31,11 +31,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final String TAG = "KCtag-" + MainActivity.class.getSimpleName();
 
-    private Button mStartNewWorkoutButton;
-    private Button customizeRoutineButton;
     private MaterialCalendarView mCalendarView;
 
-    private GymLogViewModel mGymLogViewModel;
+    private GymLogViewModel gymLogViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +47,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setUpViews() {
-        mStartNewWorkoutButton = findViewById(R.id.mainActivity_bt_start_workout);
-        mStartNewWorkoutButton.setOnClickListener(this);
+        Button startNewWorkoutButton = findViewById(R.id.mainActivity_bt_start_workout);
+        startNewWorkoutButton.setOnClickListener(this);
 
-        customizeRoutineButton = findViewById(R.id.mainActivity_bt_customize_routine);
+        Button customizeRoutineButton = findViewById(R.id.mainActivity_bt_customize_routine);
         customizeRoutineButton.setOnClickListener(this);
 
-        mCalendarView = findViewById(R.id.mainActivity_picker_calendar);
+        mCalendarView = findViewById(R.id.calendar);
     }
 
     private long getSelectedDay() {
@@ -66,11 +64,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mCalendarView.setSelectedDate(LocalDate.now());
 
-        mGymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
+        gymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
         // TODO[2]: get only exercises for the current month so setting up the calendar won't take too long
         // TODO[3]: do not fetch every exercise after every update - get only those that were added
         // TODO[2]: when exercises were deleted from a day update it so it will not look like it still has exercises
-        mGymLogViewModel.getAllExercises().observe(this, new Observer<List<Exercise>>() {
+        gymLogViewModel.getAllExercises().observe(this, new Observer<List<Exercise>>() {
             @Override
             public void onChanged(@Nullable List<Exercise> listOfAllExercises) {
                 setDecoratorsToDaysWithExercises(listOfAllExercises);
@@ -87,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             listOfDaysWithExercises.add(CalendarDay.from(calendarDayNumbers[0], calendarDayNumbers[1], calendarDayNumbers[2]));
         }
 
-        mCalendarView.addDecorator(new DaysWithExerciseDecorator(listOfDaysWithExercises, getResources().getColor(R.color.calendarDayWithExerciseColor)));
+        mCalendarView.addDecorator(new DaysWithExerciseDecorator(listOfDaysWithExercises, getResources().getColor(R.color.colorPrimary)));
     }
 
 

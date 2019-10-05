@@ -13,9 +13,11 @@ import android.util.LongSparseArray;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.button.MaterialButton;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
@@ -29,11 +31,10 @@ import pl.kcworks.simplegymlog.model.Exercise;
 import pl.kcworks.simplegymlog.model.ExerciseWithSets;
 import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 
-public class CopyExercisesActivity extends AppCompatActivity {
+public class CopyExercisesActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String IDS_OF_EXERCISES_TO_COPY_TAG = "IDS_OF_EXERCISES_TO_COPY_TAG";
     private final String TAG = "KCTag-" + CopyExercisesActivity.class.getSimpleName();
-    private MaterialCalendarView mCalendarView;
     private TextView mExercisesInSelectedDayTextView;
     private List<ExerciseWithSets> mAllExercisesWithSets;
     private LongSparseArray<ArrayList<ExerciseWithSets>> exerciseWithListSparseArray = new LongSparseArray<>();
@@ -47,14 +48,15 @@ public class CopyExercisesActivity extends AppCompatActivity {
 
         mGymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
         grabDataFromDb();
-
         setUpViews();
 
     }
 
     private void setUpViews() {
-        mCalendarView = findViewById(R.id.copyExerciseActivity_picker_calendar);
         mExercisesInSelectedDayTextView = findViewById(R.id.copyExerciseActivity_tv_exercisesInSelectedDayInfo);
+        MaterialButton copySelectedDayButton = findViewById(R.id.bt_copy_selected_day);
+        copySelectedDayButton.setOnClickListener(this);
+
     }
 
     private void grabDataFromDb() {
@@ -68,8 +70,9 @@ public class CopyExercisesActivity extends AppCompatActivity {
     }
 
     private void setUpCalendar() {
+        MaterialCalendarView mCalendarView = findViewById(R.id.calendar);
         List<CalendarDay> calendarDayList = processListOfExercisesFromDb(mAllExercisesWithSets);
-        setDecoratorsToDaysWithExercises(calendarDayList);
+        mCalendarView.addDecorator(new MainActivity.DaysWithExerciseDecorator(calendarDayList, getResources().getColor(R.color.colorPrimary)));
 
         mCalendarView.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
@@ -101,10 +104,6 @@ public class CopyExercisesActivity extends AppCompatActivity {
         }
 
         return calendarDayList;
-    }
-
-    private void setDecoratorsToDaysWithExercises(List<CalendarDay> listOfDaysWithExercises) {
-        mCalendarView.addDecorator(new MainActivity.DaysWithExerciseDecorator(listOfDaysWithExercises, getResources().getColor(R.color.calendarDayWithExerciseColor)));
     }
 
     private void presentExerciseInfoForDay(long dateInGymLogFormat) {
@@ -156,24 +155,15 @@ public class CopyExercisesActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.copy_activitiy_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.copy_menu_copyDay) {
-            returnExerciseIdsFromSelectedDay();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onBackPressed() {
         setResult(Activity.RESULT_CANCELED);
         super.onBackPressed();
     }
 
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.bt_copy_selected_day) {
+            returnExerciseIdsFromSelectedDay();
+        }
+    }
 }

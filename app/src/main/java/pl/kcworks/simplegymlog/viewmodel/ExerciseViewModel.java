@@ -16,7 +16,7 @@ import pl.kcworks.simplegymlog.ui.AddExerciseActivity;
 
 public class ExerciseViewModel extends AndroidViewModel {
 
-    public static final String TAG = "KCtag-" + AddExerciseActivity.class.getSimpleName();
+    public static final String TAG = "KCtag-" + ExerciseViewModel.class.getSimpleName();
 
     private GymLogRepository repository;
     private MutableLiveData<ExerciseWithSets> exerciseWithSetsMutableLiveData;
@@ -64,13 +64,6 @@ public class ExerciseViewModel extends AndroidViewModel {
         }
     }
 
-    public void setToAddModifyRepsBy(int modifier) {
-        SingleSet singleSet = singleSetToAddMutableLiveData.getValue();
-        int reps = singleSet.getReps() + modifier;
-        singleSet.setReps(reps);
-        singleSetToAddMutableLiveData.setValue(singleSet);
-    }
-
     public void addSet() {
         ExerciseWithSets exerciseWithSets = exerciseWithSetsMutableLiveData.getValue();
         SingleSet singleSet = singleSetToAddMutableLiveData.getValue();
@@ -84,37 +77,44 @@ public class ExerciseViewModel extends AndroidViewModel {
         exerciseWithSetsMutableLiveData.getValue().getExercise().setExerciseName(exerciseName);
     }
 
-    public void serToAddSetReps(int reps) {
+    public void setToAddSetReps(int reps) {
         singleSetToAddMutableLiveData.getValue().setReps(reps);
     }
 
-    public void setToAddSetWeight(float weight) {
+    public void setToAddModifyRepsBy(int modifier) {
+        SingleSet singleSet = singleSetToAddMutableLiveData.getValue();
+        int reps = singleSet.getReps() + modifier;
+        singleSet.setReps(reps);
+        singleSetToAddMutableLiveData.setValue(singleSet);
+    }
+
+    public void setToAddSetWeight(double weight) {
         singleSetToAddMutableLiveData.getValue().setWeight(weight);
     }
 
     public void setToAddModifyWeightBy(int modifier) {
         SingleSet singleSet = singleSetToAddMutableLiveData.getValue();
-        double newWeight;
+
         if (singleSet.isBasedOnTm()) {
             int percentageOfTm = singleSet.getPercentageOfTm() + modifier;
-            newWeight = roundTo((percentageOfTm * singleSet.getTrainingMax()) / 100, 2.5);
             singleSet.setPercentageOfTm(percentageOfTm);
+            singleSet.updateWeightForCurrentPercentageOfTm(2.5);
         }
         else {
-            newWeight = singleSet.getWeight() + modifier;
+            double newWeight = singleSet.getWeight() + modifier;
+            singleSet.setWeight(newWeight);
         }
-        singleSet.setWeight(newWeight);
+        Log.i(TAG, singleSet.toString());
         singleSetToAddMutableLiveData.setValue(singleSet);
     }
 
     public void setToAddSetTmMax(double trainingMax) {
         SingleSet singleSet = singleSetToAddMutableLiveData.getValue();
+        if (singleSet.getTrainingMax() == trainingMax) {
+            return;
+        }
         singleSet.setTrainingMax(trainingMax);
         singleSetToAddMutableLiveData.setValue(singleSet);
-    }
-
-    private double roundTo(double numberToRound, double roundingFactor) {
-        return Math.round(numberToRound / roundingFactor) * roundingFactor;
     }
 
 }

@@ -2,33 +2,31 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/MainView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.CopyExercisesActivity"
-    android:padding="16dp">
+    tools:context=".ui.CopyExercisesActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="CopyExerciseActivity"/>
-
-    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
-        android:id="@+id/copyExerciseActivity_picker_calendar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:mcv_selectionMode="single"
-        android:layout_marginBottom="-48dp"/>
+    <include layout="@layout/material_calendar_view"/>
 
     <!--TODO[4]: this will be replaced probably with RecyclerView with multiple selection,
     but for now this basic functionality is ok-->
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_weight="1">
         <TextView
             android:id="@+id/copyExerciseActivity_tv_exercisesInSelectedDayInfo"
+            style="@style/TextAppearance.MaterialComponents.Body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/bt_copy_selected_day"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="copy selected day"/>
 
 </LinearLayout>

@@ -3,7 +3,7 @@ package pl.kcworks.simplegymlog.ui;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -60,9 +60,20 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     void setRoutineList(List<Routine> routineList) {
-        List<GymLogListItem> gymLogListItems = (List<GymLogListItem>)(List<?>) routineList;
-        gymLogItems = gymLogListItems;
+        gymLogItems = flattenRoutineOnlyList(routineList);
         notifyDataSetChanged();
+    }
+
+    private List<GymLogListItem> flattenRoutineOnlyList(List<Routine> routineList) {
+        ArrayList<GymLogListItem> list = new ArrayList<>();
+
+        for (Routine routine : routineList) {
+            list.add(routine);
+            list.add(new RvExtras(GymLogType.RV_DIVIDER));
+        }
+
+        return list;
+
     }
 
 
@@ -161,14 +172,9 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             case DECORATOR_DIVIDER:
                 view = inflater.inflate(R.layout.item_rvextra_divider, parent, false);
                 return new RvExtrasViewHolder(view);
-            case DECORATOR_ADD_DAY_BT:
-                view = inflater.inflate(R.layout.item_rvextra_add_day_bt, parent, false);
-                return new RvExtrasViewHolder(view);
             case DECORATOR_ADD_EXERCISE_BT:
                 view = inflater.inflate(R.layout.item_rvextra_add_exercise_bt, parent, false);
                 return new RvExtrasViewHolder(view);
-
-
         }
 
         // null should never be returned, all cases should be handled by switch above
@@ -208,13 +214,13 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         Routine routine = ((Routine) gymLogItems.get(position));
         holder.routineNameTextView.setText(routine.getRoutineName());
         if (adapterMode == AdapterMode.SELECT_ROUTINE) {
-            holder.editRoutineImageView.setVisibility(View.GONE);
+            holder.editRoutineButton.setVisibility(View.GONE);
             holder.routineRowLinearLayout.setOnClickListener(clickListener);
             holder.routineRowLinearLayout.setTag(routine);
         }
         else if (adapterMode == AdapterMode.EDIT_ROUTINE) {
-            holder.editRoutineImageView.setOnClickListener(clickListener);
-            holder.editRoutineImageView.setTag(routine);
+            holder.editRoutineButton.setOnClickListener(clickListener);
+            holder.editRoutineButton.setTag(routine);
         }
     }
 
@@ -222,13 +228,13 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         DayOfRoutine day = (DayOfRoutine) gymLogItems.get(position);
         holder.dayNameTextView.setText(day.getDayName());
         if (adapterMode == AdapterMode.SELECT_ROUTINE) {
-            holder.editDayImageView.setVisibility(View.GONE);
+            holder.editDayButton.setVisibility(View.GONE);
             holder.dayRowLinearLayout.setOnClickListener(clickListener);
             holder.dayRowLinearLayout.setTag(day);
         }
         else if (adapterMode == AdapterMode.EDIT_ROUTINE) {
-            holder.editDayImageView.setOnClickListener(clickListener);
-            holder.editDayImageView.setTag(day);
+            holder.editDayButton.setOnClickListener(clickListener);
+            holder.editDayButton.setTag(day);
         }
     }
 
@@ -236,20 +242,27 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         Exercise exercise = (Exercise) gymLogItems.get(position);
         holder.exerciseNameTextView.setText(exercise.getExerciseName());
         if (adapterMode == AdapterMode.SELECT_ROUTINE) {
-            holder.editExerciseImageView.setVisibility(View.GONE);
+            holder.editExerciseButton.setVisibility(View.GONE);
             holder.exerciseRowLinearLayout.setOnClickListener(clickListener);
             holder.exerciseRowLinearLayout.setTag(getParentOfType(position, GymLogType.DAY));
         }
         else if (adapterMode == AdapterMode.EDIT_ROUTINE) {
-            holder.editExerciseImageView.setOnClickListener(clickListener);
-            holder.editExerciseImageView.setTag(exercise);
+            holder.editExerciseButton.setOnClickListener(clickListener);
+            holder.editExerciseButton.setTag(exercise);
         }
     }
 
     private void onBindSetItem(@NonNull SetViewHolder holder, int position) {
         SingleSet set = (SingleSet) gymLogItems.get(position);
+
         holder.setRepsTextView.setText(Integer.toString(set.getReps()));
         holder.setWeightTextView.setText(Double.toString(set.getWeight()));
+
+        if (set.isBasedOnTm()) {
+            String additionalInfo = set.getPercentageOfTm() + "% of " + set.getTrainingMax();
+            holder.setAdditionalInfoTextView.setText(additionalInfo);
+        }
+
         if (adapterMode == AdapterMode.SELECT_ROUTINE) {
             holder.setRowLinearLayout.setOnClickListener(clickListener);
             holder.setRowLinearLayout.setTag(getParentOfType(position, GymLogType.DAY));
@@ -264,13 +277,13 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     class RoutineViewHolder extends RecyclerView.ViewHolder {
         private LinearLayout routineRowLinearLayout;
         private TextView routineNameTextView;
-        private ImageView editRoutineImageView;
+        private Button editRoutineButton;
 
         RoutineViewHolder(@NonNull View itemView) {
             super(itemView);
             routineRowLinearLayout = itemView.findViewById(R.id.ll_routine_row);
             routineNameTextView = itemView.findViewById(R.id.tv_routine_name);
-            editRoutineImageView = itemView.findViewById(R.id.iv_edit_routine);
+            editRoutineButton = itemView.findViewById(R.id.iv_edit_routine);
         }
 
     }
@@ -278,39 +291,45 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     class DayViewHolder extends RecyclerView.ViewHolder {
         private LinearLayout dayRowLinearLayout;
         private TextView dayNameTextView;
-        private ImageView editDayImageView;
+        private Button editDayButton;
 
         DayViewHolder(@NonNull View itemView) {
             super(itemView);
             dayRowLinearLayout = itemView.findViewById(R.id.ll_day_row);
             dayNameTextView = itemView.findViewById(R.id.tv_day_name);
-            editDayImageView = itemView.findViewById(R.id.iv_edit_day);
+            editDayButton = itemView.findViewById(R.id.iv_edit_day);
         }
     }
 
     class ExerciseViewHolder extends RecyclerView.ViewHolder {
         private LinearLayout exerciseRowLinearLayout;
         private TextView exerciseNameTextView;
-        private ImageView editExerciseImageView;
+        private Button editExerciseButton;
 
         ExerciseViewHolder(@NonNull View itemView) {
             super(itemView);
             exerciseRowLinearLayout = itemView.findViewById(R.id.ll_exercise_row);
             exerciseNameTextView = itemView.findViewById(R.id.tv_exercise_name);
-            editExerciseImageView = itemView.findViewById(R.id.iv_edit_exercise);
+            editExerciseButton = itemView.findViewById(R.id.iv_edit_exercise);
         }
     }
 
     class SetViewHolder extends RecyclerView.ViewHolder {
         private LinearLayout setRowLinearLayout;
-        private TextView setRepsTextView;
+        private TextView setAdditionalInfoTextView;
         private TextView setWeightTextView;
+        private TextView setRepsTextView;
 
         SetViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            TextView setNumberTextView = itemView.findViewById(R.id.set_number);
+            setNumberTextView.setVisibility(View.INVISIBLE);
+
+            setAdditionalInfoTextView = itemView.findViewById(R.id.set_additional_info);
             setRowLinearLayout = itemView.findViewById(R.id.ll_set_row);
-            setRepsTextView = itemView.findViewById(R.id.tv_set_reps);
-            setWeightTextView = itemView.findViewById(pl.kcworks.simplegymlog.R.id.tv_set_weight);
+            setRepsTextView = itemView.findViewById(R.id.set_reps);
+            setWeightTextView = itemView.findViewById(R.id.set_weight);
         }
     }
 

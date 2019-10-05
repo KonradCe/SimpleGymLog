@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--using CoordinatorLayout for the FAB-->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="16dp"
+        style="@style/MainView"
         tools:context=".ui.WorkoutActivity">
 
         <LinearLayout
@@ -17,11 +19,12 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/workout_iv_leftArrow"
+            <Button
+                android:id="@+id/workout_bt_leftArrow"
+                style="@style/IconOnlyButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_chevron_left_black_24dp" />
+                app:icon="@drawable/ic_chevron_left_black_24dp" />
 
             <TextView
                 android:id="@+id/workout_tv_exerciseDate"
@@ -29,63 +32,75 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
+                style="@style/TextAppearance.MaterialComponents.Subtitle1"
                 android:text="date of exercise" />
 
-            <ImageView
-                android:id="@+id/workout_iv_rightArrow"
+            <Button
+                android:id="@+id/workout_bt_rightArrow"
+                style="@style/IconOnlyButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_chevron_right_black_24dp" />
-        </LinearLayout>
+                app:icon="@drawable/ic_chevron_right_black_24dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:text="workout activity" />
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/workout_rv_exercises"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
             android:scrollbars="vertical" />
 
         <LinearLayout
             android:id="@+id/workout_ll_new_exercises_options"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"
             android:orientation="vertical"
             android:visibility="gone"
             tools:visibility="visible">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/workout_bt_routine"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:text="routine" />
+                android:layout_marginTop="@dimen/large_margin"
+                android:layout_marginBottom="@dimen/medium_margin"
+                android:layout_marginLeft="@dimen/medium_margin"
+                android:layout_marginRight="@dimen/medium_margin"
+                android:text="copy from routine"
+                app:icon="@drawable/ic_add_black_24dp"/>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/workout_bt_copy_previous"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_margin="@dimen/medium_margin"
+                app:icon="@drawable/ic_add_black_24dp"
+                app:iconGravity="start"
+                app:iconPadding="16dp"
                 android:text="copy previous workout" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/workout_bt_add_exercise_additional"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_margin="@dimen/medium_margin"
+                app:icon="@drawable/ic_add_black_24dp"
                 android:text="start new workout" />
 
         </LinearLayout>
+
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/workout_fab_addExercise"
+        style="@style/Widget.MaterialComponents.FloatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
