@@ -3,5 +3,5 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/workout_menu_delete"
-        android:title="Delete all exercises in this day"/>
+        android:title="delete all exercises in this day"/>
 </menu>

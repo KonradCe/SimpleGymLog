@@ -304,10 +304,8 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.workout_menu_delete:
-                deleteExercisesInCurrentDay();
-                break;
+        if (item.getItemId() == R.id.workout_menu_delete) {
+            deleteExercisesInCurrentDay();
         }
 
         return super.onOptionsItemSelected(item);

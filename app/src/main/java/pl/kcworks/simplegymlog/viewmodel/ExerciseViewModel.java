@@ -117,4 +117,16 @@ public class ExerciseViewModel extends AndroidViewModel {
         singleSetToAddMutableLiveData.setValue(singleSet);
     }
 
+    public void updateExerciseWithSetsWithNewTm(double newTm) {
+        ExerciseWithSets exerciseWithSets = exerciseWithSetsMutableLiveData.getValue();
+        for (SingleSet singleSet : exerciseWithSets.getExerciseSetList()) {
+            if (singleSet.isBasedOnTm()) {
+                singleSet.setTrainingMax(newTm);
+                singleSet.updateWeightForCurrentPercentageOfTm(2.5);
+            }
+        }
+
+        exerciseWithSetsMutableLiveData.setValue(exerciseWithSets);
+    }
+
 }

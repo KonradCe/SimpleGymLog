@@ -102,8 +102,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:sdMainFabClosedSrc="@drawable/ic_add_black_24dp"
-        app:sdOverlayLayout="@id/overlay"
-        app:layout_behavior="@string/speeddial_scrolling_view_snackbar_behavior" />
+        app:sdOverlayLayout="@id/overlay"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,8 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     style="@style/MainView"
+    android:gravity="center_vertical"
     android:layout_marginBottom="@dimen/medium_margin">
+
+    <TextView
+        android:id="@+id/dialog_tv_title"
+        android:text="Edit 1RM"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/small_margin"
+        style="@style/TextAppearance.MaterialComponents.Headline6"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/dialog_text_input_layout"
@@ -18,6 +28,7 @@
             android:id="@+id/dialog_et_trainingMax"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:selectAllOnFocus="true"
             android:inputType="numberDecimal"/>
 
     </com.google.android.material.textfield.TextInputLayout>

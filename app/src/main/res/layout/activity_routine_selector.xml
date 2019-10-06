@@ -12,6 +12,7 @@
         style="@style/TextAppearance.MaterialComponents.Headline5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/medium_margin"
         android:text="select routine:" />
 
     <androidx.recyclerview.widget.RecyclerView

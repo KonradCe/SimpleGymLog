@@ -51,6 +51,14 @@ public class ExerciseWithSets {
         this.exerciseSetList = exerciseSetList;
     }
 
+    public boolean hasSetsBasedOnRm() {
+        for (SingleSet ss : exerciseSetList) {
+            if (ss.isBasedOnTm()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
     @Override

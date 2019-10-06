@@ -2,8 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/copy_menu_copyDay"
-        android:title="copy selected day"
-        app:showAsAction="always"/>
-
+        android:id="@+id/addExerciseActivity_menu_edit_RM"
+        android:title="edit 1RM"/>
 </menu>

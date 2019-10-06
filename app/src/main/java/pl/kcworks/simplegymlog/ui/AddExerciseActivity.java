@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.SystemClock;
@@ -17,6 +16,9 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -357,12 +359,9 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         }
 
         if (setIsBasedOnTm) {
-            SharedPreferences preferences = getSharedPreferences(PREFS_FILE, MODE_PRIVATE);
-            String exerciseName = currentExerciseWithSets.getExercise().getExerciseName();
-            double trainingMax = Double.longBitsToDouble(preferences.getLong(exerciseName, 0));
-
+            double trainingMax = getRmFromPreferences();
             if (trainingMax == 0) {
-                showTrainingMaxForExerciseDialog(exerciseName);
+                editRmDialog(0);
             }
             else {
                 exerciseViewModel.setToAddSetTmMax(trainingMax);
@@ -375,16 +374,25 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    private double getRmFromPreferences() {
+        SharedPreferences preferences = getSharedPreferences(PREFS_FILE, MODE_PRIVATE);
+        String exerciseName = currentExerciseWithSets.getExercise().getExerciseName();
+        return Double.longBitsToDouble(preferences.getLong(exerciseName, 0));
+    }
+
     // if set type is switched to percentage mode and id doesn't have saved TM in SharedPreferences this method is called
     // it pops up a dialog for the user to enter TM and then saves it in SharedPreferences
-    private void showTrainingMaxForExerciseDialog(final String exerciseName) {
+    private void editRmDialog(double currentRm) {
+        String exerciseName = currentExerciseWithSets.getExercise().getExerciseName();
+
         MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(this);
         View dialogView = LayoutInflater.from(this).inflate(R.layout.alert_training_max_dialog, null);
         final EditText trainingMaxEditText = dialogView.findViewById(R.id.dialog_et_trainingMax);
+        trainingMaxEditText.setText(Double.toString(currentRm));
         TextInputLayout textInputLayout = dialogView.findViewById(R.id.dialog_text_input_layout);
         textInputLayout.setHint("Training Max for " + exerciseName + ": ");
-        dialogBuilder.setTitle("Edit training max")
-                .setView(dialogView)
+
+        dialogBuilder.setView(dialogView)
                 .setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -403,11 +411,35 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
                 .show();
     }
 
-    private void saveTmInPreferences(Double newTrainingMax) {
+    private void updateSetsToCurrentRmDialog(final double newRm) {
+        MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(this);
+        dialogBuilder
+                .setTitle("Update existing sets?")
+                .setMessage("This exercise already has sets based on 1RM. Do you want to update them to current value?")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        exerciseViewModel.updateExerciseWithSetsWithNewTm(newRm);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .show();
+
+    }
+
+    private void saveTmInPreferences(double newTrainingMax) {
         SharedPreferences.Editor editor = getSharedPreferences(PREFS_FILE, MODE_PRIVATE).edit();
         editor.putLong(currentExerciseWithSets.getExercise().getExerciseName(), Double.doubleToLongBits(newTrainingMax));
         editor.apply();
         exerciseViewModel.setToAddSetTmMax(newTrainingMax);
+        if (currentExerciseWithSets.hasSetsBasedOnRm()) {
+            updateSetsToCurrentRmDialog(newTrainingMax);
+        }
     }
 
     @Override
@@ -446,6 +478,22 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
                 onSaveButtonPress();
                 break;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.add_exercise_activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.addExerciseActivity_menu_edit_RM) {
+            editRmDialog(getRmFromPreferences());
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private class OnSetClickListener implements View.OnClickListener {
