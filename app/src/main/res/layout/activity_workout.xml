@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/MainView"
+    android:layout_margin="@dimen/small_margin"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -61,7 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/large_margin"
-            android:text="start new workout"
+            android:text="add new exercise"
             app:icon="@drawable/ic_add_black_24dp" />
     </LinearLayout>
 
@@ -103,6 +103,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:sdMainFabClosedSrc="@drawable/ic_add_black_24dp"
         app:sdOverlayLayout="@id/overlay"/>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

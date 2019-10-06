@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.SystemClock;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +21,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -61,7 +62,6 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
     private static final String PREFS_FILE = "EXERCISE_MAXES";
 
-    private int setNumber = 0;     // variable to keep track and display number of sets added by the user
     private long mLastClickTime = 0; // this variable prevents from double clicking on the save button (this would result in "double saving"
     private ActivityMode activityMode;
 
@@ -76,14 +76,8 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     private TextView exerciseDateTextView;
     private TextView percentageInfoTextView;
     private Switch weightIsBasedOnPercentageSwitch;
-    private Button repsMinusButton;
-    private EditText repsEditText;
-    private Button repsPlusButton;
-    private Button weightMinusButton;
-    private EditText weightEditText;
-    private Button weightPlusButton;
-    private Button addSetButton;
-    private Button removeSetButton;
+    private TextView repsTextView;
+    private TextView weightTextView;
     private Button saveExerciseButton;
     private LinearLayout setListLinearLayout;
 
@@ -164,7 +158,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
     private void setUpViews() {
         // this line prevents keyboard from opening up on activity start
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+//        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         onSetClickListener = new OnSetClickListener();
 
@@ -196,23 +190,25 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         });
 
         // reps
-        repsMinusButton = findViewById(R.id.addExerciseActivity_bt_repsMinus);
+        Button repsMinusButton = findViewById(R.id.addExerciseActivity_bt_repsMinus);
         repsMinusButton.setOnClickListener(this);
-        repsEditText = findViewById(R.id.addExerciseActivity_et_reps);
-        repsPlusButton = findViewById(R.id.addExerciseActivity_bt_repsPlus);
+        Button repsPlusButton = findViewById(R.id.addExerciseActivity_bt_repsPlus);
         repsPlusButton.setOnClickListener(this);
+        repsTextView = findViewById(R.id.addExerciseActivity_et_reps);
+        repsTextView.setOnClickListener(this);
 
         // weight
-        weightMinusButton = findViewById(R.id.addExerciseActivity_bt_weightMinus);
+        Button weightMinusButton = findViewById(R.id.addExerciseActivity_bt_weightMinus);
         weightMinusButton.setOnClickListener(this);
-        weightEditText = findViewById(R.id.addExerciseActivity_et_weight);
-        weightPlusButton = findViewById(R.id.addExerciseActivity_bt_weightPlus);
+        Button weightPlusButton = findViewById(R.id.addExerciseActivity_bt_weightPlus);
         weightPlusButton.setOnClickListener(this);
+        weightTextView = findViewById(R.id.addExerciseActivity_et_weight);
+        weightTextView.setOnClickListener(this);
 
-        addSetButton = findViewById(R.id.addExerciseActivity_bt_addSet);
+        Button addSetButton = findViewById(R.id.addExerciseActivity_bt_addSet);
         addSetButton.setOnClickListener(this);
 
-        removeSetButton = findViewById(R.id.addExerciseActivity_bt_deleteSet);
+        Button removeSetButton = findViewById(R.id.addExerciseActivity_bt_deleteSet);
         removeSetButton.setOnClickListener(this);
 
         saveExerciseButton = findViewById(R.id.addExerciseActivity_bt_saveExercise);
@@ -222,6 +218,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void updateViews() {
+        hideKeyboard(this);
         Exercise exercise = currentExerciseWithSets.getExercise();
         List<SingleSet> singleSetList = currentExerciseWithSets.getExerciseSetList();
 
@@ -241,24 +238,25 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void updateSetToAddRelatedViews() {
-        String repsText = Integer.toString(singleSetToAdd.getReps());
-        String weightText = Double.toString(singleSetToAdd.getWeight());
+        hideKeyboard(this);
+        String repsText = (singleSetToAdd.getReps() == 0 ? "" : Integer.toString(singleSetToAdd.getReps()));
+        String weightText = (singleSetToAdd.getWeight() == 0 ? "" : Double.toString(singleSetToAdd.getWeight()));
 
-        repsEditText.setText(repsText);
+        repsTextView.setText(repsText);
         switchTypeOfSetToAdd(singleSetToAdd.isBasedOnTm());
 
         Log.i(TAG, "SingleSetToAdd: " + singleSetToAdd.toString());
         if(singleSetToAdd.isBasedOnTm()) {
-            weightEditText.setHint("% of TM");
-            weightEditText.setText(singleSetToAdd.getPercentageOfTm() + "%");
+            weightTextView.setHint("% of TM");
+            weightTextView.setText(singleSetToAdd.getPercentageOfTm() == 0 ? "" : singleSetToAdd.getPercentageOfTm() + "%");
 
             String percentageInfo = singleSetToAdd.getPercentageOfTm() + "% of " + singleSetToAdd.getTrainingMax() + " is " + singleSetToAdd.getWeight();
             percentageInfoTextView.setText(percentageInfo);
             percentageInfoTextView.setVisibility(View.VISIBLE);
         }
         else {
-            weightEditText.setHint("weight");
-            weightEditText.setText(weightText);
+            weightTextView.setHint("weight");
+            weightTextView.setText(weightText);
             percentageInfoTextView.setVisibility(View.GONE);
         }
 
@@ -280,7 +278,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             // visibility is GONE by default - we need it to be INVISIBLE so it aligns properly with sets that have additional info
             setView.setAdditionalInfoIsVisible(false);
         }
-        setView.setTag(this.setNumber);
+        setView.setTag(setNumber);
         setView.setOnClickListener(onSetClickListener);
 
        int paddingInDp = (int) (getResources().getDimension(R.dimen.small_margin) * getResources().getDisplayMetrics().density / 2);
@@ -386,9 +384,12 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         String exerciseName = currentExerciseWithSets.getExercise().getExerciseName();
 
         MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(this);
+
         View dialogView = LayoutInflater.from(this).inflate(R.layout.alert_training_max_dialog, null);
-        final EditText trainingMaxEditText = dialogView.findViewById(R.id.dialog_et_trainingMax);
-        trainingMaxEditText.setText(Double.toString(currentRm));
+        final EditText trainingMaxEditText = dialogView.findViewById(R.id.dialog_edit_text);
+        String rmText = (currentRm == 0 ? "" : Double.toString(currentRm));
+        trainingMaxEditText.setText(rmText);
+
         TextInputLayout textInputLayout = dialogView.findViewById(R.id.dialog_text_input_layout);
         textInputLayout.setHint("Training Max for " + exerciseName + ": ");
 
@@ -432,6 +433,61 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
     }
 
+    private void editWeightDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.alert_training_max_dialog, null);
+        TextView titleTextView = dialogView.findViewById(R.id.dialog_tv_title);
+        titleTextView.setText((weightIsBasedOnPercentageSwitch.isChecked() ? "% of 1RM" : "Edit weight"));
+        final EditText weightEditText = dialogView.findViewById(R.id.dialog_edit_text);
+        weightEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        TextInputLayout textInputLayout = dialogView.findViewById(R.id.dialog_text_input_layout);
+
+        textInputLayout.setHint((weightIsBasedOnPercentageSwitch.isChecked() ? "% of 1RM" : "weight"));
+
+        MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(this);
+        dialogBuilder.setView(dialogView)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        double weight = Double.parseDouble(weightEditText.getText().toString());
+                        exerciseViewModel.setToAddSetWeight(weight);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    private void editRepsDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.alert_training_max_dialog, null);
+        TextView titleTextView = dialogView.findViewById(R.id.dialog_tv_title);
+        titleTextView.setText("Edit reps");
+        final EditText repsEditText = dialogView.findViewById(R.id.dialog_edit_text);
+        repsEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        TextInputLayout textInputLayout = dialogView.findViewById(R.id.dialog_text_input_layout);
+        textInputLayout.setHint("reps");
+
+        MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(this);
+        dialogBuilder.setView(dialogView)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        int reps = Integer.parseInt(repsEditText.getText().toString());
+                        exerciseViewModel.setToAddSetReps(reps);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .show();
+    }
+
     private void saveTmInPreferences(double newTrainingMax) {
         SharedPreferences.Editor editor = getSharedPreferences(PREFS_FILE, MODE_PRIVATE).edit();
         editor.putLong(currentExerciseWithSets.getExercise().getExerciseName(), Double.doubleToLongBits(newTrainingMax));
@@ -442,17 +498,34 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case (R.id.addExerciseActivity_bt_repsMinus):
                 repsMinus();
                 break;
+            case (R.id.addExerciseActivity_et_reps):
+                editRepsDialog();
+                break;
             case (R.id.addExerciseActivity_bt_repsPlus):
                 repsPlus();
                 break;
             case (R.id.addExerciseActivity_bt_weightMinus):
                 weightMinus();
+                break;
+            case (R.id.addExerciseActivity_et_weight):
+                editWeightDialog();
                 break;
             case (R.id.addExerciseActivity_bt_weightPlus):
                 weightPlus();
@@ -495,6 +568,8 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
         return super.onOptionsItemSelected(item);
     }
+
+
 
     private class OnSetClickListener implements View.OnClickListener {
         @Override

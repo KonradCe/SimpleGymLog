@@ -112,9 +112,9 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
                 .setLabel("copy previous day")
                 .setTheme(R.style.Fab)
                 .create();
-        fab.addActionItem(insertRoutineButton);
-        fab.addActionItem(copyPreviousDayButton);
         fab.addActionItem(addExerciseButton);
+        fab.addActionItem(copyPreviousDayButton);
+        fab.addActionItem(insertRoutineButton);
 
         fab.setOnActionSelectedListener(new SpeedDialView.OnActionSelectedListener() {
             @Override

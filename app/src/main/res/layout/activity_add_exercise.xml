@@ -48,7 +48,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="right"
-            android:text="set based on % of RM"
+            android:text="set based on % of 1RM"
             android:layout_weight="1"/>
 
     </LinearLayout>
@@ -71,20 +71,21 @@
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_remove_black_24dp"/>
 
-            <EditText
+            <TextView
                 android:id="@+id/addExerciseActivity_et_reps"
                 style="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textColorHighlight="@color/colorPrimary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:hint="reps"
-                android:inputType="number"
                 android:selectAllOnFocus="true"/>
 
             <Button
                 android:id="@+id/addExerciseActivity_bt_repsPlus"
                 style="@style/IconOnlyButton"
+                android:textColorHighlight="@color/colorPrimary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_add_black_24dp" />
@@ -103,7 +104,7 @@
             android:layout_height="wrap_content"
             app:icon="@drawable/ic_remove_black_24dp"/>
 
-        <EditText
+        <TextView
             android:id="@+id/addExerciseActivity_et_weight"
             style="@style/TextAppearance.MaterialComponents.Headline6"
             android:layout_width="0dp"

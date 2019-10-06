@@ -78,7 +78,9 @@ public class ExerciseViewModel extends AndroidViewModel {
     }
 
     public void setToAddSetReps(int reps) {
-        singleSetToAddMutableLiveData.getValue().setReps(reps);
+        SingleSet singleSet = singleSetToAddMutableLiveData.getValue();
+        singleSet.setReps(reps);
+        singleSetToAddMutableLiveData.setValue(singleSet);
     }
 
     public void setToAddModifyRepsBy(int modifier) {
@@ -89,7 +91,17 @@ public class ExerciseViewModel extends AndroidViewModel {
     }
 
     public void setToAddSetWeight(double weight) {
-        singleSetToAddMutableLiveData.getValue().setWeight(weight);
+        SingleSet singleSet = singleSetToAddMutableLiveData.getValue();
+
+        if (singleSet.isBasedOnTm()) {
+            singleSet.setPercentageOfTm((int) weight);
+            singleSet.updateWeightForCurrentPercentageOfTm(2.5);
+        }
+        else {
+            singleSet.setWeight(weight);
+        }
+        Log.i(TAG, singleSet.toString());
+        singleSetToAddMutableLiveData.setValue(singleSet);;
     }
 
     public void setToAddModifyWeightBy(int modifier) {
