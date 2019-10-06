@@ -1,110 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--using CoordinatorLayout for the FAB-->
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/MainView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        style="@style/MainView"
-        tools:context=".ui.WorkoutActivity">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/workout_bt_leftArrow"
-                style="@style/IconOnlyButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:icon="@drawable/ic_chevron_left_black_24dp" />
-
-            <TextView
-                android:id="@+id/workout_tv_exerciseDate"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                android:text="date of exercise" />
-
-            <Button
-                android:id="@+id/workout_bt_rightArrow"
-                style="@style/IconOnlyButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:icon="@drawable/ic_chevron_right_black_24dp" />
-
-        </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/workout_rv_exercises"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:scrollbars="vertical" />
-
-        <LinearLayout
-            android:id="@+id/workout_ll_new_exercises_options"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_gravity="center_horizontal"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/workout_bt_routine"
-                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/large_margin"
-                android:layout_marginBottom="@dimen/medium_margin"
-                android:layout_marginLeft="@dimen/medium_margin"
-                android:layout_marginRight="@dimen/medium_margin"
-                android:text="copy from routine"
-                app:icon="@drawable/ic_add_black_24dp"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/workout_bt_copy_previous"
-                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/medium_margin"
-                app:icon="@drawable/ic_add_black_24dp"
-                app:iconGravity="start"
-                app:iconPadding="16dp"
-                android:text="copy previous workout" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/workout_bt_add_exercise_additional"
-                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/medium_margin"
-                app:icon="@drawable/ic_add_black_24dp"
-                android:text="start new workout" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/workout_fab_addExercise"
-        style="@style/Widget.MaterialComponents.FloatingActionButton"
+    <Button
+        android:id="@+id/workout_bt_leftArrow"
+        style="@style/IconOnlyButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_add_black_24dp" />
+        app:icon="@drawable/ic_chevron_left_black_24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <Button
+        android:id="@+id/workout_bt_rightArrow"
+        style="@style/IconOnlyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/ic_chevron_right_black_24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/workout_bt_routine"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/large_margin"
+            android:text="copy from routine"
+            app:icon="@drawable/ic_add_black_24dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/workout_bt_copy_previous"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="copy previous workout"
+            app:icon="@drawable/ic_add_black_24dp"
+            app:iconGravity="start"
+            app:iconPadding="16dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/workout_bt_add_exercise_additional"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/large_margin"
+            android:text="start new workout"
+            app:icon="@drawable/ic_add_black_24dp" />
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/workout_tv_exerciseDate"
+        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="date of exercise"
+        app:layout_constraintBottom_toBottomOf="@+id/workout_bt_leftArrow"
+        app:layout_constraintEnd_toStartOf="@+id/workout_bt_rightArrow"
+        app:layout_constraintStart_toEndOf="@+id/workout_bt_leftArrow"
+        app:layout_constraintTop_toTopOf="@+id/workout_bt_leftArrow" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/workout_rv_exercises"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/workout_bt_leftArrow"
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="8dp" />
+
+    <com.leinardi.android.speeddial.SpeedDialOverlayLayout
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:backgroundTint="@color/colorSecondaryLight" />
+
+    <com.leinardi.android.speeddial.SpeedDialView
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:sdExpansionMode="top"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:sdMainFabClosedSrc="@drawable/ic_add_black_24dp"
+        app:sdOverlayLayout="@id/overlay"
+        app:layout_behavior="@string/speeddial_scrolling_view_snackbar_behavior" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

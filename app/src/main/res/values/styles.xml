@@ -20,7 +20,7 @@
     </style>
 
     <style name="MainView">
-        <item name="android:padding">@dimen/small_margin</item>
+        <item name="android:layout_margin">@dimen/small_margin</item>
         <item name="android:gravity">center_horizontal</item>
     </style>
 
@@ -32,6 +32,14 @@
     <style name="SelectableItemBackground">
         <item name="android:theme">@style/SelectableItemTheme</item>
         <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="Fab" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="colorPrimary">@color/colorSecondary</item>
+        <item name="colorPrimaryDark">#ffbb00</item>
+        <item name="colorAccent">#00FF48</item>
+        <item name="colorControlHighlight">@color/colorPrimary</item>
+
     </style>
 
 </resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="fab_item_add_exercise" type="id"></item>
+    <item name="fab_item_add_routine" type="id"></item>
+    <item name="fab_item_copy_previous" type="id"></item>
+</resources>

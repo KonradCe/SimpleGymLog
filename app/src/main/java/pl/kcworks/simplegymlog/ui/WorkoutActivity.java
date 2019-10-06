@@ -16,11 +16,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.leinardi.android.speeddial.SpeedDialActionItem;
+import com.leinardi.android.speeddial.SpeedDialView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,8 +50,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     private Button mPreviousDayArrowButton;
     private Button mNextDayArrowButton;
     private RecyclerView mExerciseRecyclerView;
-    private LinearLayout mAddExercisesOptionsLinearLayout;
-    private FloatingActionButton mAddExerciseFaB;
+    private SpeedDialView fab;
 
     // additional buttons that show up only when there is no exercises for this day, probably will be replaced by FAB
     private Button mAddExercisesFromRoutineButton;
@@ -84,9 +83,9 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         mNextDayArrowButton = findViewById(R.id.workout_bt_rightArrow);
         mNextDayArrowButton.setOnClickListener(this);
         mExerciseRecyclerView = findViewById(R.id.workout_rv_exercises);
-        mAddExercisesOptionsLinearLayout = findViewById(R.id.workout_ll_new_exercises_options);
-        mAddExerciseFaB = findViewById(R.id.workout_fab_addExercise);
-        mAddExerciseFaB.setOnClickListener(this);
+        setUpFab();
+//        mAddExerciseFaB = findViewById(R.id.workout_fab_addExercise);
+//        mAddExerciseFaB.setOnClickListener(this);
 
 
         // additional buttons that show up only when there are, probably will be replaced by FAB
@@ -96,6 +95,47 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         mCopyPreviousWorkoutButton.setOnClickListener(this);
         mAddExerciseAdditionalButton = findViewById(R.id.workout_bt_add_exercise_additional);
         mAddExerciseAdditionalButton.setOnClickListener(this);
+    }
+
+    private void setUpFab() {
+        fab = findViewById(R.id.fab);
+
+        SpeedDialActionItem addExerciseButton = new SpeedDialActionItem.Builder(R.id.fab_item_add_exercise, R.drawable.ic_add_black_24dp)
+                .setLabel("add exercise")
+                .setTheme(R.style.Fab)
+                .create();
+        SpeedDialActionItem insertRoutineButton = new SpeedDialActionItem.Builder(R.id.fab_item_add_routine, R.drawable.ic_add_black_24dp)
+                .setLabel("insert routine")
+                .setTheme(R.style.Fab)
+                .create();
+        SpeedDialActionItem copyPreviousDayButton = new SpeedDialActionItem.Builder(R.id.fab_item_copy_previous, R.drawable.ic_add_black_24dp)
+                .setLabel("copy previous day")
+                .setTheme(R.style.Fab)
+                .create();
+        fab.addActionItem(insertRoutineButton);
+        fab.addActionItem(copyPreviousDayButton);
+        fab.addActionItem(addExerciseButton);
+
+        fab.setOnActionSelectedListener(new SpeedDialView.OnActionSelectedListener() {
+            @Override
+            public boolean onActionSelected(SpeedDialActionItem actionItem) {
+                switch (actionItem.getId()) {
+                    case R.id.fab_item_add_exercise:
+                        fab.close();
+                        startAddExerciseActivity();
+                        break;
+                    case R.id.fab_item_copy_previous:
+                        fab.close();
+                        startCopyExerciseActivity();
+                        break;
+                    case R.id.fab_item_add_routine:
+                        fab.close();
+                        startInsertRoutineActivity();
+                        break;
+                }
+                return false;
+            }
+        });
     }
 
     private void displayCurrentDate() {
@@ -125,12 +165,16 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
 
     private void displayNewWorkoutOptions() {
         mExerciseRecyclerView.setVisibility(View.GONE);
-        mAddExercisesOptionsLinearLayout.setVisibility(View.VISIBLE);
+        mAddExercisesFromRoutineButton.setVisibility(View.VISIBLE);
+        mCopyPreviousWorkoutButton.setVisibility(View.VISIBLE);
+        mAddExerciseAdditionalButton.setVisibility(View.VISIBLE);
     }
 
     private void hideNewWorkoutOptions() {
         mExerciseRecyclerView.setVisibility(View.VISIBLE);
-        mAddExercisesOptionsLinearLayout.setVisibility(View.GONE);
+        mAddExercisesFromRoutineButton.setVisibility(View.GONE);
+        mCopyPreviousWorkoutButton.setVisibility(View.GONE);
+        mAddExerciseAdditionalButton.setVisibility(View.GONE);
     }
 
     private void loadPreviousDay() {
@@ -145,11 +189,6 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         displayCurrentDate();
     }
 
-    private void startCopyExerciseActivity() {
-        // copy exercises from previous day
-        Intent intent = new Intent(this, CopyExercisesActivity.class);
-        startActivityForResult(intent, COPY_EXERCISES_REQUEST_CODE);
-    }
 
     private void getExercisesWithSetsToCopyFromDb(int[] idIntArray) {
         AsyncResponse asyncResponse = new AsyncResponse() {
@@ -202,21 +241,34 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
                 break;
 
             case (R.id.workout_bt_add_exercise_additional):
-            case (R.id.workout_fab_addExercise):
-                Intent addExerciseActivityIntent = new Intent(this, AddExerciseActivity.class);
-                addExerciseActivityIntent.putExtra(DATE_OF_EXERCISE_TAG, mDateOfExercise);
-                startActivity(addExerciseActivityIntent);
+                startAddExerciseActivity();
                 break;
 
             case (R.id.workout_bt_routine):
-                Intent selectDayOfRoutineIntent = new Intent(this, RoutineSelectorActivity.class);
-                selectDayOfRoutineIntent.putExtra(RoutineSelectorActivity.SELECTOR_ACTIVITY_MODE, RoutineSelectorActivity.SELECT_DAY);
-                startActivityForResult(selectDayOfRoutineIntent, SELECT_DAY_OF_ROUTINE_REQUEST_CODE);
+                startInsertRoutineActivity();
                 break;
 
         }
-        // TODO[2]: should this be startActivityForResult?
 
+    }
+
+    private void startCopyExerciseActivity() {
+        // copy exercises from previous day
+        Intent intent = new Intent(this, CopyExercisesActivity.class);
+        startActivityForResult(intent, COPY_EXERCISES_REQUEST_CODE);
+    }
+
+    private void startInsertRoutineActivity() {
+        Intent selectDayOfRoutineIntent = new Intent(this, RoutineSelectorActivity.class);
+        selectDayOfRoutineIntent.putExtra(RoutineSelectorActivity.SELECTOR_ACTIVITY_MODE, RoutineSelectorActivity.SELECT_DAY);
+        startActivityForResult(selectDayOfRoutineIntent, SELECT_DAY_OF_ROUTINE_REQUEST_CODE);
+    }
+
+    private void startAddExerciseActivity() {
+        Intent addExerciseActivityIntent = new Intent(this, AddExerciseActivity.class);
+        addExerciseActivityIntent.putExtra(DATE_OF_EXERCISE_TAG, mDateOfExercise);
+        // TODO[2]: should this be startActivityForResult?
+        startActivity(addExerciseActivityIntent);
     }
 
     @Override
