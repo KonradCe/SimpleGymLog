@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/medium_margin"
-        android:text="select routine:" />
+        android:text="@string/select_routine" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_routine_list"
@@ -25,6 +25,6 @@
         android:id="@+id/bt_add_routine"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:text="add routine"/>
+        android:text="@string/label_add_routine"/>
 
 </LinearLayout>

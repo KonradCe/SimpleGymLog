@@ -15,6 +15,7 @@ import pl.kcworks.simplegymlog.model.ExerciseWithSets;
 
 public class DataTypeConverter {
 
+    // type converter MUST be public
     @TypeConverter
     public static List<ExerciseWithSets> stringToExerciseWithSetsList(String json) {
         Moshi moshi = new Moshi.Builder().build();
@@ -29,8 +30,9 @@ public class DataTypeConverter {
         return  exerciseWithSetsList;
     }
 
-    @TypeConverter
-    public static String exerciseWithSetsListToString(List<ExerciseWithSets> exerciseWithSetsList) {
+    // type converter MUST be public
+    public @TypeConverter
+    static String exerciseWithSetsListToString(List<ExerciseWithSets> exerciseWithSetsList) {
         Moshi moshi = new Moshi.Builder().build();
         Type type = Types.newParameterizedType(List.class, ExerciseWithSets.class);
         JsonAdapter<List<ExerciseWithSets>> jsonAdapter = moshi.adapter(type);

@@ -1,16 +1,10 @@
 package pl.kcworks.simplegymlog.ui;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.SystemClock;
 import android.text.Editable;
 import android.text.InputType;
@@ -30,6 +24,10 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -43,7 +41,7 @@ import pl.kcworks.simplegymlog.model.Exercise;
 import pl.kcworks.simplegymlog.model.ExerciseWithSets;
 import pl.kcworks.simplegymlog.model.SingleSet;
 import pl.kcworks.simplegymlog.model.db.DataTypeConverter;
-import pl.kcworks.simplegymlog.viewmodel.ExerciseViewModel;
+import pl.kcworks.simplegymlog.viewmodel.AddExerciseViewModel;
 
 
 public class AddExerciseActivity extends AppCompatActivity implements View.OnClickListener {
@@ -62,10 +60,10 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
     private static final String PREFS_FILE = "EXERCISE_MAXES";
 
-    private long mLastClickTime = 0; // this variable prevents from double clicking on the save button (this would result in "double saving"
+    private long lastClickTime = 0; // this variable prevents from double clicking on the save button (this would result in "double saving"
     private ActivityMode activityMode;
 
-    private ExerciseViewModel exerciseViewModel;
+    private AddExerciseViewModel addExerciseViewModel;
     private ExerciseWithSets currentExerciseWithSets;
     private SingleSet singleSetToAdd;
 
@@ -94,9 +92,9 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void setUpViewModel() {
-        exerciseViewModel = ViewModelProviders.of(this).get(ExerciseViewModel.class);
+        addExerciseViewModel = ViewModelProviders.of(this).get(AddExerciseViewModel.class);
 
-        exerciseViewModel.getExerciseWithSetsMutableLiveData().observe(this, new Observer<ExerciseWithSets>() {
+        addExerciseViewModel.getExerciseWithSetsMutableLiveData().observe(this, new Observer<ExerciseWithSets>() {
             @Override
             public void onChanged(ExerciseWithSets exerciseWithSets) {
                 currentExerciseWithSets = exerciseWithSets;
@@ -104,7 +102,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             }
         });
 
-        exerciseViewModel.getSingleSetToAddMutableLiveData().observe(this, new Observer<SingleSet>() {
+        addExerciseViewModel.getSingleSetToAddMutableLiveData().observe(this, new Observer<SingleSet>() {
             @Override
             public void onChanged(SingleSet singleSet) {
                 singleSetToAdd = singleSet;
@@ -119,7 +117,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         // check if exercise is in EDIT_EXERCISE mode -> we are modifying existing exercise
         if (getIntent().hasExtra(UPDATE_EXERCISE_EXTRA)) {
             activityMode = ActivityMode.EDIT_EXERCISE;
-            saveExerciseButton.setText("Update exercise");
+            saveExerciseButton.setText(getString(R.string.label_update_exercise));
 
             String json = intent.getStringExtra(UPDATE_EXERCISE_EXTRA);
             exerciseWithSets = DataTypeConverter.stringToExerciseWithSets(json);
@@ -153,7 +151,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             List<SingleSet> singleSetList = new ArrayList<>();
             exerciseWithSets = new ExerciseWithSets(exercise, singleSetList);
         }
-        exerciseViewModel.setInitialValue(exerciseWithSets);
+        addExerciseViewModel.setInitialValue(exerciseWithSets);
     }
 
     private void setUpViews() {
@@ -174,7 +172,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
             @Override
             public void afterTextChanged(Editable editable) {
-                exerciseViewModel.setName(editable.toString());
+                addExerciseViewModel.setName(editable.toString());
 
             }
         });
@@ -237,6 +235,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
     }
 
+    @SuppressWarnings("HardCodedStringLiteral")
     private void updateSetToAddRelatedViews() {
         hideKeyboard(this);
         String repsText = (singleSetToAdd.getReps() == 0 ? "" : Integer.toString(singleSetToAdd.getReps()));
@@ -245,17 +244,16 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         repsTextView.setText(repsText);
         switchTypeOfSetToAdd(singleSetToAdd.isBasedOnTm());
 
-        Log.i(TAG, "SingleSetToAdd: " + singleSetToAdd.toString());
         if(singleSetToAdd.isBasedOnTm()) {
-            weightTextView.setHint("% of TM");
+            weightTextView.setHint(getString(R.string.hint_weight_Rm_set));
             weightTextView.setText(singleSetToAdd.getPercentageOfTm() == 0 ? "" : singleSetToAdd.getPercentageOfTm() + "%");
 
-            String percentageInfo = singleSetToAdd.getPercentageOfTm() + "% of " + singleSetToAdd.getTrainingMax() + " is " + singleSetToAdd.getWeight();
+            String percentageInfo = singleSetToAdd.getPercentageOfTm() + getString(R.string.percentage_of) + singleSetToAdd.getTrainingMax() + getString(R.string.percentage_info_is) + singleSetToAdd.getWeight();
             percentageInfoTextView.setText(percentageInfo);
             percentageInfoTextView.setVisibility(View.VISIBLE);
         }
         else {
-            weightTextView.setHint("weight");
+            weightTextView.setHint(getString(R.string.weight));
             weightTextView.setText(weightText);
             percentageInfoTextView.setVisibility(View.GONE);
         }
@@ -289,14 +287,14 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void removeLastSet() {
-        exerciseViewModel.removeLastSet();
+        addExerciseViewModel.removeLastSet();
     }
 
     private void onSaveButtonPress() {
         switch (activityMode) {
             case ADD_EXERCISE:
             case EDIT_EXERCISE:
-                exerciseViewModel.saveToDb(activityMode);
+                addExerciseViewModel.saveToDb(activityMode);
                 break;
             case ADD_EXERCISE_TO_ROUTINE:
                 addNewExerciseToRoutine();
@@ -310,7 +308,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void addNewExerciseToRoutine() {
-        ExerciseWithSets exerciseWithSetsToAdd = exerciseViewModel.getExerciseWithSetsMutableLiveData().getValue();
+        ExerciseWithSets exerciseWithSetsToAdd = addExerciseViewModel.getExerciseWithSetsMutableLiveData().getValue();
         String dayOfRoutineJson = getIntent().getStringExtra(ROUTINE_ADD_EXERCISE);
         DayOfRoutine dayOfRoutine = DataTypeConverter.stringToDayOfRoutine(dayOfRoutineJson);
         dayOfRoutine.getExerciseWithSetsList().add(exerciseWithSetsToAdd);
@@ -321,7 +319,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void updateExerciseInRoutine() {
-        ExerciseWithSets exerciseWithSetsToAdd = exerciseViewModel.getExerciseWithSetsMutableLiveData().getValue();
+        ExerciseWithSets exerciseWithSetsToAdd = addExerciseViewModel.getExerciseWithSetsMutableLiveData().getValue();
         String dayOfRoutineJson = getIntent().getStringExtra(ROUTINE_EDIT_EXERCISE);
         DayOfRoutine dayOfRoutine = DataTypeConverter.stringToDayOfRoutine(dayOfRoutineJson);
         dayOfRoutine.getExerciseWithSetsList().set(getIntent().getIntExtra(ROUTINE_EDIT_EXERCISE_ORDER, -1), exerciseWithSetsToAdd);
@@ -333,19 +331,19 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
     // 4 methods changing interface accordingly to what buttons were pressed and if the weight will be added based on TM (tmPercentageMode)
     private void repsMinus() {
-        exerciseViewModel.setToAddModifyRepsBy(-1);
+        addExerciseViewModel.setToAddModifyRepsBy(-1);
     }
 
     private void repsPlus() {
-        exerciseViewModel.setToAddModifyRepsBy(1);
+        addExerciseViewModel.setToAddModifyRepsBy(1);
     }
 
     private void weightMinus() {
-        exerciseViewModel.setToAddModifyWeightBy(-5);
+        addExerciseViewModel.setToAddModifyWeightBy(-5);
     }
 
     private void weightPlus() {
-        exerciseViewModel.setToAddModifyWeightBy(5);
+        addExerciseViewModel.setToAddModifyWeightBy(5);
     }
 
     // this is prompted by switching set type switch - it changes slightly UI accordingly to tmPercentageMode
@@ -362,13 +360,12 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
                 editRmDialog(0);
             }
             else {
-                exerciseViewModel.setToAddSetTmMax(trainingMax);
+                addExerciseViewModel.setToAddSetTmMax(trainingMax);
             }
 
         }
         else {
-            exerciseViewModel.setToAddSetTmMax(0);
-            Log.i(TAG, "looping here");
+            addExerciseViewModel.setToAddSetTmMax(0);
         }
     }
 
@@ -391,22 +388,22 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         trainingMaxEditText.setText(rmText);
 
         TextInputLayout textInputLayout = dialogView.findViewById(R.id.dialog_text_input_layout);
-        textInputLayout.setHint("Training Max for " + exerciseName + ": ");
+        textInputLayout.setHint(getString(R.string.hint_edit_Rm_dialog) + exerciseName + ": ");
 
         dialogBuilder.setView(dialogView)
                 .setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         double trainingMax = Double.valueOf(trainingMaxEditText.getText().toString());
                         saveTmInPreferences(trainingMax);
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         weightIsBasedOnPercentageSwitch.setChecked(false);
-                        exerciseViewModel.setToAddSetTmMax(0);
+                        addExerciseViewModel.setToAddSetTmMax(0);
                     }
                 })
                 .show();
@@ -415,15 +412,15 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     private void updateSetsToCurrentRmDialog(final double newRm) {
         MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(this);
         dialogBuilder
-                .setTitle("Update existing sets?")
-                .setMessage("This exercise already has sets based on 1RM. Do you want to update them to current value?")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setTitle(getString(R.string.dialog_update_existing_sets_title))
+                .setMessage(getString(R.string.dialog_update_existing_sets_message))
+                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        exerciseViewModel.updateExerciseWithSetsWithNewTm(newRm);
+                        addExerciseViewModel.updateExerciseWithSetsWithNewTm(newRm);
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
@@ -436,23 +433,23 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     private void editWeightDialog() {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.alert_training_max_dialog, null);
         TextView titleTextView = dialogView.findViewById(R.id.dialog_tv_title);
-        titleTextView.setText((weightIsBasedOnPercentageSwitch.isChecked() ? "% of 1RM" : "Edit weight"));
+        titleTextView.setText((weightIsBasedOnPercentageSwitch.isChecked() ? getString(R.string.hint_weight_Rm_set) : getString(R.string.dialog_edit_weight_title)));
         final EditText weightEditText = dialogView.findViewById(R.id.dialog_edit_text);
         weightEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         TextInputLayout textInputLayout = dialogView.findViewById(R.id.dialog_text_input_layout);
 
-        textInputLayout.setHint((weightIsBasedOnPercentageSwitch.isChecked() ? "% of 1RM" : "weight"));
+        textInputLayout.setHint((weightIsBasedOnPercentageSwitch.isChecked() ? getString(R.string.hint_weight_Rm_set) : getString(R.string.weight)));
 
         MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(this);
         dialogBuilder.setView(dialogView)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         double weight = Double.parseDouble(weightEditText.getText().toString());
-                        exerciseViewModel.setToAddSetWeight(weight);
+                        addExerciseViewModel.setToAddSetWeight(weight);
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
@@ -464,22 +461,22 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     private void editRepsDialog() {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.alert_training_max_dialog, null);
         TextView titleTextView = dialogView.findViewById(R.id.dialog_tv_title);
-        titleTextView.setText("Edit reps");
+        titleTextView.setText(getString(R.string.dialog_edit_reps_title));
         final EditText repsEditText = dialogView.findViewById(R.id.dialog_edit_text);
         repsEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
         TextInputLayout textInputLayout = dialogView.findViewById(R.id.dialog_text_input_layout);
-        textInputLayout.setHint("reps");
+        textInputLayout.setHint(getString(R.string.reps));
 
         MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(this);
         dialogBuilder.setView(dialogView)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         int reps = Integer.parseInt(repsEditText.getText().toString());
-                        exerciseViewModel.setToAddSetReps(reps);
+                        addExerciseViewModel.setToAddSetReps(reps);
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
@@ -492,7 +489,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         SharedPreferences.Editor editor = getSharedPreferences(PREFS_FILE, MODE_PRIVATE).edit();
         editor.putLong(currentExerciseWithSets.getExercise().getExerciseName(), Double.doubleToLongBits(newTrainingMax));
         editor.apply();
-        exerciseViewModel.setToAddSetTmMax(newTrainingMax);
+        addExerciseViewModel.setToAddSetTmMax(newTrainingMax);
         if (currentExerciseWithSets.hasSetsBasedOnRm()) {
             updateSetsToCurrentRmDialog(newTrainingMax);
         }
@@ -531,11 +528,11 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
                 weightPlus();
                 break;
             case (R.id.addExerciseActivity_bt_addSet):
-                if (exerciseViewModel.getSingleSetToAddMutableLiveData().getValue().getReps() == 0) {
-                    Toast.makeText(this, "set can not have 0 reps", Toast.LENGTH_LONG).show();
+                if (addExerciseViewModel.getSingleSetToAddMutableLiveData().getValue().getReps() == 0) {
+                    Toast.makeText(this, getString(R.string.toast_zero_reps_warning), Toast.LENGTH_LONG).show();
                 }
                 else {
-                    exerciseViewModel.addSet();
+                    addExerciseViewModel.addSet();
                 }
                 break;
 
@@ -544,10 +541,10 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
                 break;
             case (R.id.addExerciseActivity_bt_saveExercise):
                 // mis-clicking prevention, using threshold of 1000 ms
-                if (SystemClock.elapsedRealtime() - mLastClickTime < 1000){
+                if (SystemClock.elapsedRealtime() - lastClickTime < 1000){
                     return;
                 }
-                mLastClickTime = SystemClock.elapsedRealtime();
+                lastClickTime = SystemClock.elapsedRealtime();
                 onSaveButtonPress();
                 break;
         }
@@ -577,7 +574,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             SetView setView = (SetView) view;
             Log.i(TAG, setView.toString());
 
-            SingleSet singleSet = exerciseViewModel.getSingleSetToAddMutableLiveData().getValue();
+            SingleSet singleSet = addExerciseViewModel.getSingleSetToAddMutableLiveData().getValue();
             singleSet.setPercentageOfTm(setView.getPercentageOfTm());
             singleSet.setTrainingMax(setView.getTrainingMax());
 
@@ -588,7 +585,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
                 singleSet.setWeight(setView.getWeight());
             }
             singleSet.setReps(setView.getReps());
-            exerciseViewModel.getSingleSetToAddMutableLiveData().setValue(singleSet);
+            addExerciseViewModel.getSingleSetToAddMutableLiveData().setValue(singleSet);
 
         }
     }

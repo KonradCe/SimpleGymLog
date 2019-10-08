@@ -2,7 +2,6 @@ package pl.kcworks.simplegymlog.ui;
 
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -53,7 +52,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     };
 
 
-    public RoutineAdapter(AdapterMode adapterMode) {
+    RoutineAdapter(AdapterMode adapterMode) {
         this.adapterMode = adapterMode;
     }
 
@@ -67,7 +66,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         notifyDataSetChanged();
     }
 
-    public List<GymLogListItem> getGymLogItems() {
+    List<GymLogListItem> getGymLogItems() {
         return gymLogItems;
     }
 
@@ -183,7 +182,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 return new RvExtrasViewHolder(view);
         }
 
-        // null should never be returned, all cases should be handled by switch above
+        // null should never be returned, all cases are (and should be) handled by switch above
         return null;
     }
 

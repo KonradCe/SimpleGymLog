@@ -1,3 +1,57 @@
 <resources>
     <string name="app_name">SimpleGymLog</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="reps">reps</string>
+    <string name="weight">weight</string>
+    <string name="percentage_of"> % of </string>
+    <string name="percentage_info_is">is</string>
+    <string name="sets">sets</string>
+    <string name="set">set</string>
+
+    <string name="hint_exercise_name">exercise name</string>
+    <string name="hint_weight_Rm_set">% of 1RM</string>
+    <string name="hint_edit_Rm_dialog">1RM Max for</string>
+
+    <string name="label_insert_routine">insert routine</string>
+    <string name="label_add_set">add set</string>
+    <string name="label_delete_set">delete set</string>
+    <string name="label_save_exercise">save exercise</string>
+    <string name="label_update_exercise">Update exercise</string>
+    <string name="label_add_exercise">add exercise</string>
+    <string name="label_copy_day">copy previous day</string>
+    <string name="label_delete_exercise">delete exercise</string>
+    <string name="label_copy_selected_day">copy selected day</string>
+
+    <string name="dialog_update_existing_sets_title">Update existing sets?</string>
+    <string name="dialog_update_existing_sets_message">This exercise already has sets based on 1RM. Do you want to update them to current value?</string>
+    <string name="dialog_edit_weight_title">Edit weight</string>
+    <string name="dialog_edit_reps_title">Edit reps</string>
+    <string name="dialog_add_new_day_hint">name of the day</string>
+    <string name="dialog_day_title">Day name</string>
+    <string name="dialog_add_new_routine_title">Routine name</string>
+    <string name="dialog_new_routine_hint">name of the new routine</string>
+    <string name="dialog_routine_title">Routine name</string>
+
+    <string name="switch_info_standard_set">standard set with fixed weight</string>
+    <string name="switch_info_RM_set">set based on % of 1RM</string>
+
+    <string name="toast_zero_reps_warning">set can not have 0 reps</string>
+    <string name="toast_exercise_add_failed">exercise was NOT added</string>
+
+    <string name="copy_exercise_day_info_11">There is</string>
+    <string name="copy_exercise_day_info_12">exercise in selected day:</string>
+    <string name="copy_exercise_day_info_21">There are</string>
+    <string name="copy_exercise_day_info_22">exercises in selected day:</string>
+    <string name="copy_exercise_no_exercises_selected">No exercises for selected day.</string>
+    <string name="title">Simple Gym Log</string>
+    <string name="label_start_workout">start workout</string>
+    <string name="label_customize_routine">customize routine</string>
+    <string name="label_add_day_of_routine">add day of routine</string>
+    <string name="label_add_routine">add routine</string>
+    <string name="select_routine">select routine:</string>
+    <string name="weight_kg">weight [kg]</string>
+
+
 </resources>

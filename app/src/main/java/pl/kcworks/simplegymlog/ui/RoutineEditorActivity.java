@@ -1,13 +1,5 @@
 package pl.kcworks.simplegymlog.ui;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,10 +9,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 import pl.kcworks.simplegymlog.R;
 import pl.kcworks.simplegymlog.model.DayOfRoutine;
@@ -29,7 +28,6 @@ import pl.kcworks.simplegymlog.model.ExerciseWithSets;
 import pl.kcworks.simplegymlog.model.GymLogListItem;
 import pl.kcworks.simplegymlog.model.Routine;
 import pl.kcworks.simplegymlog.model.RoutineWithDays;
-import pl.kcworks.simplegymlog.model.SingleSet;
 import pl.kcworks.simplegymlog.model.db.DataTypeConverter;
 import pl.kcworks.simplegymlog.viewmodel.RoutineEditorViewModel;
 
@@ -123,20 +121,20 @@ public class RoutineEditorActivity extends AppCompatActivity implements View.OnC
         dayOfRoutine.setParentRoutineId(idOfRoutineBeingEdited);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final EditText editText = new EditText(this);
-        editText.setHint("name of the day");
+        editText.setHint(getString(R.string.dialog_add_new_day_hint));
         editText.setSelectAllOnFocus(true);
 
-        builder.setTitle("Day name")
+        builder.setTitle(getString(R.string.dialog_day_title))
                 .setView(editText)
                 .setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dayOfRoutine.setDayName(editText.getText().toString());
                         routineEditorViewModel.insertDayOfRoutine(dayOfRoutine);
                     }
                 })
-                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
@@ -161,17 +159,17 @@ public class RoutineEditorActivity extends AppCompatActivity implements View.OnC
         editText.setText(routine.getRoutineName());
         editText.setSelectAllOnFocus(true);
 
-        builder.setTitle("Routine name")
+        builder.setTitle(getString(R.string.dialog_add_new_routine_title))
                 .setView(editText)
                 .setCancelable(true)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         routine.setRoutineName(editText.getText().toString());
                         routineEditorViewModel.updateRoutine(routine);
                     }
                 })
-                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
@@ -187,55 +185,23 @@ public class RoutineEditorActivity extends AppCompatActivity implements View.OnC
         editText.setText(dayOfRoutine.getDayName());
         editText.setSelectAllOnFocus(true);
 
-        builder.setTitle("Day name")
+        builder.setTitle(getString(R.string.dialog_day_title))
                 .setView(editText)
                 .setCancelable(true)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dayOfRoutine.setDayName(editText.getText().toString());
                         routineEditorViewModel.updateDayOfRoutine(dayOfRoutine);
                     }
                 })
-                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
                     }
                 })
                 .show();
-    }
-
-    private void insertDummyRoutineToDb() {
-        List<SingleSet> singleSetList = new ArrayList<>();
-        singleSetList.add(new SingleSet(1,  100));
-        singleSetList.add(new SingleSet(2,  200));
-        singleSetList.add(new SingleSet(3,  300));
-        singleSetList.add(new SingleSet(4,  400));
-        singleSetList.add(new SingleSet(5,  500));
-
-
-        Exercise exercise = new Exercise("cwiczenie 1", 2);
-
-        ExerciseWithSets exerciseWithSets = new ExerciseWithSets(exercise, singleSetList);
-
-        List<ExerciseWithSets> exerciseWithSetsList = new ArrayList<>();
-        exerciseWithSetsList.add(exerciseWithSets);
-        exerciseWithSetsList.add(exerciseWithSets);
-
-
-        List<DayOfRoutine> dayOfRoutineList = new ArrayList<>();
-        dayOfRoutineList.add(new DayOfRoutine("dzien A", exerciseWithSetsList));
-        dayOfRoutineList.add(new DayOfRoutine("dzien B", exerciseWithSetsList));
-
-        Random r = new Random();
-        int randomInt = r.nextInt(100);
-
-        Routine routine = new Routine("routine " + randomInt);
-        RoutineWithDays routineWithDays = new RoutineWithDays(routine, dayOfRoutineList);
-
-
-        routineEditorViewModel.insertRoutine(routineWithDays);
     }
 
     @Override
@@ -249,7 +215,7 @@ public class RoutineEditorActivity extends AppCompatActivity implements View.OnC
                 routineEditorViewModel.updateDayOfRoutine(dayOfRoutine);
             }
             else {
-                Toast.makeText(this, "no changes were made", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.toast_exercise_add_failed), Toast.LENGTH_LONG).show();
             }
         }
     }

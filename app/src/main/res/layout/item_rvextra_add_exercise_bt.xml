@@ -10,4 +10,4 @@
     android:gravity="center_vertical"
     android:layout_marginLeft="@dimen/routine_adapter_exercise"
     app:icon="@drawable/ic_add_black_24dp"
-    android:text="add exercise" />
+    android:text="@string/label_add_exercise" />

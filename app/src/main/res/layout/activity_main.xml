@@ -11,7 +11,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Simple Gym Log"
+        android:text="@string/title"
         style="@style/TextAppearance.MaterialComponents.Headline4"
         android:layout_margin="@dimen/medium_margin"/>
 
@@ -25,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/small_margin"
-            android:text="start workout" />
+            android:text="@string/label_start_workout" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/mainActivity_bt_customize_routine"
@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/medium_margin"
-            android:text="customize routine"/>
+            android:text="@string/label_customize_routine"/>
 
     </LinearLayout>
 

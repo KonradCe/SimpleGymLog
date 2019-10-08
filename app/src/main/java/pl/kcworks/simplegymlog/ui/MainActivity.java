@@ -1,20 +1,22 @@
 package pl.kcworks.simplegymlog.ui;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.Button;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+import com.prolificinteractive.materialcalendarview.format.TitleFormatter;
 
 import org.threeten.bp.LocalDate;
 
@@ -30,10 +32,7 @@ import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "KCtag-" + MainActivity.class.getSimpleName();
-
-    private MaterialCalendarView mCalendarView;
-
-    private GymLogViewModel gymLogViewModel;
+    private MaterialCalendarView calendarView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,20 +52,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button customizeRoutineButton = findViewById(R.id.mainActivity_bt_customize_routine);
         customizeRoutineButton.setOnClickListener(this);
 
-        mCalendarView = findViewById(R.id.calendar);
+        calendarView = findViewById(R.id.calendar);
     }
 
     private long getSelectedDay() {
-        return DateConverterHelper.dateToLong(mCalendarView.getSelectedDate().getDate());
+        return DateConverterHelper.dateToLong(calendarView.getSelectedDate().getDate());
     }
 
     private void calendarSetUp() {
 
-        mCalendarView.setSelectedDate(LocalDate.now());
+        calendarView.setSelectedDate(LocalDate.now());
 
-        gymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
+        GymLogViewModel gymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
         // TODO[2]: get only exercises for the current month so setting up the calendar won't take too long
-        // TODO[3]: do not fetch every exercise after every update - get only those that were added
+        // TODO[3]: do not fetch every exercise after every update - get only those that were added?
         // TODO[2]: when exercises were deleted from a day update it so it will not look like it still has exercises
         gymLogViewModel.getAllExercises().observe(this, new Observer<List<Exercise>>() {
             @Override
@@ -78,14 +77,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setDecoratorsToDaysWithExercises(List<Exercise> exerciseList) {
-        mCalendarView.removeDecorators();
+        calendarView.removeDecorators();
         List<CalendarDay> listOfDaysWithExercises = new ArrayList<>();
         for (Exercise exercise : exerciseList) {
             int[] calendarDayNumbers = DateConverterHelper.gymLogDateFormatToYearMonthDayInt(exercise.getExerciseDate());
             listOfDaysWithExercises.add(CalendarDay.from(calendarDayNumbers[0], calendarDayNumbers[1], calendarDayNumbers[2]));
         }
 
-        mCalendarView.addDecorator(new DaysWithExerciseDecorator(listOfDaysWithExercises, getResources().getColor(R.color.colorPrimary)));
+        calendarView.addDecorator(new DaysWithExerciseDecorator(listOfDaysWithExercises, getResources().getColor(R.color.colorPrimary)));
     }
 
 

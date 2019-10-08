@@ -1,12 +1,5 @@
 package pl.kcworks.simplegymlog.ui;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +8,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Collections;
 import java.util.List;
@@ -128,7 +128,6 @@ public class RoutineSelectorActivity extends AppCompatActivity implements View.O
 
     private void displaySingleRoutineWithDays(int routineId) {
         if (routineSelectorViewModel.getRoutineList().hasActiveObservers()) {
-            Log.i(TAG, "routineSelectorViewModel.getRoutineList() has active observers");
             routineSelectorViewModel.getRoutineList().removeObservers(RoutineSelectorActivity.this);
         }
         routineSelectorViewModel.getRoutineWithDaysById(routineId).observe(this, new Observer<RoutineWithDays>() {
@@ -145,17 +144,17 @@ public class RoutineSelectorActivity extends AppCompatActivity implements View.O
         startActivity(intent);
     }
 
-    private void addNewRoutine() {
+    private void newRoutineDialog() {
         final RoutineWithDays routineWithDays = RoutineWithDays.createEmpty();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final EditText editText = new EditText(this);
-        editText.setHint("name of the new routine");
+        editText.setHint(getString(R.string.dialog_new_routine_hint));
         editText.setSelectAllOnFocus(true);
 
-        builder.setTitle("Routine name")
+        builder.setTitle(getString(R.string.dialog_routine_title))
                 .setView(editText)
                 .setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         routineWithDays.getRoutine().setRoutineName(editText.getText().toString());
@@ -176,7 +175,7 @@ public class RoutineSelectorActivity extends AppCompatActivity implements View.O
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.bt_add_routine) {
-            addNewRoutine();
+            newRoutineDialog();
         }
     }
 

@@ -20,6 +20,6 @@
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:text="add day of routine"/>
+        android:text="@string/label_add_day_of_routine"/>
 
 </LinearLayout>

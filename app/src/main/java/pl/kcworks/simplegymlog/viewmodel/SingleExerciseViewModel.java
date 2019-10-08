@@ -1,14 +1,17 @@
+// SingleSet ViewModel factory currently is not being used, but it might be in the near future, so I am leaving this piece of code for now
+/*
 package pl.kcworks.simplegymlog.viewmodel;
 
 import android.app.Application;
+
+import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.annotation.NonNull;
 
-import pl.kcworks.simplegymlog.model.GymLogRepository;
 import pl.kcworks.simplegymlog.model.ExerciseWithSets;
+import pl.kcworks.simplegymlog.model.GymLogRepository;
 
 public class SingleExerciseViewModel extends AndroidViewModel {
 
@@ -41,3 +44,4 @@ public class SingleExerciseViewModel extends AndroidViewModel {
         }
     }
 }
+*/

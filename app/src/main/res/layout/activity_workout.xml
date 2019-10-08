@@ -42,7 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/large_margin"
-            android:text="copy from routine"
+            android:text="@string/label_insert_routine"
             app:icon="@drawable/ic_add_black_24dp" />
 
         <com.google.android.material.button.MaterialButton
@@ -50,7 +50,7 @@
             style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="copy previous workout"
+            android:text="@string/label_copy_day"
             app:icon="@drawable/ic_add_black_24dp"
             app:iconGravity="start"
             app:iconPadding="16dp" />
@@ -61,7 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/large_margin"
-            android:text="add new exercise"
+            android:text="@string/label_add_exercise"
             app:icon="@drawable/ic_add_black_24dp" />
     </LinearLayout>
 
@@ -72,7 +72,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="date of exercise"
+        tools:text="date of exercise"
         app:layout_constraintBottom_toBottomOf="@+id/workout_bt_leftArrow"
         app:layout_constraintEnd_toStartOf="@+id/workout_bt_rightArrow"
         app:layout_constraintStart_toEndOf="@+id/workout_bt_leftArrow"

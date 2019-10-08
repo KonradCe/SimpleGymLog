@@ -94,10 +94,6 @@ public class SingleSet implements GymLogListItem{
         return singleSetID;
     }
 
-    public void setSingleSetID(int singleSetID) {
-        this.singleSetID = singleSetID;
-    }
-
     public long getCorrespondingExerciseId() {
         return correspondingExerciseId;
     }

@@ -1,20 +1,17 @@
 package pl.kcworks.simplegymlog.model;
 
 import android.app.Application;
+import android.os.AsyncTask;
+
 import androidx.lifecycle.LiveData;
 
-import android.os.AsyncTask;
-import android.util.Log;
-
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import pl.kcworks.simplegymlog.model.db.DayOfRoutineDao;
 import pl.kcworks.simplegymlog.model.db.ExerciseDao;
 import pl.kcworks.simplegymlog.model.db.GymLogRoomDatabase;
 import pl.kcworks.simplegymlog.model.db.RoutineDao;
 import pl.kcworks.simplegymlog.model.db.SingleSetDao;
-import pl.kcworks.simplegymlog.ui.WorkoutActivity;
 
 public class GymLogRepository {
 

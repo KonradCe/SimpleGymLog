@@ -127,10 +127,4 @@ public class SetView extends LinearLayout {
                 '}';
     }
 
-    public enum Units{
-        KG,
-        LBS
-    }
-
-
 }

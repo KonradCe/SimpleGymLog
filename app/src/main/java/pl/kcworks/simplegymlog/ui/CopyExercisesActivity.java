@@ -1,21 +1,18 @@
 package pl.kcworks.simplegymlog.ui;
 
 import android.app.Activity;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.util.LongSparseArray;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.button.MaterialButton;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
@@ -35,35 +32,34 @@ public class CopyExercisesActivity extends AppCompatActivity implements View.OnC
 
     public static final String IDS_OF_EXERCISES_TO_COPY_TAG = "IDS_OF_EXERCISES_TO_COPY_TAG";
     private final String TAG = "KCTag-" + CopyExercisesActivity.class.getSimpleName();
-    private TextView mExercisesInSelectedDayTextView;
-    private List<ExerciseWithSets> mAllExercisesWithSets;
+    private TextView exercisesInSelectedDayTextView;
+    private List<ExerciseWithSets> allExercisesWithSets;
     private LongSparseArray<ArrayList<ExerciseWithSets>> exerciseWithListSparseArray = new LongSparseArray<>();
-    private GymLogViewModel mGymLogViewModel;
-    private List<ExerciseWithSets> mSelectedExercisesWithSets;
+    private GymLogViewModel gymLogViewModel;
+    private List<ExerciseWithSets> selectedExercisesWithSets;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_copy_exercises);
 
-        mGymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
+        gymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
         grabDataFromDb();
         setUpViews();
-
     }
 
     private void setUpViews() {
-        mExercisesInSelectedDayTextView = findViewById(R.id.copyExerciseActivity_tv_exercisesInSelectedDayInfo);
+        exercisesInSelectedDayTextView = findViewById(R.id.copyExerciseActivity_tv_exercisesInSelectedDayInfo);
         MaterialButton copySelectedDayButton = findViewById(R.id.bt_copy_selected_day);
         copySelectedDayButton.setOnClickListener(this);
 
     }
 
     private void grabDataFromDb() {
-        mGymLogViewModel.getAllExercisesWithSets().observe(this, new Observer<List<ExerciseWithSets>>() {
+        gymLogViewModel.getAllExercisesWithSets().observe(this, new Observer<List<ExerciseWithSets>>() {
             @Override
             public void onChanged(@Nullable List<ExerciseWithSets> exerciseWithSets) {
-                mAllExercisesWithSets = exerciseWithSets;
+                allExercisesWithSets = exerciseWithSets;
                 setUpCalendar();
             }
         });
@@ -71,7 +67,7 @@ public class CopyExercisesActivity extends AppCompatActivity implements View.OnC
 
     private void setUpCalendar() {
         MaterialCalendarView mCalendarView = findViewById(R.id.calendar);
-        List<CalendarDay> calendarDayList = processListOfExercisesFromDb(mAllExercisesWithSets);
+        List<CalendarDay> calendarDayList = processListOfExercisesFromDb(allExercisesWithSets);
         mCalendarView.addDecorator(new MainActivity.DaysWithExerciseDecorator(calendarDayList, getResources().getColor(R.color.colorPrimary)));
 
         mCalendarView.setOnDateChangedListener(new OnDateSelectedListener() {
@@ -107,29 +103,29 @@ public class CopyExercisesActivity extends AppCompatActivity implements View.OnC
     }
 
     private void presentExerciseInfoForDay(long dateInGymLogFormat) {
-        mSelectedExercisesWithSets = exerciseWithListSparseArray.get(dateInGymLogFormat);
-        if (mSelectedExercisesWithSets == null) {
-            mExercisesInSelectedDayTextView.setText("No exercises for selected day.");
+        selectedExercisesWithSets = exerciseWithListSparseArray.get(dateInGymLogFormat);
+        if (selectedExercisesWithSets == null) {
+            exercisesInSelectedDayTextView.setText(getString(R.string.copy_exercise_no_exercises_selected));
         } else {
-            mExercisesInSelectedDayTextView.setText(createDayInfoFromExerciseWithSetList(mSelectedExercisesWithSets));
+            exercisesInSelectedDayTextView.setText(createDayInfoFromExerciseWithSetList(selectedExercisesWithSets));
         }
     }
 
     private String createDayInfoFromExerciseWithSetList(List<ExerciseWithSets> exerciseWithSets) {
         String exercisesInDayInfo;
         if (exerciseWithSets.size() == 1) {
-            exercisesInDayInfo = "There is " + exerciseWithSets.size() + " exercise in selected day: \n";
+            exercisesInDayInfo = getString(R.string.copy_exercise_day_info_11) + exerciseWithSets.size() + getString(R.string.copy_exercise_day_info_12);
         }
         else {
-            exercisesInDayInfo = "There are " + exerciseWithSets.size() + " exercises in selected day: \n";
+            exercisesInDayInfo = getString(R.string.copy_exercise_day_info_21) + exerciseWithSets.size() + getString(R.string.copy_exercise_day_info_22);
         }
 
         for (ExerciseWithSets e : exerciseWithSets) {
             exercisesInDayInfo += e.getExercise().getExerciseName() + " - ";
             if (e.getExerciseSetList().size() == 1) {
-                exercisesInDayInfo += "" + e.getExerciseSetList().size() + " set";
+                exercisesInDayInfo += "" + e.getExerciseSetList().size() + " " + getString(R.string.set);
             } else {
-                exercisesInDayInfo += "" + e.getExerciseSetList().size() + " sets";
+                exercisesInDayInfo += "" + e.getExerciseSetList().size() + " " + getString(R.string.sets);
             }
             exercisesInDayInfo += "\n";
         }
@@ -139,17 +135,16 @@ public class CopyExercisesActivity extends AppCompatActivity implements View.OnC
 
     private void returnExerciseIdsFromSelectedDay() {
         Intent dataIntent = new Intent();
-        if (mSelectedExercisesWithSets != null) {
-            int[] idsOfExercisesToCopy = new int[mSelectedExercisesWithSets.size()];
-            for (int i = 0; i < mSelectedExercisesWithSets.size(); i++) {
-                idsOfExercisesToCopy[i] = mSelectedExercisesWithSets.get(i).getExercise().getExerciseId();
+        if (selectedExercisesWithSets != null) {
+            int[] idsOfExercisesToCopy = new int[selectedExercisesWithSets.size()];
+            for (int i = 0; i < selectedExercisesWithSets.size(); i++) {
+                idsOfExercisesToCopy[i] = selectedExercisesWithSets.get(i).getExercise().getExerciseId();
             }
             dataIntent.putExtra(IDS_OF_EXERCISES_TO_COPY_TAG, idsOfExercisesToCopy);
             setResult(RESULT_OK, dataIntent);
             finish();
         } else {
-            Toast.makeText(this, "no exercises in selected day", Toast.LENGTH_SHORT).show();
-
+            Toast.makeText(this, getString(R.string.copy_exercise_no_exercises_selected), Toast.LENGTH_SHORT).show();
         }
 
     }

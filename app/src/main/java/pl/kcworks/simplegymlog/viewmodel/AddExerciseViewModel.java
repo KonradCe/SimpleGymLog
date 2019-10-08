@@ -8,21 +8,20 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-
 import pl.kcworks.simplegymlog.model.ExerciseWithSets;
 import pl.kcworks.simplegymlog.model.GymLogRepository;
 import pl.kcworks.simplegymlog.model.SingleSet;
 import pl.kcworks.simplegymlog.ui.AddExerciseActivity;
 
-public class ExerciseViewModel extends AndroidViewModel {
+public class AddExerciseViewModel extends AndroidViewModel {
 
-    public static final String TAG = "KCtag-" + ExerciseViewModel.class.getSimpleName();
+    public static final String TAG = "KCtag-" + AddExerciseViewModel.class.getSimpleName();
 
     private GymLogRepository repository;
     private MutableLiveData<ExerciseWithSets> exerciseWithSetsMutableLiveData;
     private MutableLiveData<SingleSet> singleSetToAddMutableLiveData;
 
-    public ExerciseViewModel(@NonNull Application application) {
+    public AddExerciseViewModel(@NonNull Application application) {
         super(application);
 
         exerciseWithSetsMutableLiveData = new MutableLiveData<>();
@@ -101,7 +100,7 @@ public class ExerciseViewModel extends AndroidViewModel {
             singleSet.setWeight(weight);
         }
         Log.i(TAG, singleSet.toString());
-        singleSetToAddMutableLiveData.setValue(singleSet);;
+        singleSetToAddMutableLiveData.setValue(singleSet);
     }
 
     public void setToAddModifyWeightBy(int modifier) {

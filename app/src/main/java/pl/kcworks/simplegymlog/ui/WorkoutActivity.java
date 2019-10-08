@@ -1,16 +1,9 @@
 package pl.kcworks.simplegymlog.ui;
 
 import android.app.Activity;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,6 +12,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.leinardi.android.speeddial.SpeedDialActionItem;
 import com.leinardi.android.speeddial.SpeedDialView;
 
@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.kcworks.simplegymlog.DateConverterHelper;
-import pl.kcworks.simplegymlog.model.GymLogRepository;
 import pl.kcworks.simplegymlog.R;
 import pl.kcworks.simplegymlog.model.Exercise;
 import pl.kcworks.simplegymlog.model.ExerciseWithSets;
+import pl.kcworks.simplegymlog.model.GymLogRepository;
 import pl.kcworks.simplegymlog.model.db.DataTypeConverter;
 import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 
@@ -38,24 +38,19 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     public static final String DATE_OF_EXERCISE_TAG = "DATE_OF_EXERCISE_TAG";
     private static final int COPY_EXERCISES_REQUEST_CODE = 31416;
     private static final int SELECT_DAY_OF_ROUTINE_REQUEST_CODE = 31417;
-    // TODO[3]: standardize field names and widgets ids
+
     private final String TAG = "KCTag-" + WorkoutActivity.class.getSimpleName();
-    // TODO[3]: not sure if this variable is needed yet
-    private long mDateOfExercise;
-    private GymLogViewModel mGymLogViewModel;
-    private WorkoutAdapter mWorkoutAdapter;
+    // TODO[3]: I don't like storing exercise date in this place, shouldn't this be in ViewModel only?
+    private long dateOfExercise;
+    private GymLogViewModel gymLogViewModel;
+    private WorkoutAdapter workoutAdapter;
 
-
-    private TextView mDateOfExerciseTextView;
-    private Button mPreviousDayArrowButton;
-    private Button mNextDayArrowButton;
-    private RecyclerView mExerciseRecyclerView;
+    private TextView dateOfExerciseTextView;
+    private RecyclerView exerciseRecyclerView;
     private SpeedDialView fab;
-
-    // additional buttons that show up only when there is no exercises for this day, probably will be replaced by FAB
-    private Button mAddExercisesFromRoutineButton;
-    private Button mCopyPreviousWorkoutButton;
-    private Button mAddExerciseAdditionalButton;
+    private Button addExercisesFromRoutineButton;
+    private Button copyPreviousWorkoutButton;
+    private Button addExerciseAdditionalButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,49 +62,46 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         displayCurrentDate();
         setupRecyclerView();
 
-        mGymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
-        loadExercisesForDate(mDateOfExercise);
+        gymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
+        loadExercisesForDate(dateOfExercise);
 
     }
 
     private void grabDataFromIntent() {
-        mDateOfExercise = getIntent().getLongExtra(DATE_OF_EXERCISE_TAG, 19901030);
+        dateOfExercise = getIntent().getLongExtra(DATE_OF_EXERCISE_TAG, 19901030);
     }
 
     private void setupViews() {
-        mDateOfExerciseTextView = findViewById(R.id.workout_tv_exerciseDate);
-        mPreviousDayArrowButton = findViewById(R.id.workout_bt_leftArrow);
-        mPreviousDayArrowButton.setOnClickListener(this);
-        mNextDayArrowButton = findViewById(R.id.workout_bt_rightArrow);
-        mNextDayArrowButton.setOnClickListener(this);
-        mExerciseRecyclerView = findViewById(R.id.workout_rv_exercises);
+        dateOfExerciseTextView = findViewById(R.id.workout_tv_exerciseDate);
+        Button previousDayArrowButton = findViewById(R.id.workout_bt_leftArrow);
+        previousDayArrowButton.setOnClickListener(this);
+        Button nextDayArrowButton = findViewById(R.id.workout_bt_rightArrow);
+        nextDayArrowButton.setOnClickListener(this);
+        exerciseRecyclerView = findViewById(R.id.workout_rv_exercises);
         setUpFab();
-//        mAddExerciseFaB = findViewById(R.id.workout_fab_addExercise);
-//        mAddExerciseFaB.setOnClickListener(this);
 
-
-        // additional buttons that show up only when there are, probably will be replaced by FAB
-        mAddExercisesFromRoutineButton = findViewById(R.id.workout_bt_routine);
-        mAddExercisesFromRoutineButton.setOnClickListener(this);
-        mCopyPreviousWorkoutButton = findViewById(R.id.workout_bt_copy_previous);
-        mCopyPreviousWorkoutButton.setOnClickListener(this);
-        mAddExerciseAdditionalButton = findViewById(R.id.workout_bt_add_exercise_additional);
-        mAddExerciseAdditionalButton.setOnClickListener(this);
+        // additional buttons that show up only when there are no exercises
+        addExercisesFromRoutineButton = findViewById(R.id.workout_bt_routine);
+        addExercisesFromRoutineButton.setOnClickListener(this);
+        copyPreviousWorkoutButton = findViewById(R.id.workout_bt_copy_previous);
+        copyPreviousWorkoutButton.setOnClickListener(this);
+        addExerciseAdditionalButton = findViewById(R.id.workout_bt_add_exercise_additional);
+        addExerciseAdditionalButton.setOnClickListener(this);
     }
 
     private void setUpFab() {
         fab = findViewById(R.id.fab);
 
         SpeedDialActionItem addExerciseButton = new SpeedDialActionItem.Builder(R.id.fab_item_add_exercise, R.drawable.ic_add_black_24dp)
-                .setLabel("add exercise")
+                .setLabel(getString(R.string.label_add_exercise))
                 .setTheme(R.style.Fab)
                 .create();
         SpeedDialActionItem insertRoutineButton = new SpeedDialActionItem.Builder(R.id.fab_item_add_routine, R.drawable.ic_add_black_24dp)
-                .setLabel("insert routine")
+                .setLabel(getString(R.string.label_insert_routine))
                 .setTheme(R.style.Fab)
                 .create();
         SpeedDialActionItem copyPreviousDayButton = new SpeedDialActionItem.Builder(R.id.fab_item_copy_previous, R.drawable.ic_add_black_24dp)
-                .setLabel("copy previous day")
+                .setLabel(getString(R.string.label_copy_day))
                 .setTheme(R.style.Fab)
                 .create();
         fab.addActionItem(addExerciseButton);
@@ -139,17 +131,17 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void displayCurrentDate() {
-        mDateOfExerciseTextView.setText(DateConverterHelper.fromLongToString(mDateOfExercise));
+        dateOfExerciseTextView.setText(DateConverterHelper.fromLongToString(dateOfExercise));
     }
 
     private void setupRecyclerView() {
-        mWorkoutAdapter = new WorkoutAdapter(this);
-        mExerciseRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mExerciseRecyclerView.setAdapter(mWorkoutAdapter);
+        workoutAdapter = new WorkoutAdapter(this);
+        exerciseRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        exerciseRecyclerView.setAdapter(workoutAdapter);
     }
 
     private void loadExercisesForDate(long dateInGymLogFormat) {
-        mGymLogViewModel.getExercisesWithSetsForDate(dateInGymLogFormat).observe(this, new Observer<List<ExerciseWithSets>>() {
+        gymLogViewModel.getExercisesWithSetsForDate(dateInGymLogFormat).observe(this, new Observer<List<ExerciseWithSets>>() {
             @Override
             public void onChanged(@Nullable List<ExerciseWithSets> exercisesWithSets) {
                 if (exercisesWithSets.isEmpty()) {
@@ -157,38 +149,37 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
                 } else {
                     hideNewWorkoutOptions();
                 }
-                mWorkoutAdapter.setExercises(exercisesWithSets);
-                mWorkoutAdapter.notifyDataSetChanged();
+                workoutAdapter.setExercises(exercisesWithSets);
+                workoutAdapter.notifyDataSetChanged();
             }
         });
     }
 
     private void displayNewWorkoutOptions() {
-        mExerciseRecyclerView.setVisibility(View.GONE);
-        mAddExercisesFromRoutineButton.setVisibility(View.VISIBLE);
-        mCopyPreviousWorkoutButton.setVisibility(View.VISIBLE);
-        mAddExerciseAdditionalButton.setVisibility(View.VISIBLE);
+        exerciseRecyclerView.setVisibility(View.GONE);
+        addExercisesFromRoutineButton.setVisibility(View.VISIBLE);
+        copyPreviousWorkoutButton.setVisibility(View.VISIBLE);
+        addExerciseAdditionalButton.setVisibility(View.VISIBLE);
     }
 
     private void hideNewWorkoutOptions() {
-        mExerciseRecyclerView.setVisibility(View.VISIBLE);
-        mAddExercisesFromRoutineButton.setVisibility(View.GONE);
-        mCopyPreviousWorkoutButton.setVisibility(View.GONE);
-        mAddExerciseAdditionalButton.setVisibility(View.GONE);
+        exerciseRecyclerView.setVisibility(View.VISIBLE);
+        addExercisesFromRoutineButton.setVisibility(View.GONE);
+        copyPreviousWorkoutButton.setVisibility(View.GONE);
+        addExerciseAdditionalButton.setVisibility(View.GONE);
     }
 
     private void loadPreviousDay() {
-        mDateOfExercise--;
-        loadExercisesForDate(mDateOfExercise);
+        dateOfExercise--;
+        loadExercisesForDate(dateOfExercise);
         displayCurrentDate();
     }
 
     private void loadNextDay() {
-        mDateOfExercise++;
-        loadExercisesForDate(mDateOfExercise);
+        dateOfExercise++;
+        loadExercisesForDate(dateOfExercise);
         displayCurrentDate();
     }
-
 
     private void getExercisesWithSetsToCopyFromDb(int[] idIntArray) {
         AsyncResponse asyncResponse = new AsyncResponse() {
@@ -211,18 +202,37 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     private void insertCopiedExercisesWithSetsToDb(List<ExerciseWithSets> list) {
         for (ExerciseWithSets eWs : list) {
             ExerciseWithSets exerciseWithSetsToAdd = ExerciseWithSets.createNewFromExisting(eWs);
-            exerciseWithSetsToAdd.getExercise().setExerciseDate(mDateOfExercise);
-            mGymLogViewModel.insertExerciseWithSets(exerciseWithSetsToAdd);
+            exerciseWithSetsToAdd.getExercise().setExerciseDate(dateOfExercise);
+            gymLogViewModel.insertExerciseWithSets(exerciseWithSetsToAdd);
         }
     }
 
     private void deleteExercisesInCurrentDay() {
-        List<ExerciseWithSets> exerciseWithSetsList = mWorkoutAdapter.getmExercisesWithSets();
+        List<ExerciseWithSets> exerciseWithSetsList = workoutAdapter.getExercisesWithSets();
         List<Exercise> exercisesToDelete = new ArrayList<>();
         for (ExerciseWithSets eWs : exerciseWithSetsList) {
             exercisesToDelete.add(eWs.getExercise());
         }
-        mGymLogViewModel.deleteExercises(exercisesToDelete);
+        gymLogViewModel.deleteExercises(exercisesToDelete);
+    }
+
+    private void startCopyExerciseActivity() {
+        // copy exercises from previous day
+        Intent intent = new Intent(this, CopyExercisesActivity.class);
+        startActivityForResult(intent, COPY_EXERCISES_REQUEST_CODE);
+    }
+
+    private void startInsertRoutineActivity() {
+        Intent selectDayOfRoutineIntent = new Intent(this, RoutineSelectorActivity.class);
+        selectDayOfRoutineIntent.putExtra(RoutineSelectorActivity.SELECTOR_ACTIVITY_MODE, RoutineSelectorActivity.SELECT_DAY);
+        startActivityForResult(selectDayOfRoutineIntent, SELECT_DAY_OF_ROUTINE_REQUEST_CODE);
+    }
+
+    private void startAddExerciseActivity() {
+        Intent addExerciseActivityIntent = new Intent(this, AddExerciseActivity.class);
+        addExerciseActivityIntent.putExtra(DATE_OF_EXERCISE_TAG, dateOfExercise);
+        // TODO[2]: should this be startActivityForResult?
+        startActivity(addExerciseActivityIntent);
     }
 
     @Override
@@ -252,25 +262,6 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    private void startCopyExerciseActivity() {
-        // copy exercises from previous day
-        Intent intent = new Intent(this, CopyExercisesActivity.class);
-        startActivityForResult(intent, COPY_EXERCISES_REQUEST_CODE);
-    }
-
-    private void startInsertRoutineActivity() {
-        Intent selectDayOfRoutineIntent = new Intent(this, RoutineSelectorActivity.class);
-        selectDayOfRoutineIntent.putExtra(RoutineSelectorActivity.SELECTOR_ACTIVITY_MODE, RoutineSelectorActivity.SELECT_DAY);
-        startActivityForResult(selectDayOfRoutineIntent, SELECT_DAY_OF_ROUTINE_REQUEST_CODE);
-    }
-
-    private void startAddExerciseActivity() {
-        Intent addExerciseActivityIntent = new Intent(this, AddExerciseActivity.class);
-        addExerciseActivityIntent.putExtra(DATE_OF_EXERCISE_TAG, mDateOfExercise);
-        // TODO[2]: should this be startActivityForResult?
-        startActivity(addExerciseActivityIntent);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -287,7 +278,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         else if (requestCode == SELECT_DAY_OF_ROUTINE_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 String dayOfRoutineJson = data.getStringExtra(RoutineSelectorActivity.DAY_OUF_ROUTINE_STRING_EXTRA);
-                mGymLogViewModel.insertDayOfRoutineAsExercises(DataTypeConverter.stringToDayOfRoutine(dayOfRoutineJson), mDateOfExercise);
+                gymLogViewModel.insertDayOfRoutineAsExercises(DataTypeConverter.stringToDayOfRoutine(dayOfRoutineJson), dateOfExercise);
             }
             else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "result canceled", Toast.LENGTH_SHORT).show();
@@ -313,8 +304,8 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        Exercise exerciseToDelete = mWorkoutAdapter.getmExercisesWithSets().get(item.getGroupId()).getExercise();
-        mGymLogViewModel.deleteSingleExercise(exerciseToDelete);
+        Exercise exerciseToDelete = workoutAdapter.getExercisesWithSets().get(item.getGroupId()).getExercise();
+        gymLogViewModel.deleteSingleExercise(exerciseToDelete);
         return true;
     }
 

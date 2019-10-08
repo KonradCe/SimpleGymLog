@@ -1,10 +1,10 @@
 package pl.kcworks.simplegymlog.model;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
-import androidx.annotation.NonNull;
 
 import org.jetbrains.annotations.NotNull;
 

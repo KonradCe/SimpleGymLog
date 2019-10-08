@@ -19,7 +19,7 @@
         style="@style/TextAppearance.MaterialComponents.Headline6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="exercise name"
+        android:hint="@string/hint_exercise_name"
         android:selectAllOnFocus="true" />
 
     <LinearLayout
@@ -32,7 +32,7 @@
             style="@style/TextAppearance.MaterialComponents.Caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="standard set with fixed weight"
+            android:text="@string/switch_info_standard_set"
             android:layout_weight="1"/>
 
         <Switch
@@ -48,7 +48,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="right"
-            android:text="set based on % of 1RM"
+            android:text="@string/switch_info_RM_set"
             android:layout_weight="1"/>
 
     </LinearLayout>
@@ -79,8 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:hint="reps"
-                android:selectAllOnFocus="true"/>
+                android:hint="@string/reps" />
 
             <Button
                 android:id="@+id/addExerciseActivity_bt_repsPlus"
@@ -109,11 +108,9 @@
             style="@style/TextAppearance.MaterialComponents.Headline6"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="weight"
+            android:hint="@string/weight"
             android:layout_weight="1"
-            android:gravity="center"
-            android:inputType="numberSigned|numberDecimal"
-            android:selectAllOnFocus="true" />
+            android:gravity="center" />
 
         <Button
             android:id="@+id/addExerciseActivity_bt_weightPlus"
@@ -130,8 +127,7 @@
             android:gravity="center_horizontal"
             style="@style/TextAppearance.MaterialComponents.Headline6"
             android:visibility="gone"
-            tools:visibility="visible"
-            android:text="75% of 200 is 150"/>
+            tools:visibility="visible"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -144,7 +140,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="add set" />
+                android:text="@string/label_add_set" />
 
             <Button
                 android:id="@+id/addExerciseActivity_bt_deleteSet"
@@ -152,7 +148,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="delete set" />
+                android:text="@string/label_delete_set" />
         </LinearLayout>
 
         <include layout="@layout/set_list_top_row"/>
@@ -177,6 +173,6 @@
         android:id="@+id/addExerciseActivity_bt_saveExercise"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="save exercise" />
+        android:text="@string/label_save_exercise" />
 
 </LinearLayout>
