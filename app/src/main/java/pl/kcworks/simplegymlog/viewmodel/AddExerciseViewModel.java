@@ -94,7 +94,7 @@ public class AddExerciseViewModel extends AndroidViewModel {
 
         if (singleSet.isBasedOnTm()) {
             singleSet.setPercentageOfTm((int) weight);
-            singleSet.updateWeightForCurrentPercentageOfTm(2.5);
+            singleSet.updateWeightForCurrentPercentageOfTm(AddExerciseActivity.ROUNDING_FACTOR);
         }
         else {
             singleSet.setWeight(weight);
@@ -109,7 +109,7 @@ public class AddExerciseViewModel extends AndroidViewModel {
         if (singleSet.isBasedOnTm()) {
             int percentageOfTm = singleSet.getPercentageOfTm() + modifier;
             singleSet.setPercentageOfTm(percentageOfTm);
-            singleSet.updateWeightForCurrentPercentageOfTm(2.5);
+            singleSet.updateWeightForCurrentPercentageOfTm(AddExerciseActivity.ROUNDING_FACTOR);
         }
         else {
             double newWeight = singleSet.getWeight() + modifier;
@@ -133,7 +133,7 @@ public class AddExerciseViewModel extends AndroidViewModel {
         for (SingleSet singleSet : exerciseWithSets.getExerciseSetList()) {
             if (singleSet.isBasedOnTm()) {
                 singleSet.setTrainingMax(newTm);
-                singleSet.updateWeightForCurrentPercentageOfTm(2.5);
+                singleSet.updateWeightForCurrentPercentageOfTm(AddExerciseActivity.ROUNDING_FACTOR);
             }
         }
 

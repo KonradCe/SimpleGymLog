@@ -9,14 +9,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+<!--        TODO[3]: locking screen in portrait mode is not elegant and a temporary solution -->
         <activity android:name=".ui.RoutineSelectorActivity"></activity>
         <activity android:name=".ui.RoutineEditorActivity" />
-        <activity android:name=".ui.CopyExercisesActivity" /> <!-- TODO[3]: this is an excuse of a solution. It blocks screen rotation so changes done to the exercise while editing won't reset -->
+        <activity android:name=".ui.CopyExercisesActivity" />
         <activity
             android:name=".ui.AddExerciseActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".ui.WorkoutActivity" />
-        <activity android:name=".ui.MainActivity">
+        <activity android:name=".ui.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

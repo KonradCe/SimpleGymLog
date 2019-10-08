@@ -295,8 +295,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         @Override
         public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-            //TODO[3]: export hardcoded string
-            contextMenu.add(this.getAdapterPosition(),1, 1, "delete routine");
+            contextMenu.add(this.getAdapterPosition(),1, 1, view.getContext().getString(R.string.label_delete_routine));
         }
 
     }

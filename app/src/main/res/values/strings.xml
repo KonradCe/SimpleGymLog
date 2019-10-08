@@ -16,12 +16,13 @@
 
     <string name="label_insert_routine">insert routine</string>
     <string name="label_add_set">add set</string>
+    <string name="label_delete_routine">delete routine</string>
+    <string name="label_delete_exercise">delete exercise</string>
     <string name="label_delete_set">delete set</string>
     <string name="label_save_exercise">save exercise</string>
     <string name="label_update_exercise">Update exercise</string>
     <string name="label_add_exercise">add exercise</string>
     <string name="label_copy_day">copy previous day</string>
-    <string name="label_delete_exercise">delete exercise</string>
     <string name="label_copy_selected_day">copy selected day</string>
 
     <string name="dialog_update_existing_sets_title">Update existing sets?</string>

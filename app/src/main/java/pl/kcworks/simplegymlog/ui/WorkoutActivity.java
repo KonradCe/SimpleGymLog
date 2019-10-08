@@ -39,8 +39,10 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     private static final int COPY_EXERCISES_REQUEST_CODE = 31416;
     private static final int SELECT_DAY_OF_ROUTINE_REQUEST_CODE = 31417;
 
+    public static final int DEFAULT_EXERCISE_DATE = 20120304;
+
     private final String TAG = "KCTag-" + WorkoutActivity.class.getSimpleName();
-    // TODO[3]: I don't like storing exercise date in this place, shouldn't this be in ViewModel only?
+    // TODO[3]: this is not a best place to store exercise date, move to ViewModel?
     private long dateOfExercise;
     private GymLogViewModel gymLogViewModel;
     private WorkoutAdapter workoutAdapter;
@@ -68,7 +70,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void grabDataFromIntent() {
-        dateOfExercise = getIntent().getLongExtra(DATE_OF_EXERCISE_TAG, 19901030);
+        dateOfExercise = getIntent().getLongExtra(DATE_OF_EXERCISE_TAG, DEFAULT_EXERCISE_DATE);
     }
 
     private void setupViews() {

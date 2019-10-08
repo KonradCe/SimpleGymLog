@@ -58,6 +58,9 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     public static final String ROUTINE_EDIT_EXERCISE_ORDER = "ROUTINE_EDIT_EXERCISE_ORDER";
     public static final String ROUTINE_RESULT = "ROUTINE_RESULT";
 
+    // TODO[3]: rounding factor will be loaded from preferences, adequate to the units (2.5 for kgs and 5 for lbs)
+    public static final double ROUNDING_FACTOR = 2.5;
+
     private static final String PREFS_FILE = "EXERCISE_MAXES";
 
     private long lastClickTime = 0; // this variable prevents from double clicking on the save button (this would result in "double saving"
@@ -146,7 +149,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         else {
             activityMode = ActivityMode.ADD_EXERCISE;
             // TODO[1] value of exerciseOrderInDay should be calculated accordingly
-            long exerciseDate = intent.getLongExtra(WorkoutActivity.DATE_OF_EXERCISE_TAG, 19901029);
+            long exerciseDate = intent.getLongExtra(WorkoutActivity.DATE_OF_EXERCISE_TAG, WorkoutActivity.DEFAULT_EXERCISE_DATE);
             Exercise exercise = new Exercise("", 5, exerciseDate);
             List<SingleSet> singleSetList = new ArrayList<>();
             exerciseWithSets = new ExerciseWithSets(exercise, singleSetList);
@@ -235,7 +238,6 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
     }
 
-    @SuppressWarnings("HardCodedStringLiteral")
     private void updateSetToAddRelatedViews() {
         hideKeyboard(this);
         String repsText = (singleSetToAdd.getReps() == 0 ? "" : Integer.toString(singleSetToAdd.getReps()));
@@ -579,7 +581,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             singleSet.setTrainingMax(setView.getTrainingMax());
 
             if (setView.hasAdditionalInfo()) {
-                singleSet.updateWeightForCurrentPercentageOfTm(2.5);
+                singleSet.updateWeightForCurrentPercentageOfTm(ROUNDING_FACTOR);
             }
             else {
                 singleSet.setWeight(setView.getWeight());

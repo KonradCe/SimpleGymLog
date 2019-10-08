@@ -131,7 +131,7 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.Exercise
                 editExerciseIntent.putExtra(AddExerciseActivity.UPDATE_EXERCISE_EXTRA, DataTypeConverter.exerciseWithSetsToString(exerciseWithSetsToEdit));
                 view.getContext().startActivity(editExerciseIntent);
             }
-            // TODO[3]: don't know the proper way to access db from here, but this function is not essential at this point
+            // TODO[3]: still needs work
             // mark set as completed
 /*            else {
                 Toast.makeText(mContext, "Id of SingleSet that was clicked: " + view.getTag(), Toast.LENGTH_LONG).show();
@@ -144,7 +144,6 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.Exercise
 
         @Override
         public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-            //TODO[3]: export hardcoded string
             contextMenu.add(this.getAdapterPosition(),1, 1, view.getContext().getString(R.string.label_delete_exercise));
         }
     }

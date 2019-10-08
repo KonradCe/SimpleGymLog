@@ -73,6 +73,7 @@ public class CopyExercisesActivity extends AppCompatActivity implements View.OnC
         mCalendarView.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
+                // TODO[1]: handling date should be refactored, just use ThreeTen
                 long selectedDayGymLogDate = date.getYear() * 10000 + date.getMonth() * 100 + date.getDay();
                 presentExerciseInfoForDay(selectedDayGymLogDate);
             }

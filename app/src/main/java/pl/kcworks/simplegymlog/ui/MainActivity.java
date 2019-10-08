@@ -65,8 +65,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         GymLogViewModel gymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
         // TODO[2]: get only exercises for the current month so setting up the calendar won't take too long
-        // TODO[3]: do not fetch every exercise after every update - get only those that were added?
-        // TODO[2]: when exercises were deleted from a day update it so it will not look like it still has exercises
         gymLogViewModel.getAllExercises().observe(this, new Observer<List<Exercise>>() {
             @Override
             public void onChanged(@Nullable List<Exercise> listOfAllExercises) {
