@@ -306,8 +306,17 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        Exercise exerciseToDelete = workoutAdapter.getExercisesWithSets().get(item.getGroupId()).getExercise();
-        gymLogViewModel.deleteSingleExercise(exerciseToDelete);
+        switch (item.getGroupId()) {
+            case WorkoutAdapter.EDIT_EXERCISE_CONTEXT_MENU_ID:
+                ExerciseWithSets exerciseWithSetsToEdit = workoutAdapter.getExercisesWithSets().get(item.getItemId());
+                Intent editExerciseIntent = new Intent(this, AddExerciseActivity.class);
+                editExerciseIntent.putExtra(AddExerciseActivity.UPDATE_EXERCISE_EXTRA, DataTypeConverter.exerciseWithSetsToString(exerciseWithSetsToEdit));
+                this.startActivity(editExerciseIntent);
+                break;
+            case WorkoutAdapter.DELETE_EXERCISE_CONTEXT_MENU_ID:
+                Exercise exerciseToDelete = workoutAdapter.getExercisesWithSets().get(item.getItemId()).getExercise();
+                gymLogViewModel.deleteSingleExercise(exerciseToDelete);
+        }
         return true;
     }
 

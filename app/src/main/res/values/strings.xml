@@ -18,6 +18,7 @@
     <string name="label_add_set">add set</string>
     <string name="label_delete_routine">delete routine</string>
     <string name="label_delete_exercise">delete exercise</string>
+    <string name="label_edit_exercise">edit exercise</string>
     <string name="label_delete_set">delete set</string>
     <string name="label_save_exercise">save exercise</string>
     <string name="label_update_exercise">Update exercise</string>
@@ -53,6 +54,7 @@
     <string name="label_add_routine">add routine</string>
     <string name="select_routine">select routine:</string>
     <string name="weight_kg">weight [kg]</string>
+    <string name="no_sets_to_show">no sets for this exercise</string>
 
 
 </resources>

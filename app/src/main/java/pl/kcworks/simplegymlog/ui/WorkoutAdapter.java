@@ -25,6 +25,8 @@ import pl.kcworks.simplegymlog.model.db.DataTypeConverter;
 public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.ExerciseViewHolder> {
 
     private static final String TAG = "KCTag-" + WorkoutAdapter.class.getSimpleName();
+    static final int DELETE_EXERCISE_CONTEXT_MENU_ID = 1;
+    static final int EDIT_EXERCISE_CONTEXT_MENU_ID = 2;
     private LayoutInflater inflater;
     private List<ExerciseWithSets> exercisesWithSets = Collections.emptyList(); // cached copy of exercises
 
@@ -111,26 +113,12 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.Exercise
             setListLinearLayout = itemView.findViewById(R.id.rvitem_ll_sets);
             exerciseTopRow = itemView.findViewById(R.id.ll_exercise_top_row);
             noSetsInfoTextView = itemView.findViewById(R.id.rvitem_tv_noSetsInfo);
-            Button editExerciseButton = itemView.findViewById(R.id.rvitem_iv_editExercise);
-
-
-            if (!editExerciseButton.hasOnClickListeners()) {
-                editExerciseButton.setOnClickListener(this);
-            }
 
             itemView.setOnCreateContextMenuListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            // edit exercise button
-            if (view.getId() == R.id.rvitem_iv_editExercise) {
-                ExerciseWithSets exerciseWithSetsToEdit = exercisesWithSets.get(getAdapterPosition());
-                Intent editExerciseIntent = new Intent(view.getContext(), AddExerciseActivity.class);
-
-                editExerciseIntent.putExtra(AddExerciseActivity.UPDATE_EXERCISE_EXTRA, DataTypeConverter.exerciseWithSetsToString(exerciseWithSetsToEdit));
-                view.getContext().startActivity(editExerciseIntent);
-            }
             // TODO[3]: still needs work
             // mark set as completed
 /*            else {
@@ -144,7 +132,8 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.Exercise
 
         @Override
         public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
-            contextMenu.add(this.getAdapterPosition(),1, 1, view.getContext().getString(R.string.label_delete_exercise));
+            contextMenu.add(EDIT_EXERCISE_CONTEXT_MENU_ID, this.getAdapterPosition(), 1, view.getContext().getString(R.string.label_edit_exercise));
+            contextMenu.add(DELETE_EXERCISE_CONTEXT_MENU_ID, this.getAdapterPosition(), 2, view.getContext().getString(R.string.label_delete_exercise));
         }
     }
 
