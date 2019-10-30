@@ -3,5 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/workout_menu_delete"
-        android:title="delete all exercises in this day"/>
+        android:title="@string/delete_all_exercises_in_this_day"/>
+
+    <item
+        android:id="@+id/workout_menu_keep_screen_on"
+        android:title="keep screen on"
+        android:checkable="true" />
+
+
 </menu>

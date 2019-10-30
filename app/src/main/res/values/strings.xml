@@ -55,6 +55,7 @@
     <string name="select_routine">select routine:</string>
     <string name="weight_kg">weight [kg]</string>
     <string name="no_sets_to_show">no sets for this exercise</string>
+    <string name="delete_all_exercises_in_this_day">delete all exercises in this day</string>
 
 
 </resources>

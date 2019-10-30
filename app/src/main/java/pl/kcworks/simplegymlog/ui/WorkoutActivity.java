@@ -1,13 +1,16 @@
 package pl.kcworks.simplegymlog.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +39,7 @@ import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 public class WorkoutActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String DATE_OF_EXERCISE_TAG = "DATE_OF_EXERCISE_TAG";
+    public static final String KEEP_SCREEN_ON_PREFERENCE_KEY = "KEEP_SCREEN_ON_PREFERENCE_KEY";
     private static final int COPY_EXERCISES_REQUEST_CODE = 31416;
     private static final int SELECT_DAY_OF_ROUTINE_REQUEST_CODE = 31417;
 
@@ -46,6 +50,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     private long dateOfExercise;
     private GymLogViewModel gymLogViewModel;
     private WorkoutAdapter workoutAdapter;
+    private boolean keepScreenOn;
 
     private TextView dateOfExerciseTextView;
     private RecyclerView exerciseRecyclerView;
@@ -63,6 +68,7 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         setupViews();
         displayCurrentDate();
         setupRecyclerView();
+        loadPreferences();
 
         gymLogViewModel = ViewModelProviders.of(this).get(GymLogViewModel.class);
         loadExercisesForDate(dateOfExercise);
@@ -157,6 +163,12 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
+    private void loadPreferences() {
+        SharedPreferences preferences = this.getPreferences(Context.MODE_PRIVATE);
+        keepScreenOn = preferences.getBoolean(KEEP_SCREEN_ON_PREFERENCE_KEY, false);
+        setKeepScreenOnSetting(keepScreenOn);
+    }
+
     private void displayNewWorkoutOptions() {
         exerciseRecyclerView.setVisibility(View.GONE);
         addExercisesFromRoutineButton.setVisibility(View.VISIBLE);
@@ -237,6 +249,21 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         startActivity(addExerciseActivityIntent);
     }
 
+    private void toggleKeepScreenOnSetting() {
+        keepScreenOn = !keepScreenOn;
+        getPreferences(Context.MODE_PRIVATE).edit().putBoolean(KEEP_SCREEN_ON_PREFERENCE_KEY, keepScreenOn).apply();
+        setKeepScreenOnSetting(keepScreenOn);
+    }
+
+    private void setKeepScreenOnSetting(boolean value) {
+        if (value) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+        else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -296,13 +323,25 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.workout_menu_delete) {
-            deleteExercisesInCurrentDay();
-        }
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.workout_menu_keep_screen_on).setChecked(keepScreenOn);
+        return super.onPrepareOptionsMenu(menu);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.workout_menu_delete:
+                deleteExercisesInCurrentDay();
+                break;
+            case R.id.workout_menu_keep_screen_on:
+                toggleKeepScreenOnSetting();
+                break;
+        }
         return super.onOptionsItemSelected(item);
     }
+
+
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
