@@ -1,8 +1,13 @@
 package pl.kcworks.simplegymlog.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -10,19 +15,20 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.preference.PreferenceManager;
 
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
-import com.prolificinteractive.materialcalendarview.format.TitleFormatter;
 
 import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import pl.kcworks.simplegymlog.DateConverterHelper;
 import pl.kcworks.simplegymlog.R;
@@ -43,6 +49,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setUpViews();
         // TODO[3]: make sure setting up the calendar doesn't take too long - we don't want a laggy startup;
         calendarSetUp();
+
+        listAllPreferences();
+
+    }
+
+    private void listAllPreferences() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        Map<String, ?> allPrefs = preferences.getAll();
+        for (Map.Entry<String, ?> entry : allPrefs.entrySet()) {
+            Log.i("map values", entry.getKey() + ": " + entry.getValue().toString());
+        }
     }
 
     private void setUpViews() {
@@ -85,6 +102,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         calendarView.addDecorator(new DaysWithExerciseDecorator(listOfDaysWithExercises, getResources().getColor(R.color.colorPrimary)));
     }
 
+    private void startSettingsActivity() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -101,6 +123,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
                 break;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.settings_menu_item) {
+            startSettingsActivity();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     static class DaysWithExerciseDecorator implements DayViewDecorator {

@@ -14,6 +14,7 @@ android:gravity="center_horizontal">
 
 <TextView
     style="@style/TextAppearance.MaterialComponents.Caption"
+    android:id="@+id/set_list_top_row_weight_label"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_weight="2"

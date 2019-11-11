@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/workout_menu_delete"
-        android:title="@string/delete_all_exercises_in_this_day"/>
+xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/workout_menu_keep_screen_on"
-        android:title="keep screen on"
+        android:title="@string/keep_screen_on"
         android:checkable="true" />
 
+    <item
+        android:id="@+id/workout_menu_delete"
+        android:title="@string/delete_all_exercises_in_this_day"/>
 
 </menu>

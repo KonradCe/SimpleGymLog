@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import androidx.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -39,7 +40,6 @@ import pl.kcworks.simplegymlog.viewmodel.GymLogViewModel;
 public class WorkoutActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String DATE_OF_EXERCISE_TAG = "DATE_OF_EXERCISE_TAG";
-    public static final String KEEP_SCREEN_ON_PREFERENCE_KEY = "KEEP_SCREEN_ON_PREFERENCE_KEY";
     private static final int COPY_EXERCISES_REQUEST_CODE = 31416;
     private static final int SELECT_DAY_OF_ROUTINE_REQUEST_CODE = 31417;
 
@@ -164,8 +164,8 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void loadPreferences() {
-        SharedPreferences preferences = this.getPreferences(Context.MODE_PRIVATE);
-        keepScreenOn = preferences.getBoolean(KEEP_SCREEN_ON_PREFERENCE_KEY, false);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        keepScreenOn = preferences.getBoolean(getResources().getString(R.string.KEEP_SCREEN_ON_PREFERENCE_KEY), false);
         setKeepScreenOnSetting(keepScreenOn);
     }
 
@@ -251,7 +251,8 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
 
     private void toggleKeepScreenOnSetting() {
         keepScreenOn = !keepScreenOn;
-        getPreferences(Context.MODE_PRIVATE).edit().putBoolean(KEEP_SCREEN_ON_PREFERENCE_KEY, keepScreenOn).apply();
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(getResources().getString(R.string.KEEP_SCREEN_ON_PREFERENCE_KEY), keepScreenOn).apply();
+
         setKeepScreenOnSetting(keepScreenOn);
     }
 
@@ -340,8 +341,6 @@ public class WorkoutActivity extends AppCompatActivity implements View.OnClickLi
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {

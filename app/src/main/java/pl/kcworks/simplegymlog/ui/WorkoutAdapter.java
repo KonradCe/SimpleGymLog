@@ -2,6 +2,7 @@ package pl.kcworks.simplegymlog.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Collections;
@@ -27,11 +29,14 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.Exercise
     private static final String TAG = "KCTag-" + WorkoutAdapter.class.getSimpleName();
     static final int DELETE_EXERCISE_CONTEXT_MENU_ID = 1;
     static final int EDIT_EXERCISE_CONTEXT_MENU_ID = 2;
+    private final String UNITS;
     private LayoutInflater inflater;
     private List<ExerciseWithSets> exercisesWithSets = Collections.emptyList(); // cached copy of exercises
 
     WorkoutAdapter(Context context) {
         inflater = LayoutInflater.from(context);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        UNITS = preferences.getString(context.getResources().getString(R.string.UNIT_SYSTEM_PREFERENCE_KEY), "UNIT_SYSTEM_PREFERENCE_KEY");
     }
 
     void setExercises(List<ExerciseWithSets> exercises) {
@@ -47,7 +52,7 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.Exercise
     @Override
     public ExerciseViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View itemView = inflater.inflate(R.layout.item_card_view_exercise, viewGroup, false);
-        return new ExerciseViewHolder(itemView);
+        return new ExerciseViewHolder(itemView, UNITS);
     }
 
     @Override
@@ -75,9 +80,9 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.Exercise
                         setView.setPercentageOfTm(set.getPercentageOfTm());
                     }
 
-                    setView.setTag(set.getSingleSetID());
+//                    setView.setTag(set.getSingleSetID());
+//                    setView.setOnClickListenerOnNumberTextView(holder);
 
-                    setView.setOnClickListener(holder);
                     holder.setListLinearLayout.addView(setView);
                 }
             } else {
@@ -105,8 +110,9 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.Exercise
         private LinearLayout setListLinearLayout;
         private LinearLayout exerciseTopRow;
         private TextView noSetsInfoTextView;
+        private TextView weightLabelTextView;
 
-        ExerciseViewHolder(@NonNull View itemView) {
+        ExerciseViewHolder(@NonNull View itemView, String units) {
             super(itemView);
 
             exerciseNameTextView = itemView.findViewById(R.id.rvitem_tv_exercise_name);
@@ -114,11 +120,18 @@ public class WorkoutAdapter extends RecyclerView.Adapter<WorkoutAdapter.Exercise
             exerciseTopRow = itemView.findViewById(R.id.ll_exercise_top_row);
             noSetsInfoTextView = itemView.findViewById(R.id.rvitem_tv_noSetsInfo);
 
+            if (units.equals("lbs")) {
+                weightLabelTextView = itemView.findViewById(R.id.set_list_top_row_weight_label);
+                weightLabelTextView.setText(R.string.weight_lbs);
+            }
+
+
             itemView.setOnCreateContextMenuListener(this);
         }
 
         @Override
         public void onClick(View view) {
+
             // TODO[3]: still needs work
             // mark set as completed
 /*            else {

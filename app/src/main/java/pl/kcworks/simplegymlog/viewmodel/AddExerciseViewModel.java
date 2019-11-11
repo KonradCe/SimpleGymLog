@@ -94,7 +94,7 @@ public class AddExerciseViewModel extends AndroidViewModel {
 
         if (singleSet.isBasedOnTm()) {
             singleSet.setPercentageOfTm((int) weight);
-            singleSet.updateWeightForCurrentPercentageOfTm(AddExerciseActivity.ROUNDING_FACTOR);
+            singleSet.updateWeightForCurrentPercentageOfTm(AddExerciseActivity.roundingFactor);
         }
         else {
             singleSet.setWeight(weight);
@@ -103,16 +103,16 @@ public class AddExerciseViewModel extends AndroidViewModel {
         singleSetToAddMutableLiveData.setValue(singleSet);
     }
 
-    public void setToAddModifyWeightBy(int modifier) {
+    public void setToAddModifyWeightBy(double weightModifier, int percentageModifier) {
         SingleSet singleSet = singleSetToAddMutableLiveData.getValue();
 
         if (singleSet.isBasedOnTm()) {
-            int percentageOfTm = singleSet.getPercentageOfTm() + modifier;
+            int percentageOfTm = singleSet.getPercentageOfTm() + percentageModifier;
             singleSet.setPercentageOfTm(percentageOfTm);
-            singleSet.updateWeightForCurrentPercentageOfTm(AddExerciseActivity.ROUNDING_FACTOR);
+            singleSet.updateWeightForCurrentPercentageOfTm(AddExerciseActivity.roundingFactor);
         }
         else {
-            double newWeight = singleSet.getWeight() + modifier;
+            double newWeight = singleSet.getWeight() + weightModifier;
             singleSet.setWeight(newWeight);
         }
         Log.i(TAG, singleSet.toString());
@@ -133,7 +133,7 @@ public class AddExerciseViewModel extends AndroidViewModel {
         for (SingleSet singleSet : exerciseWithSets.getExerciseSetList()) {
             if (singleSet.isBasedOnTm()) {
                 singleSet.setTrainingMax(newTm);
-                singleSet.updateWeightForCurrentPercentageOfTm(AddExerciseActivity.ROUNDING_FACTOR);
+                singleSet.updateWeightForCurrentPercentageOfTm(AddExerciseActivity.roundingFactor);
             }
         }
 

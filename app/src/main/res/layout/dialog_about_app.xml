@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    style="@style/MainView">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        style="@style/TextAppearance.MaterialComponents.Headline4"
+        android:layout_marginTop="@dimen/medium_margin"/>
+
+    <TextView
+        android:id="@+id/tv_version_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/medium_margin"
+        android:textColor="@color/colorSecondaryDark"
+        tools:text="0.9.0"
+        style="@style/TextAppearance.MaterialComponents.Body2" />
+
+    <include layout="@layout/item_rvextra_divider" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/small_margin"
+        android:text="Thanks for using my app!"
+        style="@style/TextAppearance.MaterialComponents.Body2" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please send any feedback to:"
+        style="@style/TextAppearance.MaterialComponents.Body2" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="tadeusz.brzuszko@gmail.com"
+        style="@style/TextAppearance.MaterialComponents.Body2"
+        android:layout_marginBottom="@dimen/small_margin"/>
+
+    <include layout="@layout/item_rvextra_divider" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Copyright &#xA9; 2019 Tadeusz Brzuszkowski"
+        style="@style/TextAppearance.MaterialComponents.Body2"
+        android:layout_margin="@dimen/small_margin"/>
+
+</LinearLayout>

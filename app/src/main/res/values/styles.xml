@@ -36,9 +36,13 @@
 
     <style name="Fab" parent="Widget.MaterialComponents.FloatingActionButton">
         <item name="colorPrimary">@color/colorSecondary</item>
-        <item name="colorPrimaryDark">#ffbb00</item>
-        <item name="colorAccent">#00FF48</item>
         <item name="colorControlHighlight">@color/colorPrimary</item>
+    </style>
+
+    <style name="PreferenceScreen" parent="AppTheme">
+        <item name="colorPrimary">@color/colorSecondaryDark</item>
+        <item name="colorSecondary"> @color/colorPrimary</item>
+
 
     </style>
 

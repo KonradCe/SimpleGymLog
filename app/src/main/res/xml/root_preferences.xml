@@ -1,0 +1,59 @@
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/settings_category_general">
+
+        <CheckBoxPreference
+            app:key="KEEP_SCREEN_ON_PREFERENCE_KEY"
+            app:title="Keep the screen on"
+            app:defaultValue="false"
+            app:summary="Display will not turn off while displaying current workout"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_category_weight">
+
+        <ListPreference
+            app:defaultValue="kg"
+            app:entries="@array/units_entries"
+            app:entryValues="@array/units_values"
+            app:key="@string/UNIT_SYSTEM_PREFERENCE_KEY"
+            app:title="@string/unit_system"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:title="@string/default_weight_increment"
+            app:key="@string/DEFAULT_WEIGHT_INCREMENT_PREFERENCE_KEY"
+            app:defaultValue="2.5"
+            app:entries="@array/weight_increment_entries"
+            app:entryValues="@array/weight_increment_values"
+            app:useSimpleSummaryProvider="true"/>
+
+        <ListPreference
+            app:title="@string/default_percentage_increment"
+            app:key="@string/DEFAULT_PERCENTAGE_INCREMENT_PREFERENCE_KEY"
+            app:defaultValue="5"
+            app:entries="@array/percentage_increment_entries"
+            app:entryValues="@array/percentage_increment_values"
+            app:useSimpleSummaryProvider="true"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_category_other">
+
+        <Preference
+            android:title="About SimpleGymLog"
+            android:key="@string/ABOUT_APP_BUTTON"
+            app:icon="@drawable/ic_info_black_24dp"/>
+
+        <Preference
+            android:title="Open source licenses"
+            android:key="@string/OPEN_SOURCE_LICENSES_BUTTON"
+            android:summary="Big thanks to all open source licenses used in this app!"/>
+
+    </PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>
