@@ -8,6 +8,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.List;
+
 import pl.kcworks.simplegymlog.model.ExerciseWithSets;
 import pl.kcworks.simplegymlog.model.GymLogRepository;
 import pl.kcworks.simplegymlog.model.SingleSet;
@@ -39,6 +41,10 @@ public class AddExerciseViewModel extends AndroidViewModel {
 
     public MutableLiveData<SingleSet> getSingleSetToAddMutableLiveData() {
         return singleSetToAddMutableLiveData;
+    }
+
+    public LiveData<List<String>> getAllExerciseNames() {
+        return repository.getAllExerciseNames();
     }
 
     public void setInitialValue(ExerciseWithSets exerciseWithSets) {
@@ -74,6 +80,7 @@ public class AddExerciseViewModel extends AndroidViewModel {
 
     public void setName(String exerciseName) {
         exerciseWithSetsMutableLiveData.getValue().getExercise().setExerciseName(exerciseName);
+        exerciseWithSetsMutableLiveData.postValue(exerciseWithSetsMutableLiveData.getValue());
     }
 
     public void setToAddSetReps(int reps) {

@@ -78,6 +78,7 @@
     <string name="settings_category_general">General</string>
     <string name="settings_category_weight">Weight settings</string>
     <string name="settings_category_other">Other</string>
+    <string name="edit_exercise_name">Edit exercise name:</string>
 
 
 </resources>

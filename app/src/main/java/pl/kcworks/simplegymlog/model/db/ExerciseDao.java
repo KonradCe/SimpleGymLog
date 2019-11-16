@@ -25,6 +25,9 @@ public interface ExerciseDao {
     @Query("SELECT * FROM exercise_table ORDER BY exerciseId")
     LiveData<List<Exercise>> getAllExercises();
 
+    @Query("SELECT DISTINCT exerciseName FROM exercise_table")
+    LiveData<List<String>> getAllExerciseNames();
+
 //    @Query("DELETE FROM exercise_table")
 //    void deleteAllExercises();
 

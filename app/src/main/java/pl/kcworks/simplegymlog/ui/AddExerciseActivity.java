@@ -6,16 +6,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -33,7 +32,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import pl.kcworks.simplegymlog.DateConverterHelper;
 import pl.kcworks.simplegymlog.R;
@@ -72,11 +73,12 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     private AddExerciseViewModel addExerciseViewModel;
     private ExerciseWithSets currentExerciseWithSets;
     private SingleSet singleSetToAdd;
+    private List<String> exerciseNamesList;
 
     private OnSetClickListener onSetClickListener;
 
     // VIEWS
-    private EditText exerciseNameEditText;
+    private TextView exerciseNameTextView;
     private TextView exerciseDateTextView;
     private TextView percentageInfoTextView;
     private Switch weightIsBasedOnPercentageSwitch;
@@ -121,6 +123,13 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             public void onChanged(SingleSet singleSet) {
                 singleSetToAdd = singleSet;
                 updateSetToAddRelatedViews();
+            }
+        });
+
+        addExerciseViewModel.getAllExerciseNames().observe(this, new Observer<List<String>>() {
+            @Override
+            public void onChanged(List<String> strings) {
+                exerciseNamesList = strings;
             }
         });
     }
@@ -174,22 +183,8 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
 
         onSetClickListener = new OnSetClickListener();
 
-        exerciseNameEditText = findViewById(R.id.addExerciseActivity_et_exerciseName);
-        exerciseNameEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                addExerciseViewModel.setName(editable.toString());
-
-            }
-        });
+        exerciseNameTextView = findViewById(R.id.addExerciseActivity_tv_exerciseName);
+        exerciseNameTextView.setOnClickListener(this);
         exerciseDateTextView = findViewById(R.id.addExerciseActivity_tv_exerciseDate);
 
         percentageInfoTextView = findViewById(R.id.addExerciseActivity_tv_percentage_info);
@@ -240,7 +235,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void updateViews() {
-        hideKeyboard(this);
+
         Exercise exercise = currentExerciseWithSets.getExercise();
         List<SingleSet> singleSetList = currentExerciseWithSets.getExerciseSetList();
 
@@ -249,7 +244,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         } catch (StringIndexOutOfBoundsException ignored) {
         }
 
-        exerciseNameEditText.setText(exercise.getExerciseName());
+        exerciseNameTextView.setText(exercise.getExerciseName());
 
         setListLinearLayout.removeAllViews();
         for (int i = 0; i < singleSetList.size(); i++) {
@@ -260,7 +255,6 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void updateSetToAddRelatedViews() {
-        hideKeyboard(this);
         String repsText = (singleSetToAdd.getReps() == 0 ? "" : Integer.toString(singleSetToAdd.getReps()));
         String weightText = (singleSetToAdd.getWeight() == 0 ? "" : Double.toString(singleSetToAdd.getWeight()));
 
@@ -314,10 +308,6 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void onSaveButtonPress() {
-        if (exerciseNameEditText.getText().toString().isEmpty()) {
-            Toast.makeText(this, getString(R.string.no_exercise_name_toast), Toast.LENGTH_LONG).show();
-            return;
-        }
         switch (activityMode) {
             case ADD_EXERCISE:
             case EDIT_EXERCISE:
@@ -400,6 +390,43 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         SharedPreferences preferences = getSharedPreferences(PREFS_FILE, MODE_PRIVATE);
         String exerciseName = currentExerciseWithSets.getExercise().getExerciseName();
         return Double.longBitsToDouble(preferences.getLong(exerciseName, 0));
+    }
+
+    private void editNameDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_training_max_alert, null);
+        TextView titleTextView = dialogView.findViewById(R.id.dialog_tv_title);
+        titleTextView.setText(getString(R.string.edit_exercise_name));
+
+        final AutoCompleteTextView nameEditText = dialogView.findViewById(R.id.dialog_edit_text);
+        nameEditText.setInputType(InputType.TYPE_CLASS_TEXT);
+        nameEditText.setText(currentExerciseWithSets.getExercise().getExerciseName());
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, exerciseNamesList.toArray(new String[0]));
+        nameEditText.setAdapter(adapter);
+
+        TextInputLayout textInputLayout = dialogView.findViewById(R.id.dialog_text_input_layout);
+        textInputLayout.setHint(getString(R.string.hint_exercise_name));
+
+        MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(this);
+        dialogBuilder.setView(dialogView)
+                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String exerciseName = nameEditText.getText().toString();
+                        if (exerciseName.trim().isEmpty() || exerciseName.equals("")) {
+                            dialogInterface.dismiss();
+                        }
+                        else {
+                            addExerciseViewModel.setName(exerciseName);
+                        }
+                    }
+                })
+                .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .show();
     }
 
     // if set type is switched to percentage mode and id doesn't have saved TM in SharedPreferences this method is called
@@ -538,20 +565,12 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
-        View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = new View(activity);
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case (R.id.addExerciseActivity_tv_exerciseName):
+                editNameDialog();
+                break;
             case (R.id.addExerciseActivity_bt_repsMinus):
                 repsMinus();
                 break;

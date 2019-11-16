@@ -14,13 +14,12 @@
         android:layout_height="wrap_content"
         tools:text="date" />
 
-    <EditText
-        android:id="@+id/addExerciseActivity_et_exerciseName"
+    <TextView
+        android:id="@+id/addExerciseActivity_tv_exerciseName"
         style="@style/TextAppearance.MaterialComponents.Headline6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/hint_exercise_name"
-        android:selectAllOnFocus="true" />
+        android:hint="@string/hint_exercise_name"/>
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -58,6 +58,10 @@ public class GymLogRepository {
         return exerciseDao.getAllExercises();
     }
 
+    public LiveData<List<String>> getAllExerciseNames() {
+        return exerciseDao.getAllExerciseNames();
+    }
+
     public LiveData<List<ExerciseWithSets>> getAllExercisesWithSets() {
         return exerciseDao.getAllExercisesWithSets();
     }
