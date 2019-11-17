@@ -5,7 +5,7 @@
 SimpleGymLog is a workout tracker with a focus on simplicity.
 I have written this app because there was no free app with clean interface, that would let you create exercises based on % of [One-Repetition Maximum](https://en.wikipedia.org/wiki/One-repetition_maximum).
 
-<img src="screenshots/main_screen.png" width="200" > <img src="/screenshots/workout_screen.png" width="200" > <img src="/screenshots/add_exercie_screen.png" width="200" >
+<img src="screenshots/main_screen.png" width="250" > <img src="/screenshots/workout_screen.png" width="250" > <img src="/screenshots/add_exercie_screen.png" width="250" >
 
 
 **What you need to know about this app:**
