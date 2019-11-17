@@ -1,4 +1,4 @@
-![logo](screenshots/logo.png =150x150 "logo")
+<img src="/screenshots/logo.png" align="center" height="150" width="150" >
 
 # SimpleGymLog
 
@@ -8,6 +8,11 @@ I have written this app because there was no free app with clean interface, that
 ![screenshot1](screenshots/main_screen.png =300 "Title screen")
 ![screenshot2](screenshots/workout_screen.png =400 "Workout screen")
 ![screenshot3](screenshots/add_exercie_screen.png?raw=true "Add exercise")
+
+<img src="screenshots/main_screen.png" align="center" height="150" width="150" >
+<img src="/screenshots/workout_screen.png" align="center" height="150" width="150" >
+<img src="/screenshots/add_exercie_screen.png" align="center" height="150" width="150" >
+
 
 **What you need to know about this app:**
 - free
