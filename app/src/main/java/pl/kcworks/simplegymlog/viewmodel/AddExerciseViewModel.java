@@ -53,9 +53,11 @@ public class AddExerciseViewModel extends AndroidViewModel {
 
     public void removeLastSet() {
         ExerciseWithSets exerciseWithSets = exerciseWithSetsMutableLiveData.getValue();
-        exerciseWithSets.getExerciseSetList().remove(exerciseWithSets.getExerciseSetList().size() - 1);
+        if (exerciseWithSets.getExerciseSetList().size() != 0) {
+            exerciseWithSets.getExerciseSetList().remove(exerciseWithSets.getExerciseSetList().size() - 1);
+            exerciseWithSetsMutableLiveData.setValue(exerciseWithSets);
+        }
 
-        exerciseWithSetsMutableLiveData.setValue(exerciseWithSets);
     }
 
     public void saveToDb(AddExerciseActivity.ActivityMode mode) {

@@ -265,7 +265,7 @@ public class AddExerciseActivity extends AppCompatActivity implements View.OnCli
             weightTextView.setHint(getString(R.string.hint_weight_Rm_set));
             weightTextView.setText(singleSetToAdd.getPercentageOfTm() == 0 ? "" : singleSetToAdd.getPercentageOfTm() + "%");
 
-            String percentageInfo = singleSetToAdd.getPercentageOfTm() + " " + getString(R.string.multiplication_sign) + " " + singleSetToAdd.getTrainingMax() + " " + getString(R.string.almost_equal_sign) + " " + singleSetToAdd.getWeight();
+            String percentageInfo = singleSetToAdd.getPercentageOfTm() + "% " + getString(R.string.multiplication_sign) + " " + singleSetToAdd.getTrainingMax() + " " + getString(R.string.almost_equal_sign) + " " + singleSetToAdd.getWeight();
             percentageInfoTextView.setText(percentageInfo);
             percentageInfoTextView.setVisibility(View.VISIBLE);
         }

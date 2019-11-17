@@ -3,6 +3,7 @@ package pl.kcworks.simplegymlog.ui;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Menu;
@@ -51,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         calendarSetUp();
 
         listAllPreferences();
-
     }
 
     private void listAllPreferences() {
