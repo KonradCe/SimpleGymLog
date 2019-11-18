@@ -12,7 +12,7 @@ I have written this app because there was no free app with clean interface, that
 - free
 - clean and simple
 - create your own routines to begin workout ASAP
-- [b]exercise based on 1RM[/b]
+- **exercise based on 1RM**
 - ad free
 - open source
 
