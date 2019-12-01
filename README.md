@@ -1,4 +1,4 @@
-<img src="/pictures/logo.png" align="center" height="150" width="150" > <a href="https://play.google.com/store/apps/details?id=pl.kcworks.simplegymlog"><img src="/pictures/google-play-badge.png" align="center"></a>
+<img src="/pictures/logo.png" align="center" height="150" width="150" > <a href="https://play.google.com/store/apps/details?id=pl.kcworks.simplegymlog"><img src="/pictures/google-play-badge.png" align="center" height="150"></a>
 
 # SimpleGymLog
 
